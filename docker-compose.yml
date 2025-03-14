@@ -1,7 +1,7 @@
 version: '3.8'
 services:
 
-  XMPP_SERVER:
+  xmpp:
     image: tigase/tigase-xmpp-server:8.1.2
     ports:
       - "8480:8080"
@@ -15,10 +15,7 @@ services:
       - ./tigase/config/tigase.conf:/home/tigase/tigase-server/etc/tigase.conf
       - ./tigase/config/config.tdsl:/home/tigase/tigase-server/etc/config.tdsl
 
-  MAS:
+  mas:
     image: mas:latest
     deploy:
-      resources:
-        limits:
-          cpus: ${CPUS}
-          memory: ${MEMORY}
+      

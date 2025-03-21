@@ -1,7 +1,6 @@
-version: '3.8'
 services:
 
-  xmpp:
+  server_hello:
     image: tigase/tigase-xmpp-server:8.1.2
     ports:
       - "8480:8080"
@@ -9,13 +8,28 @@ services:
     environment:
       - DB_ROOT_USER=admin
       - DB_ROOT_PASS=admin
-      - ADMIN_JID=admin@server_hello 
+      - ADMIN_JID=admin@serverhello.local
       - ADMIN_PASSWORD=admin
     volumes:
       - ./tigase/config/tigase.conf:/home/tigase/tigase-server/etc/tigase.conf
       - ./tigase/config/config.tdsl:/home/tigase/tigase-server/etc/config.tdsl
+    extra_hosts:
+      - "serverhello.local:127.0.0.1"
+    healthcheck:
+#      test: ["CMD", "curl", "-f", "http://127.0.0.1:8080/rest/health"]
+      test: ["CMD", "nc", "-z", "localhost", "5222"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
 
   mas:
     image: mas:latest
+    ports:
+      - "14000:10000"
+    depends_on:
+      server_hello:
+        condition: service_healthy
     deploy:
-      
+      resources:
+        limits:
+          memory: 512MB

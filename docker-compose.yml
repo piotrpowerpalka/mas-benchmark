@@ -13,21 +13,17 @@ services:
     volumes:
       - ./tigase/config/tigase.conf:/home/tigase/tigase-server/etc/tigase.conf
       - ./tigase/config/config.tdsl:/home/tigase/tigase-server/etc/config.tdsl
-    extra_hosts:
-      - "serverhello.local:127.0.0.1"
     healthcheck:
-#      test: ["CMD", "curl", "-f", "http://127.0.0.1:8080/rest/health"]
-      test: ["CMD", "nc", "-z", "localhost", "5222"]
+      test: ["CMD", "curl", "-f", "http://127.0.0.1:8080/rest/health"]
+#      test: ["CMD", "nc", "-z", "localhost", "5222"]
       interval: 15s
       timeout: 5s
       retries: 5
 
   mas:
     image: mas:latest
-    ports:
-      - "14000:10000"
 #    depends_on:
-#      server_hello:
+#      serverhello:
 #        condition: service_healthy
     deploy:
       resources:

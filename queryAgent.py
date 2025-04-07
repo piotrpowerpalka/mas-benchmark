@@ -2,7 +2,8 @@ import asyncio
 from spade.agent import Agent
 from spade.behaviour import OneShotBehaviour, CyclicBehaviour
 from spade.message import Message
-from spade.template import Template, ANDTemplate
+from spade.template import Template, ANDTemplate, ORTemplate
+from tools import *
 import random
 import string
 import time
@@ -15,6 +16,11 @@ class queryAgent(Agent):
         
         self.repetitions = self.get("repetitions-num")
 
+        self.agentsSet = []
+        for cnt in range(0, self.get("numagents")):
+            if cnt != int(self.name.split("@")[0].replace("agent", "")):
+                self.agentsSet.append("agent{}@{}".format(cnt, self.get("server")))
+
         templateInit = Template()
         templateInit.body = "Start"
 
@@ -24,7 +30,7 @@ class queryAgent(Agent):
         templateInform = Template()
         templateInform.set_metadata("performative", "inform")
 
-        templateComb = ANDTemplate(templateInform, templateQuery)
+        templateComb = ORTemplate(templateInform, templateQuery)
 
         self.add_behaviour(self.ReceiveMessage(), templateComb)
         self.add_behaviour(self.ReceiveInit(), templateInit)
@@ -32,7 +38,7 @@ class queryAgent(Agent):
 
     class sendMessageBehaviour(OneShotBehaviour):
         async def run(self):
-            tojid = "agent{}@{}".format( random.randint(0, self.agent.get("numagents") - 1), self.agent.get("server"))
+            tojid = random.choice(self.agent.agentsSet)
             msg = Message( to=tojid, sender=self.agent.name)
             msg.set_metadata("performative", "query")
             msg.set_metadata("reply_with", str(uuid.uuid4()))
@@ -40,22 +46,22 @@ class queryAgent(Agent):
             msg.body = str(''.join(random.choices(string.ascii_letters + string.digits, k=self.agent.get("content-size"))))
 #             msg.body = "Hello"
 
-            print("{};{};{};{};{}".format(msg.sender, msg.to, msg.get_metadata("performative"), msg.get_metadata("reply_with"), "sent", datetime.datetime.now()))
+            logMessage(msg, "S")
             await self.send(msg)
 
     class ReceiveMessage(CyclicBehaviour):
         async def run(self):
-            print("{} Receiving message...".format(self.agent.name))
             msg = await self.receive()  # wait for a message for 300 seconds
             if msg:
+                logMessage(msg, "R")
+
                 if msg.get_metadata("performative") == "query":
                     rplymsg = msg.make_reply()
                     rplymsg.set_metadata("performative", "inform")        
-                    print("{};{};{};{};{}".format(rplymsg.sender, rplymsg.to, rplymsg.get_metadata("performative"), rplymsg.get_metadata("reply_with"), "sent", datetime.datetime.now()))
+                    logMessage(rplymsg, "S")    
                     await self.send(rplymsg)
 
-                print("{};{};{};{};{}".format(msg.sender, msg.to, msg.get_metadata("performative"), msg.get_metadata("reply_with"), "received", datetime.datetime.now()))
-
+                
                 
                 if self.agent.repetitions > 0:
                     self.agent.repetitions -= 1
@@ -67,7 +73,7 @@ class queryAgent(Agent):
         async def run(self):
             msg = await self.receive()  # wait for a message for 300 seconds
             if msg:
-                print("{};{};{};{};{}".format(msg.sender, msg.to, msg.get_metadata("performative"), msg.get_metadata("reply_with"), "init received", datetime.datetime.now()))
+                logMessage(msg, "R")
                 self.agent.add_behaviour(self.agent.sendMessageBehaviour())
                 self.agent.repetitions -= 1
     

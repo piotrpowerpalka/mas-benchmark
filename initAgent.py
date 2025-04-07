@@ -2,6 +2,7 @@ import asyncio
 from spade.agent import Agent
 from spade.behaviour import OneShotBehaviour, CyclicBehaviour
 from spade.message import Message
+from tools import *  
 import random
 import string
 import time
@@ -22,9 +23,9 @@ class initAgent(Agent):
             for cnt in range(0, self.agent.get("numagents")):
                 tojid = F"agent{cnt}@{self.agent.get('server')}"
                 msg = Message( to=tojid, sender=self.agent.name)
-                msg.set_metadata("performative", "cfp")
+                msg.set_metadata("performative", "propose")
                 msg.set_metadata("reply_with", str(uuid.uuid4()))   
                 msg.body = "Start"
 
-                print("{};{};{};{};{}".format(msg.sender, msg.to, msg.get_metadata("reply_with"), "sent", datetime.datetime.now()))
+                logMessage(msg, "S")
                 await self.send(msg)

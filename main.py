@@ -7,6 +7,7 @@ import time
 from informAgent import *
 from queryAgent import *
 from initAgent import *
+from cfpAgent import *
 import traceback
 import argparse
 
@@ -16,10 +17,11 @@ parser.add_argument("-p", "--password", type=str, help="Agent password", default
 parser.add_argument("-n", "--numagents", type=int, help="Total number of agents", default=10)
 parser.add_argument("-f", "--fromag", type=int, help="Starting agent number on this docker", default=0)
 parser.add_argument("-t", "--toag", type=int, help="Ending agent number on this docker", default=9)
+parser.add_argument("-g", "--groupsize", type=int, help="Size of group of agents (only for cfp|negotiation)", default=3)
 parser.add_argument("-c", "--communication-type", type=str, help="Type of communication [inform|query|cfp|negotiation]", default="inform")
 parser.add_argument("-x", "--content-size", type=int, help="Size of content [bytes]", default="1024")
 parser.add_argument("-r", "--repetitions-num", type=int, help="Number of repetitions", default="10")
-parser.add_argument("-i", "--initag", type=int, help="Initialize the initAwgent", default=0)
+parser.add_argument("-i", "--initag", type=int, help="Run the initAgent", default=0)
 args = parser.parse_args()
 
 
@@ -57,6 +59,18 @@ async def main():
             agnt.set("server", config["server"])
             agnt.set("fromag", config["fromag"])
             agnt.set("toag", config["toag"])
+            agnt.set("numagents", config["numagents"])
+            agnt.set("content-size", config["content-size"])
+            agnt.set("repetitions-num", config["repetitions-num"])
+
+            agarr.append(agnt)
+
+        if config["communication-type"] == "cfp":
+            agnt = cfpAgent(aname, config["password"], verify_security=False)
+            agnt.set("server", config["server"])
+            agnt.set("fromag", config["fromag"])
+            agnt.set("toag", config["toag"])
+            agnt.set("groupsize", config["groupsize"])
             agnt.set("numagents", config["numagents"])
             agnt.set("content-size", config["content-size"])
             agnt.set("repetitions-num", config["repetitions-num"])

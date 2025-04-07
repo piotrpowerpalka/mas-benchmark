@@ -1,0 +1,312 @@
+Attaching to mas1-1, serverhello-1
+serverhello-1  | Upgrading database schema...
+mas1-1         | Starting...
+mas1-1         | Initalizing agent agent0@serverhello
+mas1-1         | Initalizing agent agent1@serverhello
+mas1-1         | Initalizing agent agent2@serverhello
+mas1-1         | Initalizing agent agent3@serverhello
+mas1-1         | Initalizing agent agent4@serverhello
+mas1-1         | Initalizing agent agent5@serverhello
+mas1-1         | Initalizing agent agent6@serverhello
+mas1-1         | Initalizing agent agent7@serverhello
+mas1-1         | Initalizing agent agent8@serverhello
+mas1-1         | Initalizing agent agent9@serverhello
+mas1-1         | Running agent agent0
+serverhello-1  | Derby shut down normally
+serverhello-1  | Derby shut down normally
+serverhello-1  | 
+serverhello-1  | 
+serverhello-1  | 
+serverhello-1  | 
+serverhello-1  |   =============================================================================
+serverhello-1  |   	Schema upgrade finished
+serverhello-1  |   
+serverhello-1  |   Data source: default with uri jdbc:derby:derby;create=true
+serverhello-1  |   	Checking connection to database	ok
+serverhello-1  |   	Checking if database exists	ok
+serverhello-1  |   	Loading Common Schema Files	ok
+serverhello-1  |   	Loading schema: Tigase Message Archiving Component, version: 2.1.0-b270/b48b562a (database version: none)	ok
+serverhello-1  |   	Loading schema: Tigase XMPP Server (Core), version: 8.1.1-b5650/86bb4486 (database version: none)	ok
+serverhello-1  |   	Loading schema: Tigase MUC Component, version: 3.1.2-b649/5e056afa (database version: none)	ok
+serverhello-1  |   	Loading schema: Tigase PubSub Component, version: 4.1.0-b716/dded4fd1 (database version: none)	ok
+serverhello-1  |   	Adding XMPP admin accounts	warning
+serverhello-1  |   		Message: Error: No admin users entered
+serverhello-1  |   	Post installation action	ok
+serverhello-1  |   =============================================================================
+serverhello-1  | 
+serverhello-1  | 
+serverhello-1  | 
+serverhello-1  | 
+serverhello-1  | 
+serverhello-1  | Starting Tigase XMPP Server...
+serverhello-1  | Running Tigase: 
+serverhello-1  | componentInfo{Title=Tigase XML Tools, Version=4.1.0-b289/244a87d9, Class=tigase.xml.XMLUtils}
+serverhello-1  | componentInfo{Title=Tigase Utils, Version=4.1.0-b437/a3e8f636, Class=tigase.util.ClassUtil}
+serverhello-1  | componentInfo{Title=Tigase XMPP Server, Version=8.1.1-b5650/86bb4486, Class=tigase.server.XMPPServer}
+serverhello-1  | componentInfo{Title=Tigase XMPP Server Distribution, Version=8.1.2-b10915/87522b38, Class=tigase.dist.XmppServerDist}
+serverhello-1  | Loading component: vhost-man :: componentInfo{Title=Tigase XMPP Server, Version=8.1.1-b5650/86bb4486, Class=tigase.vhosts.VHostManager}
+serverhello-1  | Loading plugin: session-open=2:2553 ... 	, version: 8.1.1-b5650/86bb4486
+serverhello-1  | Loading plugin: vcard-temp=1:5106 ... 	, version: 8.1.1-b5650/86bb4486
+serverhello-1  | Loading plugin: message-archive-xep-0136=1:5106 ... 	, version: 8.1.1-b5650/86bb4486
+serverhello-1  | Loading plugin: vcard-xep-0292=1:5106 ... 	, version: 8.1.1-b5650/86bb4486
+serverhello-1  | Loading plugin: urn:ietf:params:xml:ns:xmpp-bind=1:5106 ... 	, version: 8.1.1-b5650/86bb4486
+serverhello-1  | Loading plugin: starttls=1:5106 ... 	, version: 8.1.1-b5650/86bb4486
+serverhello-1  | Loading plugin: jabber:iq:register=1:5106 ... 	, version: 8.1.1-b5650/86bb4486
+serverhello-1  | Loading plugin: urn:ietf:params:xml:ns:xmpp-session=1:5106 ... 	, version: 8.1.1-b5650/86bb4486
+serverhello-1  | Loading plugin: urn:ietf:params:xml:ns:xmpp-sasl=4:1276 ... 	, version: 8.1.1-b5650/86bb4486
+serverhello-1  | Loading plugin: message-archive=1:5106 ... 	, version: 8.1.1-b5650/86bb4486
+serverhello-1  | Loading plugin: http://jabber.org/protocol/stats=1:5106 ... 	, version: 8.1.1-b5650/86bb4486
+serverhello-1  | Loading plugin: urn:xmpp:time=1:5106 ... 	, version: 8.1.1-b5650/86bb4486
+serverhello-1  | Loading plugin: jabber:iq:privacy=1:5106 ... 	, version: 8.1.1-b5650/86bb4486
+serverhello-1  | Loading plugin: zlib=1:5106 ... 	, version: 8.1.1-b5650/86bb4486
+serverhello-1  | Loading plugin: pep=2:2553 ... 	, version: 8.1.1-b5650/86bb4486
+serverhello-1  | Loading plugin: jabber:iq:roster=4:1276 ... 	, version: 8.1.1-b5650/86bb4486
+serverhello-1  | Loading plugin: http://jabber.org/protocol/commands=1:5106 ... 	, version: 8.1.1-b5650/86bb4486
+serverhello-1  | Loading plugin: jabber:iq:private=1:5106 ... 	, version: 8.1.1-b5650/86bb4486
+serverhello-1  | Loading plugin: message-carbons=1:5106 ... 	, version: 8.1.1-b5650/86bb4486
+serverhello-1  | Loading plugin: urn:xmpp:blocking=1:5106 ... 	, version: 8.1.1-b5650/86bb4486
+serverhello-1  | Loading plugin: jabber:iq:auth=1:5106 ... 	, version: 8.1.1-b5650/86bb4486
+serverhello-1  | Loading plugin: presence-state=4:1276 ... 	, version: 8.1.1-b5650/86bb4486
+serverhello-1  | Loading plugin: urn:xmpp:push:0=1:5106 ... 	, version: 8.1.1-b5650/86bb4486
+serverhello-1  | Loading plugin: session-close=4:1276 ... 	, version: 8.1.1-b5650/86bb4486
+serverhello-1  | Loading plugin: message-archive-xep-0136=1:5106 ... 	, version: 8.1.1-b5650/86bb4486
+serverhello-1  | Loading plugin: urn:xmpp:ping=1:5106 ... 	, version: 8.1.1-b5650/86bb4486
+serverhello-1  | Loading plugin: default-handler=64:79 ... 	, version: 8.1.1-b5650/86bb4486
+serverhello-1  | Loading plugin: disco=1:5106 ... 	, version: 8.1.1-b5650/86bb4486
+serverhello-1  | Loading plugin: amp=1:5106 ... 	, version: 8.1.1-b5650/86bb4486
+serverhello-1  | Loading plugin: jabber:iq:version=1:5106 ... 	, version: 8.1.1-b5650/86bb4486
+serverhello-1  | Loading plugin: urn:xmpp:csi:0=1:5106 ... 	, version: 8.1.1-b5650/86bb4486
+serverhello-1  | Loading plugin: presence-subscription=4:1276 ... 	, version: 8.1.1-b5650/86bb4486
+serverhello-1  | Loading plugin: urn:xmpp:mam:1=1:5106 ... 	, version: 8.1.1-b5650/86bb4486
+serverhello-1  | Loading plugin: message-archive=1:5106 ... 	, version: 8.1.1-b5650/86bb4486
+serverhello-1  | Loading component: sess-man :: componentInfo{Title=Tigase XMPP Server, Version=8.1.1-b5650/86bb4486, Class=tigase.server.xmppsession.SessionManager}
+serverhello-1  | Loading component: message-router :: componentInfo{Title=Tigase XMPP Server, Version=8.1.1-b5650/86bb4486, Class=tigase.server.MessageRouter}
+serverhello-1  | Loading component: stats :: componentInfo{Title=Tigase XMPP Server, Version=8.1.1-b5650/86bb4486, Class=tigase.stats.StatisticsCollector}
+serverhello-1  | Loading component: pubsub :: componentInfo{Title=Tigase PubSub, Version=4.1.0-b716/dded4fd1-8.1.1-b5650/86bb4486, Class=tigase.pubsub.PubSubComponent}
+serverhello-1  | Loading component: c2s :: componentInfo{Title=Tigase XMPP Server, Version=8.1.1-b5650/86bb4486, Class=tigase.server.xmppclient.ClientConnectionManager}
+serverhello-1  | Loading component: eventbus :: componentInfo{Title=Tigase XMPP Server, Version=8.1.1-b5650/86bb4486, Class=tigase.eventbus.component.EventBusComponent}
+serverhello-1  | Loading component: s2s :: componentInfo{Title=Tigase XMPP Server, Version=8.1.1-b5650/86bb4486, Class=tigase.server.xmppserver.S2SConnectionManager}
+serverhello-1  | Loading component: http :: componentInfo{Title=Tigase HTTP API component, Version=2.1.1-b347/18147653-8.1.1-b5650/86bb4486, Class=tigase.http.HttpMessageReceiver}
+serverhello-1  | Loading component: muc :: componentInfo{Title=Tigase MUC, Version=3.1.2-b649/5e056afa-8.1.1-b5650/86bb4486, Class=tigase.muc.MUCComponent}
+serverhello-1  | Loading component: message-archive :: componentInfo{Title=Tigase Message Archiving Component, Version=2.1.0-b270/b48b562a-8.1.1-b5650/86bb4486, Class=tigase.archive.MessageArchiveComponent}
+serverhello-1  | Loading component: amp :: componentInfo{Title=Tigase XMPP Server, Version=8.1.1-b5650/86bb4486, Class=tigase.server.amp.AmpComponent}
+serverhello-1  | Loading component: bosh :: componentInfo{Title=Tigase XMPP Server, Version=8.1.1-b5650/86bb4486, Class=tigase.server.bosh.BoshConnectionManager}
+serverhello-1  | Loading component: monitor :: componentInfo{Title=Tigase XMPP Server, Version=8.1.1-b5650/86bb4486, Class=tigase.monitor.MonitorComponent}
+serverhello-1  | Loading component: ws2s :: componentInfo{Title=Tigase XMPP Server, Version=8.1.1-b5650/86bb4486, Class=tigase.server.websocket.WebSocketClientConnectionManager}
+serverhello-1  | == 2025-03-31 18:12:22.392 Server finished starting up in (14s) and (if there wasn't any error) is ready to use
+serverhello-1  | 
+mas1-1         | Running agent agent1
+mas1-1         | Running agent agent2
+mas1-1         | Running agent agent3
+mas1-1         | Running agent agent4
+mas1-1         | Running agent agent5
+mas1-1         | Running agent agent6
+mas1-1         | Running agent agent7
+mas1-1         | Running agent agent8
+mas1-1         | Running agent agent9
+mas1-1         | Running init agent
+mas1-1         | Agent initagent starting...
+mas1-1         | initagent;agent0@serverhello;cb00dd6a-5754-4359-a6fb-5667e1157e7a;sent;2025-03-31 18:12:34.430319
+mas1-1         | initagent;agent1@serverhello;b716736f-0426-4eca-ad65-7db3f90e9688;sent;2025-03-31 18:12:34.430513
+mas1-1         | initagent;agent2@serverhello;ef2a707f-008b-4f7d-8ed6-d56e4f20ff11;sent;2025-03-31 18:12:34.430577
+mas1-1         | initagent;agent3@serverhello;8da5cf4c-89f5-4c6d-ae40-2d6a49e3b5c7;sent;2025-03-31 18:12:34.430635
+mas1-1         | initagent;agent4@serverhello;8376a8d1-9776-4044-99cc-7c4942e4b8d9;sent;2025-03-31 18:12:34.430693
+mas1-1         | initagent;agent5@serverhello;3cb0ae2b-2cfc-468c-bdb9-a4c6e47bb97d;sent;2025-03-31 18:12:34.430791
+mas1-1         | initagent;agent6@serverhello;821fcda2-b843-453f-a0ca-20f05d697ade;sent;2025-03-31 18:12:34.430854
+mas1-1         | initagent;agent7@serverhello;76fc5893-538c-489b-a1c5-8206292875eb;sent;2025-03-31 18:12:34.430914
+mas1-1         | initagent;agent8@serverhello;396e900c-94cf-4640-9633-e13236be9041;sent;2025-03-31 18:12:34.431034
+mas1-1         | initagent;agent9@serverhello;340a76cc-e99c-4c14-8a82-15fba5530d36;sent;2025-03-31 18:12:34.431102
+mas1-1         | initagent;agent0@serverhello;cb00dd6a-5754-4359-a6fb-5667e1157e7a;init received;2025-03-31 18:12:34.431494
+mas1-1         | initagent;agent1@serverhello;b716736f-0426-4eca-ad65-7db3f90e9688;init received;2025-03-31 18:12:34.431634
+mas1-1         | initagent;agent2@serverhello;ef2a707f-008b-4f7d-8ed6-d56e4f20ff11;init received;2025-03-31 18:12:34.431737
+mas1-1         | initagent;agent3@serverhello;8da5cf4c-89f5-4c6d-ae40-2d6a49e3b5c7;init received;2025-03-31 18:12:34.431819
+mas1-1         | initagent;agent4@serverhello;8376a8d1-9776-4044-99cc-7c4942e4b8d9;init received;2025-03-31 18:12:34.431892
+mas1-1         | initagent;agent5@serverhello;3cb0ae2b-2cfc-468c-bdb9-a4c6e47bb97d;init received;2025-03-31 18:12:34.431932
+mas1-1         | initagent;agent6@serverhello;821fcda2-b843-453f-a0ca-20f05d697ade;init received;2025-03-31 18:12:34.431973
+mas1-1         | initagent;agent7@serverhello;76fc5893-538c-489b-a1c5-8206292875eb;init received;2025-03-31 18:12:34.432048
+mas1-1         | initagent;agent8@serverhello;396e900c-94cf-4640-9633-e13236be9041;init received;2025-03-31 18:12:34.432097
+mas1-1         | initagent;agent9@serverhello;340a76cc-e99c-4c14-8a82-15fba5530d36;init received;2025-03-31 18:12:34.432192
+mas1-1         | agent0;agent7@serverhello;52456512-aa53-42d6-8de3-e4ca1be858c4;sent;2025-03-31 18:12:34.432665
+mas1-1         | agent1;agent0@serverhello;c04449b9-c75e-4ced-8434-621bcb3fdf9e;sent;2025-03-31 18:12:34.433163
+mas1-1         | agent2;agent9@serverhello;310e96c9-0995-46fd-81af-ec5e49b0b656;sent;2025-03-31 18:12:34.433671
+mas1-1         | agent3;agent9@serverhello;9a9ca0b0-0c12-469d-95cb-becd2a9a6ba3;sent;2025-03-31 18:12:34.434243
+mas1-1         | agent4;agent0@serverhello;968f359f-6592-4302-b3b8-c9dc4d416278;sent;2025-03-31 18:12:34.434771
+mas1-1         | agent5;agent6@serverhello;4eb5da99-e208-412a-b733-d386bbddd364;sent;2025-03-31 18:12:34.435398
+mas1-1         | agent6;agent0@serverhello;12e5094c-f9ec-4913-8ede-d4c5588890f6;sent;2025-03-31 18:12:34.435956
+mas1-1         | agent7;agent3@serverhello;09c31c81-c13e-4d61-a647-099cf5fbccdb;sent;2025-03-31 18:12:34.436485
+mas1-1         | agent8;agent8@serverhello;8519f529-5f7c-4432-a8f0-a69e9db2074b;sent;2025-03-31 18:12:34.437219
+mas1-1         | agent9;agent7@serverhello;6acdafff-f27a-4a49-b771-892ee4fdad26;sent;2025-03-31 18:12:34.437720
+mas1-1         | agent5;agent6@serverhello;4eb5da99-e208-412a-b733-d386bbddd364;received;2025-03-31 18:12:34.438606
+mas1-1         | agent0;agent7@serverhello;52456512-aa53-42d6-8de3-e4ca1be858c4;received;2025-03-31 18:12:34.438729
+mas1-1         | agent2;agent9@serverhello;310e96c9-0995-46fd-81af-ec5e49b0b656;received;2025-03-31 18:12:34.439537
+mas1-1         | agent1;agent0@serverhello;c04449b9-c75e-4ced-8434-621bcb3fdf9e;received;2025-03-31 18:12:34.439825
+mas1-1         | agent7;agent3@serverhello;09c31c81-c13e-4d61-a647-099cf5fbccdb;received;2025-03-31 18:12:34.439939
+mas1-1         | agent6;agent4@serverhello;701a1e95-80d9-4869-b9c8-f9dbd9f6e6d3;sent;2025-03-31 18:12:34.440307
+mas1-1         | agent7;agent2@serverhello;898d4eb6-64de-4426-865b-4f42c382f5ce;sent;2025-03-31 18:12:34.440720
+mas1-1         | agent9;agent7@serverhello;6acdafff-f27a-4a49-b771-892ee4fdad26;received;2025-03-31 18:12:34.440828
+mas1-1         | agent8;agent8@serverhello;8519f529-5f7c-4432-a8f0-a69e9db2074b;received;2025-03-31 18:12:34.440907
+mas1-1         | agent9;agent0@serverhello;ca609cac-48f1-42dc-b9ca-56196b6ebad9;sent;2025-03-31 18:12:34.441159
+mas1-1         | agent3;agent9@serverhello;9a9ca0b0-0c12-469d-95cb-becd2a9a6ba3;received;2025-03-31 18:12:34.441262
+mas1-1         | agent0;agent5@serverhello;b500f78f-29c2-4689-9a81-af6dd0d30587;sent;2025-03-31 18:12:34.441708
+mas1-1         | agent4;agent0@serverhello;968f359f-6592-4302-b3b8-c9dc4d416278;received;2025-03-31 18:12:34.441816
+mas1-1         | agent3;agent2@serverhello;d287cab0-4eb6-4f35-a820-3f804d32e64f;sent;2025-03-31 18:12:34.442139
+mas1-1         | agent7;agent7@serverhello;026f7366-798b-42e1-bf8a-e65dc7e2aaaf;sent;2025-03-31 18:12:34.442538
+mas1-1         | agent8;agent2@serverhello;80918b46-917c-4f82-aaf5-529695c62b64;sent;2025-03-31 18:12:34.442852
+mas1-1         | agent9;agent3@serverhello;8b482ddf-e685-472d-b154-bd2e12102c2c;sent;2025-03-31 18:12:34.443217
+mas1-1         | agent0;agent3@serverhello;dc7ba59f-1e3b-4302-a6bf-76d28eb2de51;sent;2025-03-31 18:12:34.443546
+mas1-1         | agent6;agent0@serverhello;12e5094c-f9ec-4913-8ede-d4c5588890f6;received;2025-03-31 18:12:34.443632
+mas1-1         | agent0;agent1@serverhello;d6dfe7e8-a9e9-4ffe-81ed-66de3e883abf;sent;2025-03-31 18:12:34.444294
+mas1-1         | agent9;agent0@serverhello;ca609cac-48f1-42dc-b9ca-56196b6ebad9;received;2025-03-31 18:12:34.444383
+mas1-1         | agent7;agent2@serverhello;898d4eb6-64de-4426-865b-4f42c382f5ce;received;2025-03-31 18:12:34.444455
+mas1-1         | agent6;agent4@serverhello;701a1e95-80d9-4869-b9c8-f9dbd9f6e6d3;received;2025-03-31 18:12:34.444551
+mas1-1         | agent0;agent5@serverhello;b500f78f-29c2-4689-9a81-af6dd0d30587;received;2025-03-31 18:12:34.444771
+mas1-1         | agent7;agent7@serverhello;026f7366-798b-42e1-bf8a-e65dc7e2aaaf;received;2025-03-31 18:12:34.444942
+mas1-1         | agent0;agent6@serverhello;e576d212-8d24-43cc-b352-81402b5df31c;sent;2025-03-31 18:12:34.445527
+mas1-1         | agent2;agent6@serverhello;5bc077aa-adc9-4a46-bf2f-29b5213c51db;sent;2025-03-31 18:12:34.446101
+mas1-1         | agent3;agent2@serverhello;d287cab0-4eb6-4f35-a820-3f804d32e64f;received;2025-03-31 18:12:34.446381
+mas1-1         | agent9;agent3@serverhello;8b482ddf-e685-472d-b154-bd2e12102c2c;received;2025-03-31 18:12:34.446574
+mas1-1         | agent4;agent1@serverhello;d1f4c48f-5468-4924-ad60-8166d7323b3a;sent;2025-03-31 18:12:34.447002
+mas1-1         | agent5;agent0@serverhello;a9db6cf9-ff22-44ae-8243-e5f1da415ed7;sent;2025-03-31 18:12:34.447376
+mas1-1         | agent7;agent2@serverhello;bb175cb1-6184-4418-bc3d-a15ca90e4b8e;sent;2025-03-31 18:12:34.447786
+mas1-1         | agent0;agent1@serverhello;d6dfe7e8-a9e9-4ffe-81ed-66de3e883abf;received;2025-03-31 18:12:34.447996
+mas1-1         | agent2;agent9@serverhello;2d61accb-fe13-4956-95b5-6f8cf0b1037a;sent;2025-03-31 18:12:34.448393
+mas1-1         | agent8;agent2@serverhello;80918b46-917c-4f82-aaf5-529695c62b64;received;2025-03-31 18:12:34.448504
+mas1-1         | agent3;agent9@serverhello;a73bbe44-fa49-4347-91a1-21d0ca6bd98b;sent;2025-03-31 18:12:34.448814
+mas1-1         | agent0;agent3@serverhello;dc7ba59f-1e3b-4302-a6bf-76d28eb2de51;received;2025-03-31 18:12:34.448924
+mas1-1         | agent1;agent0@serverhello;108246d2-acc4-4ac9-a3d0-5eaa949909ce;sent;2025-03-31 18:12:34.449453
+mas1-1         | agent2;agent2@serverhello;eb756b96-9a55-4c5c-b686-a3e405f83580;sent;2025-03-31 18:12:34.449758
+mas1-1         | agent3;agent4@serverhello;d4ec9797-8c1e-4e2e-98fe-3a0657ce14b7;sent;2025-03-31 18:12:34.450066
+mas1-1         | agent0;agent6@serverhello;e576d212-8d24-43cc-b352-81402b5df31c;received;2025-03-31 18:12:34.450209
+mas1-1         | agent5;agent0@serverhello;a9db6cf9-ff22-44ae-8243-e5f1da415ed7;received;2025-03-31 18:12:34.450692
+mas1-1         | agent4;agent1@serverhello;d1f4c48f-5468-4924-ad60-8166d7323b3a;received;2025-03-31 18:12:34.450802
+mas1-1         | agent7;agent2@serverhello;bb175cb1-6184-4418-bc3d-a15ca90e4b8e;received;2025-03-31 18:12:34.450902
+mas1-1         | agent6;agent0@serverhello;caad4d46-bb20-4b0c-98e5-4795a5f74163;sent;2025-03-31 18:12:34.451235
+mas1-1         | agent2;agent6@serverhello;5bc077aa-adc9-4a46-bf2f-29b5213c51db;received;2025-03-31 18:12:34.451345
+mas1-1         | agent2;agent9@serverhello;2d61accb-fe13-4956-95b5-6f8cf0b1037a;received;2025-03-31 18:12:34.451439
+mas1-1         | agent0;agent9@serverhello;2cc85100-e398-47f7-bab0-8323d08ac227;sent;2025-03-31 18:12:34.451757
+mas1-1         | agent1;agent1@serverhello;8b9f507a-2722-4291-84b7-24a060db890a;sent;2025-03-31 18:12:34.452111
+mas1-1         | agent2;agent2@serverhello;03c16979-0b99-4771-9094-b53db01bedae;sent;2025-03-31 18:12:34.452443
+mas1-1         | agent2;agent2@serverhello;eb756b96-9a55-4c5c-b686-a3e405f83580;received;2025-03-31 18:12:34.452537
+mas1-1         | agent3;agent4@serverhello;d4ec9797-8c1e-4e2e-98fe-3a0657ce14b7;received;2025-03-31 18:12:34.452647
+mas1-1         | agent6;agent8@serverhello;77e85c76-76c0-4a00-8b27-8ff83af0fd36;sent;2025-03-31 18:12:34.453014
+mas1-1         | agent9;agent7@serverhello;8c9af507-7abb-448f-80b0-9ead64f7aa72;sent;2025-03-31 18:12:34.453362
+mas1-1         | agent3;agent9@serverhello;a73bbe44-fa49-4347-91a1-21d0ca6bd98b;received;2025-03-31 18:12:34.453454
+mas1-1         | agent1;agent0@serverhello;108246d2-acc4-4ac9-a3d0-5eaa949909ce;received;2025-03-31 18:12:34.453584
+mas1-1         | agent2;agent1@serverhello;657586a4-3512-4688-95cc-7738d014bcd3;sent;2025-03-31 18:12:34.453954
+mas1-1         | agent4;agent4@serverhello;086c18e9-427b-4ee6-854a-06cb50dd33d9;sent;2025-03-31 18:12:34.454276
+mas1-1         | agent9;agent9@serverhello;0da1cc7f-ac31-43a1-a208-1d1688323690;sent;2025-03-31 18:12:34.454794
+mas1-1         | agent0;agent0@serverhello;a0d2ae35-02f7-4a04-a43d-0b24431d3be4;sent;2025-03-31 18:12:34.455128
+mas1-1         | agent6;agent0@serverhello;caad4d46-bb20-4b0c-98e5-4795a5f74163;received;2025-03-31 18:12:34.455221
+mas1-1         | agent1;agent1@serverhello;8b9f507a-2722-4291-84b7-24a060db890a;received;2025-03-31 18:12:34.455330
+mas1-1         | agent2;agent2@serverhello;03c16979-0b99-4771-9094-b53db01bedae;received;2025-03-31 18:12:34.455440
+mas1-1         | agent6;agent8@serverhello;77e85c76-76c0-4a00-8b27-8ff83af0fd36;received;2025-03-31 18:12:34.455610
+mas1-1         | agent0;agent9@serverhello;2cc85100-e398-47f7-bab0-8323d08ac227;received;2025-03-31 18:12:34.455719
+mas1-1         | agent0;agent8@serverhello;28ef2073-5e31-44b9-a4fc-d3ec37fbb714;sent;2025-03-31 18:12:34.456063
+mas1-1         | agent1;agent3@serverhello;8a9281d2-e207-4999-9d04-8d538d224ff0;sent;2025-03-31 18:12:34.456573
+mas1-1         | agent2;agent6@serverhello;c0bd156b-3a41-4399-878b-3da6876a88d7;sent;2025-03-31 18:12:34.456982
+mas1-1         | agent4;agent4@serverhello;086c18e9-427b-4ee6-854a-06cb50dd33d9;received;2025-03-31 18:12:34.457127
+mas1-1         | agent9;agent7@serverhello;8c9af507-7abb-448f-80b0-9ead64f7aa72;received;2025-03-31 18:12:34.457264
+mas1-1         | agent8;agent1@serverhello;fb460c4e-befb-4bdf-a74a-75664d7603b8;sent;2025-03-31 18:12:34.457723
+mas1-1         | agent9;agent0@serverhello;6128afca-fd07-4c66-8e17-72c0fe1a5ed5;sent;2025-03-31 18:12:34.458097
+mas1-1         | agent9;agent9@serverhello;0da1cc7f-ac31-43a1-a208-1d1688323690;received;2025-03-31 18:12:34.458204
+mas1-1         | agent0;agent0@serverhello;a0d2ae35-02f7-4a04-a43d-0b24431d3be4;received;2025-03-31 18:12:34.458516
+mas1-1         | agent2;agent1@serverhello;657586a4-3512-4688-95cc-7738d014bcd3;received;2025-03-31 18:12:34.458627
+mas1-1         | agent4;agent1@serverhello;0fe0f8b5-21d4-4291-9ac0-29b2fd94901e;sent;2025-03-31 18:12:34.458964
+mas1-1         | agent7;agent6@serverhello;218c868b-9155-4157-b0a9-14b0ebf6cd5c;sent;2025-03-31 18:12:34.459297
+mas1-1         | agent9;agent2@serverhello;d53a5f8e-8924-486a-b9a4-a4c1ebd93d4a;sent;2025-03-31 18:12:34.459632
+mas1-1         | agent0;agent9@serverhello;1f9dc77d-2ef7-44fc-8041-94980a4da7f5;sent;2025-03-31 18:12:34.459955
+mas1-1         | agent1;agent3@serverhello;94e3cff4-c690-4d47-8fb5-31ac191b2db4;sent;2025-03-31 18:12:34.460420
+mas1-1         | agent1;agent3@serverhello;8a9281d2-e207-4999-9d04-8d538d224ff0;received;2025-03-31 18:12:34.460548
+mas1-1         | agent2;agent6@serverhello;c0bd156b-3a41-4399-878b-3da6876a88d7;received;2025-03-31 18:12:34.460697
+mas1-1         | agent0;agent8@serverhello;28ef2073-5e31-44b9-a4fc-d3ec37fbb714;received;2025-03-31 18:12:34.460897
+mas1-1         | agent9;agent0@serverhello;6128afca-fd07-4c66-8e17-72c0fe1a5ed5;received;2025-03-31 18:12:34.461065
+mas1-1         | agent8;agent1@serverhello;fb460c4e-befb-4bdf-a74a-75664d7603b8;received;2025-03-31 18:12:34.461174
+mas1-1         | agent3;agent4@serverhello;53133ca4-80f8-4403-b085-5341a69fda29;sent;2025-03-31 18:12:34.461521
+mas1-1         | agent6;agent7@serverhello;e63e1fe8-9734-4a5f-b27b-35d958b030bf;sent;2025-03-31 18:12:34.461889
+mas1-1         | agent8;agent0@serverhello;cbd5653a-d2dc-49b7-9e51-e467ada0b29b;sent;2025-03-31 18:12:34.462300
+mas1-1         | agent0;agent3@serverhello;51ae548d-9bdc-4390-a986-0d785ff68906;sent;2025-03-31 18:12:34.462717
+mas1-1         | agent1;agent9@serverhello;07a50607-10dd-4744-b096-228c01a696bc;sent;2025-03-31 18:12:34.463113
+mas1-1         | agent4;agent1@serverhello;0fe0f8b5-21d4-4291-9ac0-29b2fd94901e;received;2025-03-31 18:12:34.463229
+mas1-1         | agent9;agent2@serverhello;d53a5f8e-8924-486a-b9a4-a4c1ebd93d4a;received;2025-03-31 18:12:34.463334
+mas1-1         | agent1;agent3@serverhello;94e3cff4-c690-4d47-8fb5-31ac191b2db4;received;2025-03-31 18:12:34.463463
+mas1-1         | agent7;agent6@serverhello;218c868b-9155-4157-b0a9-14b0ebf6cd5c;received;2025-03-31 18:12:34.463606
+mas1-1         | agent0;agent9@serverhello;1f9dc77d-2ef7-44fc-8041-94980a4da7f5;received;2025-03-31 18:12:34.463742
+mas1-1         | agent1;agent2@serverhello;c85e7c7d-4e28-4634-b867-5f518f4bb401;sent;2025-03-31 18:12:34.464104
+mas1-1         | agent2;agent8@serverhello;ac03892b-0e67-49cd-9dbd-5c2f92432fed;sent;2025-03-31 18:12:34.464504
+mas1-1         | agent3;agent5@serverhello;660cf26d-6819-4e3a-8cc8-1b911f4833c0;sent;2025-03-31 18:12:34.464911
+mas1-1         | agent3;agent4@serverhello;53133ca4-80f8-4403-b085-5341a69fda29;received;2025-03-31 18:12:34.465018
+mas1-1         | agent6;agent0@serverhello;bd21eb95-0020-43db-b32e-1bc3efa92860;sent;2025-03-31 18:12:34.465399
+mas1-1         | agent6;agent7@serverhello;e63e1fe8-9734-4a5f-b27b-35d958b030bf;received;2025-03-31 18:12:34.465511
+mas1-1         | agent9;agent2@serverhello;d3ce2e81-a125-4064-a7cf-ea8d82a5f6cb;sent;2025-03-31 18:12:34.465867
+mas1-1         | agent8;agent0@serverhello;cbd5653a-d2dc-49b7-9e51-e467ada0b29b;received;2025-03-31 18:12:34.466005
+mas1-1         | agent0;agent3@serverhello;51ae548d-9bdc-4390-a986-0d785ff68906;received;2025-03-31 18:12:34.466157
+mas1-1         | agent4;agent8@serverhello;c47c5523-f2e6-44df-8751-7c7c779de545;sent;2025-03-31 18:12:34.466510
+mas1-1         | agent7;agent5@serverhello;e1b2fd8e-d041-4e7b-90d0-e36d135b0c54;sent;2025-03-31 18:12:34.466899
+mas1-1         | agent1;agent9@serverhello;07a50607-10dd-4744-b096-228c01a696bc;received;2025-03-31 18:12:34.467035
+mas1-1         | agent1;agent2@serverhello;c85e7c7d-4e28-4634-b867-5f518f4bb401;received;2025-03-31 18:12:34.467163
+mas1-1         | agent3;agent1@serverhello;4249b849-3669-4098-bf35-c2be7884ab92;sent;2025-03-31 18:12:34.467500
+mas1-1         | agent3;agent5@serverhello;660cf26d-6819-4e3a-8cc8-1b911f4833c0;received;2025-03-31 18:12:34.467668
+mas1-1         | agent2;agent8@serverhello;ac03892b-0e67-49cd-9dbd-5c2f92432fed;received;2025-03-31 18:12:34.467805
+mas1-1         | agent9;agent2@serverhello;59083a77-ecc4-4e41-aff0-abbe71d45620;sent;2025-03-31 18:12:34.468155
+mas1-1         | agent6;agent0@serverhello;bd21eb95-0020-43db-b32e-1bc3efa92860;received;2025-03-31 18:12:34.468289
+mas1-1         | agent2;agent4@serverhello;e2fec555-3d99-4a42-9997-60a7b98e69b0;sent;2025-03-31 18:12:34.468572
+mas1-1         | agent9;agent2@serverhello;d3ce2e81-a125-4064-a7cf-ea8d82a5f6cb;received;2025-03-31 18:12:34.468656
+mas1-1         | agent5;agent8@serverhello;5271ee01-c557-486b-949f-73c7abceca6f;sent;2025-03-31 18:12:34.469026
+mas1-1         | agent8;agent6@serverhello;45277193-f622-4b33-9025-62ee1c19aaee;sent;2025-03-31 18:12:34.469385
+mas1-1         | agent4;agent8@serverhello;c47c5523-f2e6-44df-8751-7c7c779de545;received;2025-03-31 18:12:34.469476
+mas1-1         | agent2;agent1@serverhello;1352a263-86ed-44d7-90ef-2faaf92c8f1f;sent;2025-03-31 18:12:34.469892
+mas1-1         | agent7;agent5@serverhello;e1b2fd8e-d041-4e7b-90d0-e36d135b0c54;received;2025-03-31 18:12:34.470135
+mas1-1         | agent8;agent0@serverhello;69d83ef5-e118-4260-9254-cb13de849db7;sent;2025-03-31 18:12:34.470607
+mas1-1         | agent3;agent1@serverhello;4249b849-3669-4098-bf35-c2be7884ab92;received;2025-03-31 18:12:34.470767
+mas1-1         | agent9;agent2@serverhello;59083a77-ecc4-4e41-aff0-abbe71d45620;received;2025-03-31 18:12:34.470962
+mas1-1         | agent2;agent4@serverhello;e2fec555-3d99-4a42-9997-60a7b98e69b0;received;2025-03-31 18:12:34.471072
+mas1-1         | agent5;agent8@serverhello;d9582f96-139b-4e0d-b903-f535d10ef9e2;sent;2025-03-31 18:12:34.471597
+mas1-1         | agent5;agent8@serverhello;5271ee01-c557-486b-949f-73c7abceca6f;received;2025-03-31 18:12:34.471858
+mas1-1         | agent1;agent2@serverhello;decf9dde-dd95-41d4-9a42-d33055859cf9;sent;2025-03-31 18:12:34.472224
+mas1-1         | agent4;agent4@serverhello;2bd782e0-e135-406c-a4cd-78bcfcb5176e;sent;2025-03-31 18:12:34.472655
+mas1-1         | agent8;agent6@serverhello;45277193-f622-4b33-9025-62ee1c19aaee;received;2025-03-31 18:12:34.472822
+mas1-1         | agent8;agent7@serverhello;b399f1c1-7f0e-445c-9858-0a793c4f4f6f;sent;2025-03-31 18:12:34.473171
+mas1-1         | agent8;agent0@serverhello;69d83ef5-e118-4260-9254-cb13de849db7;received;2025-03-31 18:12:34.473283
+mas1-1         | agent2;agent1@serverhello;1352a263-86ed-44d7-90ef-2faaf92c8f1f;received;2025-03-31 18:12:34.473472
+mas1-1         | agent6;agent6@serverhello;7bb8b83d-3591-45c9-b70f-e5a81a939078;sent;2025-03-31 18:12:34.473854
+mas1-1         | agent5;agent8@serverhello;d9582f96-139b-4e0d-b903-f535d10ef9e2;received;2025-03-31 18:12:34.474016
+mas1-1         | agent1;agent8@serverhello;cea1b11c-2beb-494f-aeb5-00778c767e0a;sent;2025-03-31 18:12:34.474339
+mas1-1         | agent1;agent2@serverhello;decf9dde-dd95-41d4-9a42-d33055859cf9;received;2025-03-31 18:12:34.474446
+mas1-1         | agent4;agent4@serverhello;2bd782e0-e135-406c-a4cd-78bcfcb5176e;received;2025-03-31 18:12:34.474507
+mas1-1         | agent8;agent1@serverhello;b9b80f3f-b973-410b-8f0e-8e1ce5193611;sent;2025-03-31 18:12:34.474880
+mas1-1         | agent4;agent5@serverhello;a277293c-f32a-4430-976f-bddc617d1714;sent;2025-03-31 18:12:34.475306
+mas1-1         | agent6;agent6@serverhello;7bb8b83d-3591-45c9-b70f-e5a81a939078;received;2025-03-31 18:12:34.475425
+mas1-1         | agent8;agent7@serverhello;b399f1c1-7f0e-445c-9858-0a793c4f4f6f;received;2025-03-31 18:12:34.475503
+mas1-1         | agent6;agent1@serverhello;84335483-e2ad-4e93-a3f6-d1284922155b;sent;2025-03-31 18:12:34.475882
+mas1-1         | agent7;agent3@serverhello;8e596e51-86ae-4884-96c1-28a4dde6f91c;sent;2025-03-31 18:12:34.476157
+mas1-1         | agent1;agent8@serverhello;cea1b11c-2beb-494f-aeb5-00778c767e0a;received;2025-03-31 18:12:34.476257
+mas1-1         | agent8;agent1@serverhello;b9b80f3f-b973-410b-8f0e-8e1ce5193611;received;2025-03-31 18:12:34.476345
+mas1-1         | agent4;agent5@serverhello;a277293c-f32a-4430-976f-bddc617d1714;received;2025-03-31 18:12:34.476508
+mas1-1         | agent8;agent5@serverhello;fcb4ce29-87c4-4d3d-9b98-4fb61f70be9b;sent;2025-03-31 18:12:34.476885
+mas1-1         | agent1;agent2@serverhello;c7254da3-aeec-4de3-a869-b1c1a5538d92;sent;2025-03-31 18:12:34.477210
+mas1-1         | agent5;agent6@serverhello;f7e2df4e-9f49-4c72-9b4c-f2fd2eba5ad6;sent;2025-03-31 18:12:34.477532
+mas1-1         | agent6;agent1@serverhello;84335483-e2ad-4e93-a3f6-d1284922155b;received;2025-03-31 18:12:34.477751
+mas1-1         | agent7;agent3@serverhello;8e596e51-86ae-4884-96c1-28a4dde6f91c;received;2025-03-31 18:12:34.477807
+mas1-1         | agent1;agent2@serverhello;c7254da3-aeec-4de3-a869-b1c1a5538d92;received;2025-03-31 18:12:34.478009
+mas1-1         | agent3;agent7@serverhello;9c831462-d4bb-4ce5-8026-09ad0ffbd262;sent;2025-03-31 18:12:34.478308
+mas1-1         | agent8;agent5@serverhello;fcb4ce29-87c4-4d3d-9b98-4fb61f70be9b;received;2025-03-31 18:12:34.478442
+mas1-1         | agent5;agent6@serverhello;f7e2df4e-9f49-4c72-9b4c-f2fd2eba5ad6;received;2025-03-31 18:12:34.478584
+mas1-1         | agent5;agent3@serverhello;fc170c2d-8f27-4038-bba5-339410ffe0cd;sent;2025-03-31 18:12:34.478990
+mas1-1         | agent6;agent8@serverhello;6de4c58b-91b6-497f-970a-81d95d0179ae;sent;2025-03-31 18:12:34.479306
+mas1-1         | agent3;agent7@serverhello;9c831462-d4bb-4ce5-8026-09ad0ffbd262;received;2025-03-31 18:12:34.479534
+mas1-1         | agent7;agent7@serverhello;fd2d55f9-b28a-4469-9db6-d20ebccbb6e4;sent;2025-03-31 18:12:34.479848
+mas1-1         | agent6;agent8@serverhello;6de4c58b-91b6-497f-970a-81d95d0179ae;received;2025-03-31 18:12:34.479933
+mas1-1         | agent5;agent3@serverhello;fc170c2d-8f27-4038-bba5-339410ffe0cd;received;2025-03-31 18:12:34.480020
+mas1-1         | agent8;agent7@serverhello;4dbb0784-2740-4e63-a0c9-3184af7a8223;sent;2025-03-31 18:12:34.480370
+mas1-1         | agent3;agent0@serverhello;991fec99-aab1-4201-9434-c96d18890e9a;sent;2025-03-31 18:12:34.480674
+mas1-1         | agent7;agent7@serverhello;fd2d55f9-b28a-4469-9db6-d20ebccbb6e4;received;2025-03-31 18:12:34.480781
+mas1-1         | agent7;agent6@serverhello;954b6a28-b6b4-4218-a664-52e8bd31f40a;sent;2025-03-31 18:12:34.481136
+mas1-1         | agent8;agent7@serverhello;4dbb0784-2740-4e63-a0c9-3184af7a8223;received;2025-03-31 18:12:34.481295
+mas1-1         | agent3;agent0@serverhello;991fec99-aab1-4201-9434-c96d18890e9a;received;2025-03-31 18:12:34.481384
+mas1-1         | agent7;agent8@serverhello;ff5ab1e3-507e-4685-9079-0fdc587662d5;sent;2025-03-31 18:12:34.481663
+mas1-1         | agent7;agent6@serverhello;954b6a28-b6b4-4218-a664-52e8bd31f40a;received;2025-03-31 18:12:34.481799
+mas1-1         | agent6;agent3@serverhello;5d93cc07-2909-471b-b018-9dbbe85df40c;sent;2025-03-31 18:12:34.482162
+mas1-1         | agent7;agent8@serverhello;ff5ab1e3-507e-4685-9079-0fdc587662d5;received;2025-03-31 18:12:34.482261
+mas1-1         | agent6;agent3@serverhello;5d93cc07-2909-471b-b018-9dbbe85df40c;received;2025-03-31 18:12:34.482421
+mas1-1         | agent3;agent8@serverhello;b9d3349d-5fe7-46c2-8c27-9fe80050c739;sent;2025-03-31 18:12:34.482753
+mas1-1         | agent3;agent8@serverhello;b9d3349d-5fe7-46c2-8c27-9fe80050c739;received;2025-03-31 18:12:34.482999

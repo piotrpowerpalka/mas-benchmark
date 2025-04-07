@@ -5,5 +5,6 @@ COPY . /app
 
 RUN pip install spade
 RUN chmod +x main.py
+# Use environment variables passed from docker-compose
 
-CMD python -u main.py
+CMD python -u main.py 

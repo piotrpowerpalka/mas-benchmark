@@ -82,15 +82,17 @@ class cfpAgent(Agent):
                             logMessage(rplymsg, "S")    
                             await self.send(rplymsg) 
 
-                # begin a new round of CFP
-                if self.agent.repetitions > 0:
-                    self.agent.repetitions -= 1
-                    self.agent.add_behaviour(self.agent.sendMessageBehaviour())
+                    # begin a new round of CFP
+                    if self.agent.repetitions > 0:
+                        self.agent.repetitions -= 1
+                        self.agent.add_behaviour(self.agent.sendMessageBehaviour())
 
 
     class sendMessageBehaviour(OneShotBehaviour):
         async def run(self):
             agGrp = random.sample(self.agent.agentsSet, self.agent.groupsize)   
+            self.agent.offers.clear()
+            self.agent.refusals.clear()
 
             for g in agGrp:
                 tojid = g

@@ -25,7 +25,8 @@ numOfAgents = 100
 agentsPerContainers = int(numOfAgents/nunmOfContainers)
 repeats = 10
 messageSize = 1024
-commType = "inform"
+commType = "cfp"
+groupsize = 3
 
 print(header)
 for i in range(nunmOfContainers):
@@ -33,12 +34,12 @@ for i in range(nunmOfContainers):
     image: mas:latest
     build:
       context: .
-    command: python -u main.py -f {} -t {} -n {} -r {} -x {} -i {} -c {}
+    command: python -u main.py -f {} -t {} -n {} -r {} -x {} -i {} -c {} -g {}
     deploy:
       resources:
         limits:
           memory: 128MB
 
-""".format(i, i * agentsPerContainers, (i+1) * agentsPerContainers - 1, numOfAgents, repeats, messageSize, "1" if i == nunmOfContainers - 1 else "0", commType))
+""".format(i, i * agentsPerContainers, (i+1) * agentsPerContainers - 1, numOfAgents, repeats, messageSize, "1" if i == nunmOfContainers - 1 else "0", commType, groupsize))
 
 

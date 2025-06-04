@@ -38,6 +38,7 @@ async def main():
     config["communication-type"] = args.communication_type
     config["content-size"] = args.content_size
     config["repetitions-num"] = args.repetitions_num
+    config["groupsize"] = args.groupsize
 
     for cnt in range(config["fromag"], config["toag"] + 1):
         aname = "agent{}@{}".format(cnt, config["server"])

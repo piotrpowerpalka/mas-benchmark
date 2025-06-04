@@ -14,6 +14,9 @@ import datetime
 class cfpAgent(Agent):
     async def setup(self):
         
+        self.offers = []  # List to store offers
+        self.refusals = []  # List to store refusals
+
         self.repetitions = self.get("repetitions-num")
         self.groupsize = self.get("groupsize")
 
@@ -26,51 +29,101 @@ class cfpAgent(Agent):
         templateInit.body = "Start"
 
         templateCFP = Template()
-        templateCFP.set_metadata("performative", "cfp")
+        templateCFP.set_metadata("performative", "CFP")
 
-        templateComb = ORTemplate(templateCFP)
+        templatePropose = Template()
+        templatePropose.set_metadata("performative", "propose")
+        
+        templateRefuse = Template()
+        templateRefuse.set_metadata("performative", "refuse")
 
-        self.add_behaviour(self.ReceiveMessage(), templateComb)
+        templateAccept = Template()
+        templateAccept.set_metadata("performative", "accept-proposal")
+
+        templateReject = Template()
+        templateReject.set_metadata("performative", "reject-proposal")
+
+        templateCombMess = ORTemplate(templateCFP, ORTemplate(templateAccept, templateReject))
+        templateCombOffers = ORTemplate(templatePropose, templateRefuse)
+
+        self.add_behaviour(self.ReceiveMessage(), templateCombMess)
+        self.add_behaviour(self.ReceiveOffers(), templateCombOffers)
         self.add_behaviour(self.ReceiveInit(), templateInit)
-    
+        
+    class ReceiveOffers(CyclicBehaviour):
+        async def run(self):
+            msg = await self.receive() 
+            if msg:     
+                logMessage(msg, "R")
+                
+                if msg.get_metadata("performative") == "propose":
+                    self.agent.offers.append(msg)  # store the offers in a list
+
+                if msg.get_metadata("performative") == "refuse":
+                    self.agent.refusals.append(msg)
+
+                # end of collecting offers and refusals
+                if len(self.agent.offers) + len(self.agent.refusals) == self.agent.groupsize:
+                    winOffer = random.choice(self.agent.offers)  # Randomly select one offer
+                    self.agent.offers.remove(winOffer)  # Remove the winning offer from the list
+
+                    rplymsg = winOffer.make_reply()
+                    rplymsg.set_metadata("performative", "accept-proposal")
+                    rplymsg.set_metadata("reply_with", "rw-" + str(uuid.uuid4()))
+                    rplymsg.body = str(''.join(random.choices(string.ascii_letters + string.digits, k=self.agent.get("content-size"))))
+                    logMessage(rplymsg, "S")
+                    await self.send(rplymsg)
+
+                    for offer in self.agent.offers:
+                            rplymsg = offer.make_reply()
+                            rplymsg.set_metadata("performative", "reject-proposal")      
+                            rplymsg.set_metadata("reply_with", "rw-" + str(uuid.uuid4()))  
+                            rplymsg.body = str(''.join(random.choices(string.ascii_letters + string.digits, k=self.agent.get("content-size"))))
+                            logMessage(rplymsg, "S")    
+                            await self.send(rplymsg) 
+
+                # begin a new round of CFP
+                if self.agent.repetitions > 0:
+                    self.agent.repetitions -= 1
+                    self.agent.add_behaviour(self.agent.sendMessageBehaviour())
+
 
     class sendMessageBehaviour(OneShotBehaviour):
         async def run(self):
-            agGrp = tojid = random.choice(self.agent.agentsSet, self.agent.groupsize)   
+            agGrp = random.sample(self.agent.agentsSet, self.agent.groupsize)   
 
             for g in agGrp:
                 tojid = g
-                msg = Message( to=tojid, sender=self.agent.name)
+                msg = Message(to=tojid, sender=self.agent.name)
                 msg.set_metadata("performative", "CFP")
-                msg.set_metadata("reply_with", str(uuid.uuid4()))
+                msg.set_metadata("reply_with", "rw-" + str(uuid.uuid4()))
+                msg.set_metadata("conversation_id", "cid-" + str(uuid.uuid4()))
                 msg.body = str(''.join(random.choices(string.ascii_letters + string.digits, k=self.agent.get("content-size"))))
-
                 logMessage(msg, "S")
                 await self.send(msg)
 
     class ReceiveMessage(CyclicBehaviour):
         async def run(self):
-            msg = await self.receive()  # wait for a message for 300 seconds
+            msg = await self.receive()  
             if msg:
                 logMessage(msg, "R")
                 
                 if msg.get_metadata("performative") == "CFP":
                     rplymsg = msg.make_reply()
-                    rplymsg.set_metadata("performative", "inform")        
+                    if random.random() <= 0.9:  # Randomly decide to accept or refuse
+                        rplymsg.set_metadata("performative", "propose")
+                    else:
+                        rplymsg.set_metadata("performative", "refuse")
+
+                    rplymsg.set_metadata("reply_with", "rw-" + str(uuid.uuid4()))
+                    rplymsg.body = str(''.join(random.choices(string.ascii_letters + string.digits, k=self.agent.get("content-size"))))
                     logMessage(rplymsg, "S")    
                     await self.send(rplymsg)
-
-                
-                
-                if self.agent.repetitions > 0:
-                    self.agent.repetitions -= 1
-                    self.agent.add_behaviour(self.agent.sendMessageBehaviour())
-
     
     
     class ReceiveInit(CyclicBehaviour):
         async def run(self):
-            msg = await self.receive()  # wait for a message for 300 seconds
+            msg = await self.receive()  
             if msg:
                 logMessage(msg, "R")
                 self.agent.add_behaviour(self.agent.sendMessageBehaviour())

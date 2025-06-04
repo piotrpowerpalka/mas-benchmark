@@ -41,7 +41,8 @@ class queryAgent(Agent):
             tojid = random.choice(self.agent.agentsSet)
             msg = Message( to=tojid, sender=self.agent.name)
             msg.set_metadata("performative", "query")
-            msg.set_metadata("reply_with", str(uuid.uuid4()))
+            msg.set_metadata("reply_with", "rw-" + str(uuid.uuid4()))
+            msg.set_metadata("conversation_id", "cid-" + str(uuid.uuid4()))
             
             msg.body = str(''.join(random.choices(string.ascii_letters + string.digits, k=self.agent.get("content-size"))))
 #             msg.body = "Hello"
@@ -58,6 +59,9 @@ class queryAgent(Agent):
                 if msg.get_metadata("performative") == "query":
                     rplymsg = msg.make_reply()
                     rplymsg.set_metadata("performative", "inform")        
+                    rplymsg.set_metadata("reply_with", "rw-" + str(uuid.uuid4()))
+                    rplymsg.body = str(''.join(random.choices(string.ascii_letters + string.digits, k=self.agent.get("content-size"))))
+                    
                     logMessage(rplymsg, "S")    
                     await self.send(rplymsg)
 

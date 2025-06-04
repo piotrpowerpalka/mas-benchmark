@@ -37,7 +37,9 @@ class informAgent(Agent):
             tojid = random.choice(self.agent.agentsSet)
             msg = Message( to=tojid, sender=self.agent.name)
             msg.set_metadata("performative", "inform")
-            msg.set_metadata("reply_with", str(uuid.uuid4()))
+            msg.set_metadata("reply_with", "rw-" + str(uuid.uuid4()))
+            msg.set_metadata("conversation_id", "cid-" + str(uuid.uuid4()))
+
             msg.body = str(''.join(random.choices(string.ascii_letters + string.digits, k=self.agent.get("content-size"))))
             
             logMessage(msg, "S")

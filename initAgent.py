@@ -23,7 +23,6 @@ class initAgent(Agent):
             for cnt in range(0, self.agent.get("numagents")):
                 tojid = F"agent{cnt}@{self.agent.get('server')}"
                 msg = Message( to=tojid, sender=self.agent.name)
-                msg.set_metadata("performative", "propose")
                 msg.set_metadata("reply_with", str(uuid.uuid4()))   
                 msg.body = "Start"
 

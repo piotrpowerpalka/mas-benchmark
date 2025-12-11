@@ -6,6 +6,7 @@ import sys
 import scipy.stats as stats
 import numpy as np
 import seaborn as sns
+from uuid import UUID
 
 input_file = 'out.txt'
 if len(sys.argv) > 1:
@@ -32,8 +33,8 @@ with open(input_file, 'r', encoding='utf-16') as infile:
             else:   
                 conversations[rec[4]].update({'receivetime': rec[6]})
 
-print(messages)
-print(conversations)
+#print(messages)
+#print(conversations)
 
 uuids_with_only_sendtime = [uuid for uuid, details in messages.items() if 'receivetime' not in details]
 uuidsconv_with_only_sendtime = [uuid for uuid, details in conversations.items() if 'receivetime' not in details]

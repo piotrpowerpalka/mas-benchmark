@@ -85,19 +85,28 @@ async def main():
         initag.set("toag", config["toag"])
         initag.set("numagents", config["numagents"])
 
+    repeat = True
+    while repeat == True:
+        try:
+            for ag in agarr:
+                print(f"Running agent {ag.name}")
+                await ag.start(auto_register=True)
 
-    try:
-        for ag in agarr:
-            print(f"Running agent {ag.name}")
-            await ag.start(auto_register=True)
+            if config["initag"] == 1:
+                print("Running init agent")        
+                await initag.start(auto_register=True)
 
-        if config["initag"] == 1:
-            print("Running init agent")        
-            await initag.start(auto_register=True)
-            
-    except Exception as exception:
-        print(traceback.format_exc()) # This line is for getting traceback.
-        print(sys.exc_info()[2]) # This line is getting for the error type.            break
+            repeat = False
+            break
+                
+        except Exception as exception:
+            print("Error starting agents. Retrying in 5 seconds...")
+            print(traceback.format_exc()) # This line is for getting traceback.
+            print(sys.exc_info()[2]) # This line is getting for the error type.
+            time.sleep(5)
+
+#    while any(ag.is_alive() for ag in agarr) or (config["initag"] == 1 and initag.is_alive()):
+#        await asyncio.sleep(1)
 
     while True:
         try:

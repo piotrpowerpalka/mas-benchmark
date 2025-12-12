@@ -57,8 +57,8 @@ class informAgent(Agent):
                     self.agent.add_behaviour(self.agent.sendMessageBehaviour())
             else:
                 if self.agent.repetitions == 0:
-                    print(f"{self.agent.name}: Stopping agent.")
-                    self.agent.stop()
+                    print(f"Stoping agent: {self.agent.name}")
+                    await self.agent.stop()
     
     class ReceiveInit(CyclicBehaviour):
         async def run(self):

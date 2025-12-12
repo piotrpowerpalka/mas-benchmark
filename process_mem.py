@@ -2,10 +2,15 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import sys
 
+endofsim = -1
+
 input_file = 'data_mem.csv'
 if len(sys.argv) > 1:
     print(sys.argv[1])
     input_file = sys.argv[1]
+
+if len(sys.argv) > 2:
+    endofsim = sys.argv[2]
 
 df = pd.read_csv(input_file, sep=';', names=['timestamp', 'container', 'memory used / total memory', 'processor usage'])
 
@@ -20,6 +25,8 @@ df['time'] = pd.to_datetime(df['timestamp'], unit='s')
 df['time'] = df['time'] - df['time'].min()  # Normalize time to start from zero
 df['time'] = df['time'].dt.total_seconds()
 
+if (endofsim != -1):
+    df = df[df['timestamp'] <= float(endofsim)] # remove all entries after end of simulation
 
 # Calculate statistics
 avg_memory = df['memory_used'].mean()

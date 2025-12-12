@@ -3,6 +3,10 @@ FROM python:3.8
 WORKDIR /app
 COPY . /app
 
+RUN apt-get update && apt-get install -y tzdata \
+ && ln -fs /usr/share/zoneinfo/Europe/Warsaw /etc/localtime \
+ && dpkg-reconfigure -f noninteractive tzdata
+ 
 RUN pip install spade
 RUN chmod +x main.py
 # Use environment variables passed from docker-compose

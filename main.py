@@ -105,7 +105,7 @@ async def main():
             print(sys.exc_info()[2]) # This line is getting for the error type.
             time.sleep(5)
 
-    while any(ag.is_alive() for ag in agarr) or (config["initag"] == 1 and initag.is_alive()):
+    while any(ag.is_alive() for ag in agarr):
         await asyncio.sleep(1)
 
 #    while True:

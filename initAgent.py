@@ -14,8 +14,8 @@ class initAgent(Agent):
         
     async def setup(self):
         print("Agent {} starting...".format(self.name))
-        self.add_behaviour(self.SendInitBehviour())
-    
+        b = self.SendInitBehviour()
+        self.add_behaviour(b)
 
     class SendInitBehviour(OneShotBehaviour):
         async def run(self):
@@ -29,5 +29,5 @@ class initAgent(Agent):
                 logMessage(msg, "S")
                 await self.send(msg)
             
-            print("InitAgent: All init messages sent, stopping agent.")
-            self.agent.stop()
+            print(f"Stoping agent: {self.agent.name}")
+            await self.agent.stop()

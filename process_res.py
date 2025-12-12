@@ -82,6 +82,26 @@ with open(output_file, 'w') as outfile:
     outfile.write(f"Skewness of diff: {skewness_diff}\n")
     outfile.write(f"Kurtosis of diff: {kurtosis_diff}\n")
     outfile.write(f"Shapiro-Wilk statistic {stat}: p-value {p}\n")
+    # Find the latest timestamp (simulation end time)
+    all_times = []
+    for mess in messages:
+        if 'receivetime' in messages[mess]:
+            all_times.append(messages[mess]['receivetime'])
+    for conv in conversations:
+        if 'receivetime' in conversations[conv]:
+            all_times.append(conversations[conv]['receivetime'])
+
+    if all_times:
+        earliest_time_str = min(all_times)
+        earliest_time = datetime.datetime.strptime(earliest_time_str, '%Y-%m-%d %H:%M:%S.%f')
+        timestamp_start = earliest_time.timestamp()
+        latest_time_str = max(all_times)
+        latest_time = datetime.datetime.strptime(latest_time_str, '%Y-%m-%d %H:%M:%S.%f')
+        timestamp = latest_time.timestamp()
+        outfile.write(f"Simulation started: {earliest_time_str}\n")
+        outfile.write(f"Simulation started (timestamp): {timestamp_start}\n")
+        outfile.write(f"Simulation ended: {latest_time_str}\n")
+        outfile.write(f"Simulation ended (timestamp): {timestamp}\n")
 
 sns.histplot(diff_values, kde=True, label='Empirical Data', stat="density")
 

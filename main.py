@@ -105,16 +105,16 @@ async def main():
             print(sys.exc_info()[2]) # This line is getting for the error type.
             time.sleep(5)
 
-#    while any(ag.is_alive() for ag in agarr) or (config["initag"] == 1 and initag.is_alive()):
-#        await asyncio.sleep(1)
+    while any(ag.is_alive() for ag in agarr) or (config["initag"] == 1 and initag.is_alive()):
+        await asyncio.sleep(1)
 
-    while True:
-        try:
-            await asyncio.sleep(60)
-        except:
-            print(traceback.format_exc()) # This line is for getting traceback.
-            print(sys.exc_info()[2]) # This line is getting for the error type.            break
-            break
+#    while True:
+#        try:
+#            await asyncio.sleep(60)
+#        except:
+#            print(traceback.format_exc()) # This line is for getting traceback.
+#            print(sys.exc_info()[2]) # This line is getting for the error type.            break
+#            break
 
 if __name__ == "__main__":
     print("Starting...")

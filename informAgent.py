@@ -48,15 +48,17 @@ class informAgent(Agent):
 
     class ReceiveOffers(CyclicBehaviour):
         async def run(self):
-            msg = await self.receive()  # wait for a message for 300 seconds
+            msg = await self.receive(15)  # wait for a message for 15 seconds
             if msg:
                 logMessage(msg, "R")
                 
                 if self.agent.repetitions > 0:
                     self.agent.repetitions -= 1
                     self.agent.add_behaviour(self.agent.sendMessageBehaviour())
-
-    
+            else:
+                if self.agent.repetitions == 0:
+                    print(f"{self.agent.name}: Stopping agent.")
+                    self.agent.stop()
     
     class ReceiveInit(CyclicBehaviour):
         async def run(self):

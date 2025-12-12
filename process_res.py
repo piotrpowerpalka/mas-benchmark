@@ -16,7 +16,7 @@ if len(sys.argv) > 1:
 messages = {}
 conversations = {}
 
-with open(input_file, 'r', encoding='utf-16') as infile:
+with open(input_file, 'r', encoding='utf-8') as infile:
     for line in infile:
         # print(line)
         match = re.search(r"\| (agent.*)", line)

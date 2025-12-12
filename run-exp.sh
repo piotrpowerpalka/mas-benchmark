@@ -3,8 +3,8 @@
 CONTAINERS=${1:-"1"}
 
 
-XMPP="prosody"
-NUM_AGENTS="1000"
+XMPP="tigase"  # prosody | tigase
+NUM_AGENTS="100"
 REPEATS="100"
 MESSAGE_SIZE=$((1024))
 COMM_TYPE="inform"

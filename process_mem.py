@@ -1,7 +1,13 @@
 import pandas as pd
 import matplotlib.pyplot as plt
+import sys
 
-df = pd.read_csv('data_mem.csv', sep=';', names=['timestamp', 'container', 'memory used / total memory', 'processor usage'])
+input_file = 'data_mem.csv'
+if len(sys.argv) > 1:
+    print(sys.argv[1])
+    input_file = sys.argv[1]
+
+df = pd.read_csv(input_file, sep=';', names=['timestamp', 'container', 'memory used / total memory', 'processor usage'])
 
 # Parse memory usage (extract numeric value from "32.86MiB / 512MiB")
 df['memory_used'] = df['memory used / total memory'].str.extract(r'(\d+\.?\d*)')[0].astype(float)
@@ -21,10 +27,12 @@ max_memory = df['memory_used'].max()
 duration = df['timestamp'].max() - df['timestamp'].min()
 cpu_95_percentile = df['cpu_usage'].quantile(0.95)
 
-print(f"Average memory usage: {avg_memory:.2f} MiB")
-print(f"Maximum memory usage: {max_memory:.2f} MiB")
-print(f"Experiment duration: {duration:.2f}s ({duration/60:.2f}min)")
-print(f"CPU in top 5% (threshold: {cpu_95_percentile:.2f}%): {len(df[df['cpu_usage'] >= cpu_95_percentile])} measurements")
+output_file = 'mem_stats_{}.txt'.format(input_file)
+with open(output_file, 'w') as outfile:
+    outfile.write(f"Average memory usage: {avg_memory:.2f} MiB")
+    outfile.write(f"Maximum memory usage: {max_memory:.2f} MiB")
+    outfile.write(f"Experiment duration: {duration:.2f}s ({duration/60:.2f}min)")
+    outfile.write(f"CPU in top 5% (threshold: {cpu_95_percentile:.2f}%): {len(df[df['cpu_usage'] >= cpu_95_percentile])} measurements")
 
 # Create plots
 fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(12, 8))
@@ -45,5 +53,5 @@ ax2.legend()
 ax2.grid(True)
 
 plt.tight_layout()
-plt.savefig('memory_cpu_usage.png')
+plt.savefig('memory_cpu_usage_{}.png'.format(input_file))
 plt.show()

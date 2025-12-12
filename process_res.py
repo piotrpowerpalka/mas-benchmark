@@ -51,6 +51,9 @@ for mess in messages:
 
 diff_values = [messages[mess]['diff'] for mess in messages if 'diff' in messages[mess]]
 
+print("Processed {} messages, {} conversations".format(len(messages), len(conversations)))
+print("diff value[0:10]:", diff_values[0:10])
+
 for conv in conversations:
     if 'receivetime' in conversations[conv]:
         xxx = datetime.datetime.strptime(conversations[conv]['sendtime'], '%Y-%m-%d %H:%M:%S.%f')

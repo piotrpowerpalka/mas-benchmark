@@ -6,4 +6,5 @@ def logMessage(msg: Message, str: string):
     print("{};{};{};{};{};{};{}".format(msg.sender, msg.to, msg.get_metadata("performative"), msg.get_metadata("reply_with"), msg.get_metadata("conversation_id"), str, datetime.datetime.now()))
                 
     
-    
+def logInitMessage(agentname: string):
+    print("init;{};{}".format(agentname, datetime.datetime.now()))

@@ -42,7 +42,8 @@ async def main():
 
     for cnt in range(config["fromag"], config["toag"] + 1):
         aname = "agent{}@{}".format(cnt, config["server"])
-        print(f"Initalizing agent {aname}")
+        logInitMessage("initializing", aname)
+                
         
         if config["communication-type"] == "inform":
             agnt = informAgent(aname, config["password"], verify_security=False)
@@ -84,16 +85,18 @@ async def main():
         initag.set("fromag", config["fromag"])
         initag.set("toag", config["toag"])
         initag.set("numagents", config["numagents"])
+        logInitMessage("initializing", initag.jid)
+                
 
     repeat = True
     while repeat == True:
         try:
             for ag in agarr:
-                print(f"Running agent {ag.name}")
+                logInitMessage("running", ag.jid)
                 await ag.start(auto_register=True)
 
             if config["initag"] == 1:
-                print("Running init agent")        
+                logInitMessage("running", initag.jid)
                 await initag.start(auto_register=True)
 
             repeat = False

@@ -77,7 +77,7 @@ def gen_compose(xmpp, numOfContainers, numOfAgents, repeats, messageSize, commTy
   rv += (header_prosody if xmpp == "prosody" else header_tigase)
   for i in range(numOfContainers):
       rv += """
-  mas{}:
+    mas{}:
       image: mas:latest
       build:
         context: .

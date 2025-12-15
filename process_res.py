@@ -103,6 +103,11 @@ with open(output_file, 'w') as outfile:
         outfile.write(f"Simulation ended: {latest_time_str}\n")
         outfile.write(f"Simulation ended (timestamp): {timestamp}\n")
 
+    outfile.write(f"Messages lost: {len(uuids_with_only_sendtime)}\n")
+    outfile.write(f"Conversations lost: {len(uuidsconv_with_only_sendtime)}\n")
+    outfile.write(f"Messages successful: {len(diff_values)}\n")
+    outfile.write(f"Conversations successful: {len(diff_conv_values)}\n")
+
 sns.histplot(diff_values, kde=True, label='Empirical Data', stat="density")
 
 # Generate x values for the normal distribution

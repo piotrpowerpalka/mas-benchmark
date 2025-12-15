@@ -20,6 +20,8 @@ mkdir -p "$LOGDIR/tigase"
 cp prosody/* "$LOGDIR/prosody"/. -r
 cp tigase/* "$LOGDIR/tigase"/. -r
 cp Dockerfile "$LOGDIR"/.
+cp src-agents/* "$LOGDIR"/. -r 
+
 cd "$LOGDIR" || exit 1
 
 DOCKER_COMPOSE_NAME="docker-compose-$XMPP-c$CONTAINERS-n$NUM_AGENTS-r$REPEATS-ms$MESSAGE_SIZE-$COMM_TYPE-g$GROUP_SIZE-m$MEMSIZE-cpu$CPUS.yaml"

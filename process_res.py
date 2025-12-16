@@ -15,11 +15,17 @@ if len(sys.argv) > 1:
 
 messages = {}
 conversations = {}
+inits = []
 
 with open(input_file, 'r', encoding='utf-8') as infile:
     for line in infile:
         # print(line)
+        matchinit = re.search(r"\| (init;.*)", line)
         match = re.search(r"\| (agent.*)", line)
+        if matchinit:
+            rec = matchinit.group(1).split(';')
+            inits.append(rec[3])
+
         if match:
             # print(match.group(1))
             rec = match.group(1).split(';')
@@ -73,9 +79,17 @@ skewness_diff = stats.skew(diff_values)
 kurtosis_diff = stats.kurtosis(diff_values)
 stat, p = stats.shapiro(diff_values)
 
+
+#inits = [datetime.datetime.strptime(t, '%Y-%m-%d %H:%M:%S.%f').timestamp() for t in inits]
+#inits = [t - min(inits) for t in inits]
+
 # Save the mean and standard deviation to a text file
 output_file = 'stats_{}.txt'.format(input_file)
 with open(output_file, 'w') as outfile:
+    outfile.write(f"Initialization started at: {datetime.datetime.strptime(min(inits), '%Y-%m-%d %H:%M:%S.%f').timestamp()}\n")
+    outfile.write(f"Initialization ended at: {datetime.datetime.strptime(max(inits), '%Y-%m-%d %H:%M:%S.%f').timestamp()}\n")
+    #outfile.write(f"Duration of initialization: {np.max(inits)}\n")
+
     outfile.write(f"Mean diff: {mean_diff}\n")
     outfile.write(f"Standard deviation of diff: {std_dev_diff}\n")
     outfile.write(f"Median diff: {median_diff}\n")

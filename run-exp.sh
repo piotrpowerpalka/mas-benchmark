@@ -4,7 +4,7 @@ CONTAINERS=${1:-"1"}
 
 
 XMPP="prosody"  # prosody | tigase
-NUM_AGENTS="25"
+NUM_AGENTS="30"
 REPEATS="100"
 MESSAGE_SIZE=$((1024))
 COMM_TYPE="inform"

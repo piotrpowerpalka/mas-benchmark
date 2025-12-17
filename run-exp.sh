@@ -1,16 +1,14 @@
 #!/usr/bin/env bash
 
 CONTAINERS=${1:-"1"}
-
-
-XMPP="prosody"  # prosody | tigase
-NUM_AGENTS="30"
-REPEATS="100"
-MESSAGE_SIZE=$((1024))
-COMM_TYPE="inform"
-GROUP_SIZE="30"
-MEMSIZE="512mb" # smallcase - beacuse the docker name uses it that way
-CPUS="2"
+XMPP=${2:-"prosody"} # prosody | tigase
+COMM_TYPE=${3:-"inform"} # inform | query | cfp
+NUM_AGENTS=${4:-"100"}
+REPEATS=${5:-"100"}
+MESSAGE_SIZE=${6:-$((1024))}
+MEMSIZE=${7:-"512mb"} # smallcase - beacuse the docker name uses it that way
+CPUS=${8:-"1"}
+GROUP_SIZE=${9:-"30"}
 
 LOGDIR="logs_$XMPP-c$CONTAINERS-n$NUM_AGENTS-r$REPEATS-ms$MESSAGE_SIZE-$COMM_TYPE-g$GROUP_SIZE-m$MEMSIZE-cpu$CPUS"
 
@@ -44,7 +42,7 @@ done
 LAST_SIZE=0
 STABLE_COUNT=0
 while [ $STABLE_COUNT -lt 3 ]; do
-    sleep 2
+    sleep 10
     CURRENT_SIZE=$(stat -f%z "logs_$DOCKER_COMPOSE_NAME.log" 2>/dev/null || stat -c%s "logs_$DOCKER_COMPOSE_NAME.log" 2>/dev/null)
     if [ "$CURRENT_SIZE" -eq "$LAST_SIZE" ]; then
         ((STABLE_COUNT++))
@@ -53,7 +51,7 @@ while [ $STABLE_COUNT -lt 3 ]; do
     fi
     LAST_SIZE="$CURRENT_SIZE"
 done
-sleep 1
+sleep 5
 
 docker compose -f "$DOCKER_COMPOSE_NAME" down
 
@@ -63,7 +61,7 @@ pkill -f "../mem.sh $LOGDIR-mas"
 
 python3 ../process_res.py "logs_$DOCKER_COMPOSE_NAME.log"
 for ((i=0; i<CONTAINERS; i++)); do
-    python3 ../process_mem.py "mem_$DOCKER_COMPOSE_NAME-mas$i-1.log"
+    python3 ../process_mem.py "mem_$DOCKER_COMPOSE_NAME-$CNT.log"
 done
 
 cd ..

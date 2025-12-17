@@ -53,7 +53,7 @@ for mess in messages:
         diff = (yyy - xxx).microseconds
         messages[mess].update({'diff': diff})
     else:
-        print (messages[mess]['uuid'])
+        print (messages[mess])
 
 diff_values = [messages[mess]['diff'] for mess in messages if 'diff' in messages[mess]]
 

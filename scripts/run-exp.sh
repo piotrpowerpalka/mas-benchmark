@@ -10,29 +10,29 @@ MEMSIZE=${7:-"512mb"} # smallcase - beacuse the docker name uses it that way
 CPUS=${8:-"1"}
 GROUP_SIZE=${9:-"30"}
 
-LOGDIR="logs_$XMPP-c$CONTAINERS-n$NUM_AGENTS-r$REPEATS-ms$MESSAGE_SIZE-$COMM_TYPE-g$GROUP_SIZE-m$MEMSIZE-cpu$CPUS"
+LOGDIR="logs/logs_$XMPP-c$CONTAINERS-n$NUM_AGENTS-r$REPEATS-ms$MESSAGE_SIZE-$COMM_TYPE-g$GROUP_SIZE-m$MEMSIZE-cpu$CPUS"
 
 mkdir -p "$LOGDIR" || exit 1
 mkdir -p "$LOGDIR/prosody"
 mkdir -p "$LOGDIR/tigase"
-cp prosody/* "$LOGDIR/prosody"/. -r
-cp tigase/* "$LOGDIR/tigase"/. -r
-cp Dockerfile "$LOGDIR"/.
-cp src-agents/* "$LOGDIR"/. -r 
+cp src/spade/prosody/* "$LOGDIR/prosody"/. -r
+cp src/spade/tigase/* "$LOGDIR/tigase"/. -r
+cp dockers/Dockerfile.spade "$LOGDIR"/.
+cp src/spade/*.py "$LOGDIR"/. -r 
 
 cd "$LOGDIR" || exit 1
 
 DOCKER_COMPOSE_NAME="docker-compose-$XMPP-c$CONTAINERS-n$NUM_AGENTS-r$REPEATS-ms$MESSAGE_SIZE-$COMM_TYPE-g$GROUP_SIZE-m$MEMSIZE-cpu$CPUS.yaml"
 
 echo "Generating docker compose file: $DOCKER_COMPOSE_NAME"
-python3 ../gen_compose.py "$DOCKER_COMPOSE_NAME" "$XMPP" "$CONTAINERS" "$NUM_AGENTS" "$REPEATS" "$MESSAGE_SIZE" "$COMM_TYPE" "$GROUP_SIZE" "$MEMSIZE" "$CPUS"
+python3 ../../scripts/gen_compose.py "$DOCKER_COMPOSE_NAME" "$XMPP" "$CONTAINERS" "$NUM_AGENTS" "$REPEATS" "$MESSAGE_SIZE" "$COMM_TYPE" "$GROUP_SIZE" "$MEMSIZE" "$CPUS"
 
 docker compose -f "$DOCKER_COMPOSE_NAME" up > "logs_$DOCKER_COMPOSE_NAME.log" 2>&1 &
 
 for ((i=0; i<CONTAINERS; i++)); do
     CNT="$LOGDIR-mas$i-1"
     echo "Starting container $CNT"
-    ../mem.sh $CNT "mem_$DOCKER_COMPOSE_NAME-$CNT.log" &
+    ../../scripts/mem.sh $CNT "mem_$DOCKER_COMPOSE_NAME-$CNT.log" &
     PID=$!
     echo "Process ID for container $CNT: $PID" >> "process_ids.log"
     echo "Running container $CNT"
@@ -57,12 +57,12 @@ docker compose -f "$DOCKER_COMPOSE_NAME" down
 
 
 # Stop the memory logging processes
-pkill -f "../mem.sh $LOGDIR-mas"
+pkill -f "../../scripts/mem.sh $LOGDIR-mas"
 
-python3 ../process_res.py "logs_$DOCKER_COMPOSE_NAME.log"
+python3 ../../scripts/process_res.py "logs_$DOCKER_COMPOSE_NAME.log"
 for ((i=0; i<CONTAINERS; i++)); do
-    python3 ../process_mem.py "mem_$DOCKER_COMPOSE_NAME-$CNT.log"
+    python3 ../../scripts/process_mem.py "mem_$DOCKER_COMPOSE_NAME-$CNT.log"
 done
 
-cd ..
+cd ../..
 

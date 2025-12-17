@@ -11,6 +11,7 @@ from cfpAgent import *
 from tools import *
 import traceback
 import argparse
+import asyncio
 
 parser = argparse.ArgumentParser(description="Multi-agent benchmark")
 parser.add_argument("-s", "--server", type=str, help="Server hostname", default="serverhello")

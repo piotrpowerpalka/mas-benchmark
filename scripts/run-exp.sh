@@ -10,7 +10,9 @@ MEMSIZE=${7:-"512mb"} # smallcase - beacuse the docker name uses it that way
 CPUS=${8:-"1"}
 GROUP_SIZE=${9:-"30"}
 
-LOGDIR="logs/logs_$XMPP-c$CONTAINERS-n$NUM_AGENTS-r$REPEATS-ms$MESSAGE_SIZE-$COMM_TYPE-g$GROUP_SIZE-m$MEMSIZE-cpu$CPUS"
+cd logs || exit 1
+
+LOGDIR="logs_$XMPP-c$CONTAINERS-n$NUM_AGENTS-r$REPEATS-ms$MESSAGE_SIZE-$COMM_TYPE-g$GROUP_SIZE-m$MEMSIZE-cpu$CPUS"
 
 mkdir -p "$LOGDIR" || exit 1
 mkdir -p "$LOGDIR/prosody"

@@ -10,6 +10,7 @@ MEMSIZE=${7:-"512mb"} # smallcase - beacuse the docker name uses it that way
 CPUS=${8:-"1"}
 GROUP_SIZE=${9:-"30"}
 
+mkdir -p logs  || exit 1
 cd logs || exit 1
 
 LOGDIR="logs_$XMPP-c$CONTAINERS-n$NUM_AGENTS-r$REPEATS-ms$MESSAGE_SIZE-$COMM_TYPE-g$GROUP_SIZE-m$MEMSIZE-cpu$CPUS"
@@ -17,10 +18,10 @@ LOGDIR="logs_$XMPP-c$CONTAINERS-n$NUM_AGENTS-r$REPEATS-ms$MESSAGE_SIZE-$COMM_TYP
 mkdir -p "$LOGDIR" || exit 1
 mkdir -p "$LOGDIR/prosody"
 mkdir -p "$LOGDIR/tigase"
-cp src/spade/prosody/* "$LOGDIR/prosody"/. -r
-cp src/spade/tigase/* "$LOGDIR/tigase"/. -r
-cp dockers/Dockerfile.spade "$LOGDIR"/.
-cp src/spade/*.py "$LOGDIR"/. -r 
+cp ../src/spade/prosody/* "$LOGDIR/prosody"/. -r
+cp ../src/spade/tigase/* "$LOGDIR/tigase"/. -r
+cp ../dockers/Dockerfile.spade "$LOGDIR"/.
+cp ../src/spade/*.py "$LOGDIR"/. -r 
 
 cd "$LOGDIR" || exit 1
 

@@ -20,7 +20,7 @@ mkdir -p "$LOGDIR/prosody"
 mkdir -p "$LOGDIR/tigase"
 cp ../src/spade/prosody/* "$LOGDIR/prosody"/. -r
 cp ../src/spade/tigase/* "$LOGDIR/tigase"/. -r
-cp ../dockers/Dockerfile.spade "$LOGDIR"/.
+cp ../dockers/Dockerfile.spade "$LOGDIR"/Dockerfile
 cp ../src/spade/*.py "$LOGDIR"/. -r 
 
 cd "$LOGDIR" || exit 1

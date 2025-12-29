@@ -67,6 +67,6 @@ class informAgent(Agent):
                 logMessage(msg, "R")
                 self.agent.add_behaviour(self.agent.sendMessageBehaviour())
                 self.agent.repetitions -= 1
-            else:
-                logInfoMessage("No init message received - something is wrong", self.agent.name)
+#            else:
+#                logInfoMessage("No init message received - something is wrong", self.agent.name)
     

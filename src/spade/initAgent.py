@@ -29,5 +29,5 @@ class initAgent(Agent):
                 logMessage(msg, "S")
                 await self.send(msg)
             
-            print(f"Stoping agent: {self.agent.name}")
-            await self.agent.stop()
+            #print(f"Stoping agent: {self.agent.name}")
+            #await self.agent.stop()

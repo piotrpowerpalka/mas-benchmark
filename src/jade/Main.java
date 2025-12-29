@@ -23,6 +23,8 @@ public class Main {
         // Tu domyślnie: main-container lokalny; 'server' trzymamy dla kompatybilności z CLI.
         p.setParameter(Profile.MAIN_HOST, cfg.server);
         p.setParameter(Profile.GUI, "false");
+        p.setParameter(Profile.MAIN_PORT, "1099");
+        
 
         ContainerController main = rt.createMainContainer(p);
 

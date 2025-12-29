@@ -57,7 +57,7 @@ class informAgent(Agent):
                     self.agent.add_behaviour(self.agent.sendMessageBehaviour())
             else:
                 if self.agent.repetitions == 0:
-                    print(f"Stoping agent: {self.agent.name}")
+                    logInfoMessage("Stoping agent", self.agent.name)
                     await self.agent.stop()
     
     class ReceiveInit(CyclicBehaviour):
@@ -67,4 +67,6 @@ class informAgent(Agent):
                 logMessage(msg, "R")
                 self.agent.add_behaviour(self.agent.sendMessageBehaviour())
                 self.agent.repetitions -= 1
+            else:
+                logInfoMessage("No init message received - something is wrong", self.agent.name)
     

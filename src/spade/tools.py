@@ -8,3 +8,6 @@ def logMessage(msg: Message, str: string):
     
 def logInitMessage(str: string, agentname: string):
     print("init;{};{};{}".format(str, agentname, datetime.datetime.now()))
+
+def logInfoMessage(str: string, agentname: string):
+    print("info;{};{};{}".format(str, agentname, datetime.datetime.now()))

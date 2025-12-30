@@ -1,0 +1,45 @@
+services:
+
+    serverhello:
+      image: prosody/prosody:latest
+      container_name: serverhello
+      hostname: serverhello
+      environment:
+        PROSODY_VIRTUAL_HOSTS: "serverhello"
+      ports:
+        - "5222:5222"  # Port XMPP
+        - "5269:5269"  # Server-to-server communication (optional)
+        - "5280:5280"  # HTTP (optional, for web admin or BOSH)
+      volumes:
+        - ./prosody/conf/prosody.cfg.lua:/prosody/conf.d/prosody.cfg.lua
+        - ./prosody/conf/prosody.cfg.lua:/etc/prosody/prosody.cfg.lua
+        - ./prosody/certs:/etc/prosody/certs
+  
+    mas0:
+      image: mas:latest
+      container_name: mas0
+      build:
+        context: .
+      command: python -u main.py -f 0 -t 49 -n 100 -r 100 -x 999 -i 0 -c inform -g 30
+      deploy:
+        resources:
+          limits:
+            memory: 512mb
+            cpus: 1
+      depends_on:
+      - serverhello
+
+    mas1:
+      image: mas:latest
+      container_name: mas1
+      build:
+        context: .
+      command: python -u main.py -f 50 -t 99 -n 100 -r 100 -x 999 -i 1 -c inform -g 30
+      deploy:
+        resources:
+          limits:
+            memory: 512mb
+            cpus: 1
+      depends_on:
+      - serverhello
+

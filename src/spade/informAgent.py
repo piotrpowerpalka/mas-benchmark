@@ -62,11 +62,11 @@ class informAgent(Agent):
     
     class ReceiveInit(CyclicBehaviour):
         async def run(self):
-            msg = await self.receive()  # wait for a message for 300 seconds
+            msg = await self.receive(30)  # wait for a message for 300 seconds
             if msg:
                 logMessage(msg, "R")
                 self.agent.add_behaviour(self.agent.sendMessageBehaviour())
                 self.agent.repetitions -= 1
 #            else:
-#                logInfoMessage("No init message received - something is wrong", self.agent.name)
+#               logInfoMessage("No init message received - something is wrong", self.agent.name)
     

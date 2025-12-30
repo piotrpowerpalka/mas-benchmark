@@ -69,7 +69,7 @@ def gen_compose(xmpp, numOfContainers, numOfAgents, repeats, messageSize, commTy
         - ./prosody/conf/prosody.cfg.lua:/etc/prosody/prosody.cfg.lua
         - ./prosody/certs:/etc/prosody/certs
       networks:
-        - xmpp_net
+        - xmpp
   """
 
 
@@ -81,6 +81,8 @@ def gen_compose(xmpp, numOfContainers, numOfAgents, repeats, messageSize, commTy
       image: mas:latest
       build:
         context: .
+      container_name: mas{}
+      hostname: mas{}
       command: python -u main.py -f {} -t {} -n {} -r {} -x {} -i {} -c {} -g {}
       deploy:
         resources:
@@ -91,13 +93,13 @@ def gen_compose(xmpp, numOfContainers, numOfAgents, repeats, messageSize, commTy
       if (xmpp == 'prosody'):
           rv += """
       networks:
-        - xmpp_net
+        - xmpp
 """
 
   if (xmpp == 'prosody'):
      rv += """
 networks:
-  xmpp_net:
+  xmpp:
     driver: bridge
       """
 

@@ -2,11 +2,10 @@
 admins = { "admin@serverhello" }
 
 log = {
-    warn = "*console"
+    info = "*console"
 }
 
 modules_enabled = {
-    "message";  -- Ensures message routing
     "roster"; -- Allow users to have a roster
     "saslauth"; -- Authentication for clients and servers
     "tls"; -- Enable secure connections
@@ -14,6 +13,7 @@ modules_enabled = {
     "disco"; -- Service discovery
     "carbons"; -- Keep messages synced across devices
     "mam"; -- Store and access message archives
+	"register";
 }
 
 allow_registration = true -- Enable users to self-register
@@ -25,4 +25,4 @@ ssl = {
 
 VirtualHost "serverhello"
     enabled = true
-    authentication = "anonymous"
+    authentication = "internal_plain"  -- ZAMIANA z "anonymous"

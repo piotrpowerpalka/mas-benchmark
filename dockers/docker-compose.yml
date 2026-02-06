@@ -5,8 +5,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.jade
-    #command: java -cp /app/jade.jar jade.Boot -container -host serverhello -port 1099 -agent mas0:InitAgent mas1:InformAgent
-    command: java -cp /app/jade.jar Main
+    command: java -cp /app/jade.jar:. Main -f 0 -t 99 -n 100 -r 100 -x 1024 -i 1 -c inform -g 30 
     deploy:
       resources:
         limits:
@@ -20,7 +19,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.jade
-    command: java -cp /app/jade.jar jade.Boot -port 1099
+    command: java -cp /app/jade.jar:. jade.Boot -container -host serverhello -port 1099 
     deploy:
       resources:
         limits:

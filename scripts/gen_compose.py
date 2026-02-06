@@ -70,25 +70,61 @@ def gen_compose(xmpp, numOfContainers, numOfAgents, repeats, messageSize, commTy
         - ./prosody/certs:/etc/prosody/certs
   """
 
-
-
-  rv += (header_prosody if xmpp == "prosody" else header_tigase)
-  for i in range(numOfContainers):
-      rv += """
-    mas{}:
-      image: mas:latest
+  header_jade = """services:
+    jadeserver: 
+      image: jadeserver:latest
+      container_name: serverhello
+      hostname: serverhello
       build:
         context: .
-      container_name: mas{}
-      hostname: mas{}
-      command: python -u main.py -f {} -t {} -n {} -r {} -x {} -i {} -c {} -g {}
+        dockerfile: Dockerfile
+      command: java -cp /app/jade.jar:. jade.Boot -container -host serverhello -port 1099 
       deploy:
         resources:
           limits:
-            memory: {}
-            cpus: {}
-  """.format(i, i, i, i * agentsPerContainers, (i+1) * agentsPerContainers - 1, numOfAgents, repeats, messageSize, "1" if i == numOfContainers - 1 else "0", commType, groupsize, memsize, cpus)
+            memory: 128MB
+"""
 
+  if (xmpp == "prosody"):  rv += header_prosody
+  elif (xmpp == "tigase"): rv += header_tigase
+  elif (xmpp == "jade"):   rv += header_jade
+  else:
+    raise ValueError("Unsupported XMPP server type: {}".format(xmpp))
+
+  if (xmpp == "prosody" or xmpp == "tigase"):
+    for i in range(numOfContainers):
+        rv += """
+      mas{}:
+        image: mas:latest
+        build:
+          context: .
+        container_name: mas{}
+        hostname: mas{}
+        command: python -u main.py -f {} -t {} -n {} -r {} -x {} -i {} -c {} -g {}
+        deploy:
+          resources:
+            limits:
+              memory: {}
+              cpus: {}
+    """.format(i, i, i, i * agentsPerContainers, (i+1) * agentsPerContainers - 1, numOfAgents, repeats, messageSize, "1" if i == numOfContainers - 1 else "0", commType, groupsize, memsize, cpus)
+
+  if (xmpp == "jade"):
+    for i in range(numOfContainers):
+        rv += """
+    mas{}:
+        image: jademas:latest
+        build:
+          context: .
+        container_name: mas{}
+        hostname: mas{}
+        command: java -cp /app/jade.jar:. Main -f {} -t {} -n {} -r {} -x {} -i {} -c {} -g {}
+        deploy:
+          resources:
+            limits:
+              memory: {}
+              cpus: {}
+    """.format(i, i, i, i * agentsPerContainers, (i+1) * agentsPerContainers - 1, numOfAgents, repeats, messageSize, "1" if i == numOfContainers - 1 else "0", commType, groupsize, memsize, cpus)
+ 
   return rv
 
 def compose_tofile(dcname, x, nc, na, repeats, ms, ct, gs, memsize, cpus):

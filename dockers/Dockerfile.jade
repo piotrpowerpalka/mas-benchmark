@@ -1,8 +1,9 @@
-FROM eclipse-temurin:17-jre
+FROM eclipse-temurin:17-jdk
 WORKDIR /app
 
 COPY ./lib/jade.jar /app/jade.jar
-COPY ./src/jade/*.class /app/*
+COPY ./jade/* /app/*
+RUN javac -cp /app/lib/jade.jar:. /app/*.java
 
 # Typowe porty JADE: 1099 (Main Container), 7778 (HTTP MTP/ACC) :contentReference[oaicite:1]{index=1}
 EXPOSE 1099 7778

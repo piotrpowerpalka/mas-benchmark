@@ -6,9 +6,7 @@ import jade.core.Runtime;
 import jade.wrapper.AgentController;
 import jade.wrapper.ContainerController;
 
-
 public class Main {
-
     public static void main(String[] args) throws Exception {
         System.out.println("Starting...");
 
@@ -25,23 +23,28 @@ public class Main {
         p.setParameter(Profile.GUI, "false");
         p.setParameter(Profile.MAIN_PORT, "1099");
         
-
         ContainerController main = rt.createMainContainer(p);
 
         // Start agents in range
         for (int cnt = cfg.fromAg; cnt <= cfg.toAg; cnt++) {
             String aname = "agent" + cnt;
             Tools.logInitMessage("initializing", aname);
+            String acl;
 
-            Class<?> clazz = switch (cfg.communicationType) {
-                case "inform" -> InformAgent.class;
-                case "query" -> QueryAgent.class;
-                case "cfp" -> CfpAgent.class;
-                default -> throw new IllegalArgumentException("Unsupported communication-type: " + cfg.communicationType);
-            };
+            System.out.println("|" + cfg.communicationType + "|");
+
+            if (cfg.communicationType.equals("inform")){
+                acl = "InformAgent";
+            } else if (cfg.communicationType.equals("query")){
+                acl = "QueryAgent";
+            } else if (cfg.communicationType.equals("cfp")){
+                acl = "CfpAgent";
+            } else {
+                throw new IllegalArgumentException("Unsupported communication-type: " + cfg.communicationType);
+            }
 
             Object[] agentArgs = cfg.toAgentArgs();
-            AgentController ac = main.createNewAgent(aname, clazz.getName(), agentArgs);
+            AgentController ac = main.createNewAgent(aname, acl, agentArgs);
             Tools.logInitMessage("running", aname);
             ac.start();
         }

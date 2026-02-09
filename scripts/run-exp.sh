@@ -16,12 +16,23 @@ cd logs || exit 1
 LOGDIR="logs_$XMPP-c$CONTAINERS-n$NUM_AGENTS-r$REPEATS-ms$MESSAGE_SIZE-$COMM_TYPE-g$GROUP_SIZE-m$MEMSIZE-cpu$CPUS"
 
 mkdir -p "$LOGDIR" || exit 1
-mkdir -p "$LOGDIR/prosody"
-mkdir -p "$LOGDIR/tigase"
-cp ../src/spade/prosody/* "$LOGDIR/prosody"/. -r
-cp ../src/spade/tigase/* "$LOGDIR/tigase"/. -r
-cp ../dockers/Dockerfile.spade "$LOGDIR"/Dockerfile
-cp ../src/spade/*.py "$LOGDIR"/. -r 
+
+if [ "$XMPP" == "prosody" ] || [ "$XMPP" == "tigase" ]; then
+    mkdir -p "$LOGDIR/prosody"
+    mkdir -p "$LOGDIR/tigase"
+    cp ../src/spade/prosody/* "$LOGDIR/prosody"/. -r
+    cp ../src/spade/tigase/* "$LOGDIR/tigase"/. -r
+    cp ../dockers/Dockerfile.spade "$LOGDIR"/Dockerfile
+    cp ../src/spade/*.py "$LOGDIR"/. -r 
+fi
+
+if [ "$XMPP" == "jade" ]; then
+    mkdir -p "$LOGDIR/lib"
+    mkdir -p "$LOGDIR/jade"
+    cp ../src/jade/* "$LOGDIR"/jade/. -r
+    cp ../lib/jade.jar "$LOGDIR"/lib/. -r
+    cp ../dockers/Dockerfile.jade "$LOGDIR"/Dockerfile
+fi
 
 cd "$LOGDIR" || exit 1
 
@@ -30,6 +41,7 @@ DOCKER_COMPOSE_NAME="docker-compose-$XMPP-c$CONTAINERS-n$NUM_AGENTS-r$REPEATS-ms
 echo "Generating docker compose file: $DOCKER_COMPOSE_NAME"
 python3 ../../scripts/gen_compose.py "$DOCKER_COMPOSE_NAME" "$XMPP" "$CONTAINERS" "$NUM_AGENTS" "$REPEATS" "$MESSAGE_SIZE" "$COMM_TYPE" "$GROUP_SIZE" "$MEMSIZE" "$CPUS"
 
+#docker compose -f "$DOCKER_COMPOSE_NAME" up --build
 docker compose -f "$DOCKER_COMPOSE_NAME" up > "logs_$DOCKER_COMPOSE_NAME.log" 2>&1 &
 
 for ((i=0; i<CONTAINERS; i++)); do

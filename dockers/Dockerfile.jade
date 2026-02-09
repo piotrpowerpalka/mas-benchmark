@@ -3,7 +3,12 @@ WORKDIR /app
 
 COPY ./lib/jade.jar /app/jade.jar
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 COPY ./src/jade/*.class /app/*
+=======
+COPY ./jade/* /app/.
+RUN javac -cp /app/jade.jar:. /app/*.java
+>>>>>>> Stashed changes
 =======
 COPY ./jade/* /app/.
 RUN javac -cp /app/jade.jar:. /app/*.java

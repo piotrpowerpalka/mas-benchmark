@@ -52,8 +52,12 @@ for mess in messages:
             xxx = datetime.datetime.strptime(messages[mess]['sendtime'], '%Y-%m-%d %H:%M:%S.%f')
             yyy = datetime.datetime.strptime(messages[mess]['receivetime'], '%Y-%m-%d %H:%M:%S.%f')
         except ValueError:
-            xxx = datetime.datetime.strptime(messages[mess]['sendtime'], '%Y-%m-%d %H:%M:%S')
-            yyy = datetime.datetime.strptime(messages[mess]['receivetime'], '%Y-%m-%d %H:%M:%S')
+            try:
+                xxx = datetime.datetime.strptime(messages[mess]['sendtime'], '%Y-%m-%d %H:%M:%S')
+                yyy = datetime.datetime.strptime(messages[mess]['receivetime'], '%Y-%m-%d %H:%M:%S')
+            except ValueError:
+                xxx = datetime.datetime.strptime(messages[mess]['sendtime'], '%Y-%m-%dT%H:%M:%S.%f%z')
+                yyy = datetime.datetime.strptime(messages[mess]['receivetime'], '%Y-%m-%dT%H:%M:%S.%f%z')
         diff = (yyy - xxx).microseconds
         messages[mess].update({'diff': diff})
     else:

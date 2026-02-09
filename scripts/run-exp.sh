@@ -41,9 +41,8 @@ DOCKER_COMPOSE_NAME="docker-compose-$XMPP-c$CONTAINERS-n$NUM_AGENTS-r$REPEATS-ms
 echo "Generating docker compose file: $DOCKER_COMPOSE_NAME"
 python3 ../../scripts/gen_compose.py "$DOCKER_COMPOSE_NAME" "$XMPP" "$CONTAINERS" "$NUM_AGENTS" "$REPEATS" "$MESSAGE_SIZE" "$COMM_TYPE" "$GROUP_SIZE" "$MEMSIZE" "$CPUS"
 
-docker compose -f "$DOCKER_COMPOSE_NAME" up --build
-# docker compose -f "$DOCKER_COMPOSE_NAME" up > "logs_$DOCKER_COMPOSE_NAME.log" 2>&1 &
-exit 0
+#docker compose -f "$DOCKER_COMPOSE_NAME" up --build
+docker compose -f "$DOCKER_COMPOSE_NAME" up > "logs_$DOCKER_COMPOSE_NAME.log" 2>&1 &
 
 for ((i=0; i<CONTAINERS; i++)); do
     CNT="$LOGDIR-mas$i-1"

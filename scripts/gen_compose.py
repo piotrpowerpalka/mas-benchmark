@@ -94,18 +94,18 @@ def gen_compose(xmpp, numOfContainers, numOfAgents, repeats, messageSize, commTy
   if (xmpp == "prosody" or xmpp == "tigase"):
     for i in range(numOfContainers):
         rv += """
-      mas{}:
-        image: mas:latest
-        build:
-          context: .
-        container_name: mas{}
-        hostname: mas{}
-        command: python -u main.py -f {} -t {} -n {} -r {} -x {} -i {} -c {} -g {}
-        deploy:
-          resources:
-            limits:
-              memory: {}
-              cpus: {}
+    mas{}:
+      image: mas:latest
+      build:
+        context: .
+      container_name: mas{}
+      hostname: mas{}
+      command: python -u main.py -f {} -t {} -n {} -r {} -x {} -i {} -c {} -g {}
+      deploy:
+        resources:
+          limits:
+            memory: {}
+            cpus: {}
     """.format(i, i, i, i * agentsPerContainers, (i+1) * agentsPerContainers - 1, numOfAgents, repeats, messageSize, "1" if i == numOfContainers - 1 else "0", commType, groupsize, memsize, cpus)
 
   if (xmpp == "jade"):

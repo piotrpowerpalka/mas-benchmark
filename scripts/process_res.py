@@ -49,15 +49,19 @@ uuidsconv_with_only_sendtime = [uuid for uuid, details in conversations.items() 
 for mess in messages:
     if 'receivetime' in messages[mess]:
         try:
-            xxx = datetime.datetime.strptime(messages[mess]['sendtime'], '%Y-%m-%d %H:%M:%S.%f')
-            yyy = datetime.datetime.strptime(messages[mess]['receivetime'], '%Y-%m-%d %H:%M:%S.%f')
+            sendtime = messages[mess]['sendtime']
+            if 'T' in sendtime and 'Z' in sendtime:
+                sendtime = sendtime.replace('T', ' ').replace('Z', '')
+            rectime  = messages[mess]['receivetime']
+            if 'T' in rectime and 'Z' in rectime:
+                rectime = rectime.replace('T', ' ').replace('Z', '')
+            
+            xxx = datetime.datetime.strptime(sendtime, '%Y-%m-%d %H:%M:%S.%f')
+            yyy = datetime.datetime.strptime(rectime, '%Y-%m-%d %H:%M:%S.%f')
         except ValueError:
-            try:
-                xxx = datetime.datetime.strptime(messages[mess]['sendtime'], '%Y-%m-%d %H:%M:%S')
-                yyy = datetime.datetime.strptime(messages[mess]['receivetime'], '%Y-%m-%d %H:%M:%S')
-            except ValueError:
-                xxx = datetime.datetime.strptime(messages[mess]['sendtime'], "%Y-%m-%dT%H:%M:%S.%f")
-                yyy = datetime.datetime.strptime(messages[mess]['receivetime'], "%Y-%m-%dT%H:%M:%S.%f")
+            xxx = datetime.datetime.strptime(sendtime, '%Y-%m-%d %H:%M:%S')
+            yyy = datetime.datetime.strptime(rectime, '%Y-%m-%d %H:%M:%S')
+        
         diff = (yyy - xxx).microseconds
         messages[mess].update({'diff': diff})
     else:
@@ -71,15 +75,20 @@ print("diff value[0:10]:", diff_values[0:10])
 for conv in conversations:
     if 'receivetime' in conversations[conv]:
         try:
-            xxx = datetime.datetime.strptime(conversations[conv]['sendtime'], '%Y-%m-%d %H:%M:%S.%f')
-            yyy = datetime.datetime.strptime(conversations[conv]['receivetime'], '%Y-%m-%d %H:%M:%S.%f')
+            sendtime = conversations[conv]['sendtime']
+            if 'T' in sendtime and 'Z' in sendtime:
+                sendtime = sendtime.replace('T', ' ').replace('Z', '')
+            rectime  = conversations[conv]['receivetime']
+            if 'T' in rectime and 'Z' in rectime:
+                rectime = rectime.replace('T', ' ').replace('Z', '')
+
+
+            xxx = datetime.datetime.strptime(sendtime, '%Y-%m-%d %H:%M:%S.%f')
+            yyy = datetime.datetime.strptime(rectime, '%Y-%m-%d %H:%M:%S.%f')
         except ValueError:
-            try:
-                xxx = datetime.datetime.strptime(conversations[conv]['sendtime'], '%Y-%m-%d %H:%M:%S')
-                yyy = datetime.datetime.strptime(conversations[conv]['receivetime'], '%Y-%m-%d %H:%M:%S')
-            except:
-                xxx = datetime.datetime.strptime(conversations[conv]['sendtime'], "%Y-%m-%dT%H:%M:%S.%f")
-                yyy = datetime.datetime.strptime(conversations[conv]['receivetime'], "%Y-%m-%dT%H:%M:%S.%f")
+            xxx = datetime.datetime.strptime(sendtime, '%Y-%m-%d %H:%M:%S')
+            yyy = datetime.datetime.strptime(rectime, '%Y-%m-%d %H:%M:%S')
+                
         diff = (yyy - xxx).microseconds
         conversations[conv].update({'diff': diff})
     else:

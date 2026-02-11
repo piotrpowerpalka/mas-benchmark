@@ -50,11 +50,16 @@ for mess in messages:
     if 'receivetime' in messages[mess]:
         try:
             sendtime = messages[mess]['sendtime']
-            if 'T' in sendtime and 'Z' in sendtime:
-                sendtime = sendtime.replace('T', ' ').replace('Z', '')
+            if 'T' in sendtime:
+                sendtime = sendtime.replace('T', ' ')
+            if 'Z' in sendtime: 
+                sendtime = sendtime.replace('Z', '')
+            
             rectime  = messages[mess]['receivetime']
-            if 'T' in rectime and 'Z' in rectime:
-                rectime = rectime.replace('T', ' ').replace('Z', '')
+            if 'T' in rectime:
+                rectime = rectime.replace('T', ' ')
+            if 'Z' in rectime:
+                rectime = rectime.replace('Z', '')
             
             xxx = datetime.datetime.strptime(sendtime, '%Y-%m-%d %H:%M:%S.%f')
             yyy = datetime.datetime.strptime(rectime, '%Y-%m-%d %H:%M:%S.%f')
@@ -76,11 +81,17 @@ for conv in conversations:
     if 'receivetime' in conversations[conv]:
         try:
             sendtime = conversations[conv]['sendtime']
-            if 'T' in sendtime and 'Z' in sendtime:
-                sendtime = sendtime.replace('T', ' ').replace('Z', '')
+            if 'T' in sendtime:
+                sendtime = sendtime.replace('T', ' ')
+            if 'Z' in sendtime: 
+                sendtime = sendtime.replace('Z', '')
+
             rectime  = conversations[conv]['receivetime']
-            if 'T' in rectime and 'Z' in rectime:
-                rectime = rectime.replace('T', ' ').replace('Z', '')
+            if 'T' in rectime:
+                rectime = rectime.replace('T', ' ')
+            if 'Z' in rectime:
+                rectime = rectime.replace('Z', '')
+            
 
 
             xxx = datetime.datetime.strptime(sendtime, '%Y-%m-%d %H:%M:%S.%f')
@@ -92,7 +103,7 @@ for conv in conversations:
         diff = (yyy - xxx).microseconds
         conversations[conv].update({'diff': diff})
     else:
-        print (conversations[conv]['uuid'])
+        print (conversations[conv])
 
 diff_conv_values = [conversations[conv]['diff'] for conv in conversations if 'diff' in conversations[conv]]
 

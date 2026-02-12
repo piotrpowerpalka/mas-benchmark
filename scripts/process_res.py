@@ -55,6 +55,7 @@ for mess in messages:
         yyy = pd.Timestamp(rectime)       
         diff: pd.Timedelta = yyy - xxx
         messages[mess].update({'diff': diff.total_seconds()})  # Convert to seconds
+
     else:
         print (messages[mess])  
 

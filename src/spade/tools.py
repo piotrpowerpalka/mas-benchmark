@@ -3,7 +3,9 @@ import datetime
 import string
 
 def logMessage(msg: Message, str: string):
-    print("{};{};{};{};{};{};{}".format(msg.sender, msg.to, msg.get_metadata("performative"), msg.get_metadata("reply_with"), msg.get_metadata("conversation_id"), str, datetime.datetime.now()))
+    sender = str(msg.sender).split("@")[0]  # Extract the part before the first "/"
+    to = str(msg.to).split("@")[0]  # Extract the part before the first "/"
+    print("{};{};{};{};{};{};{}".format(sender, to, msg.get_metadata("performative"), msg.get_metadata("reply_with"), msg.get_metadata("conversation_id"), str, datetime.datetime.now()))
                 
     
 def logInitMessage(str: string, agentname: string):

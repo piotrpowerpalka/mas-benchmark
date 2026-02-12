@@ -61,4 +61,4 @@ ax2.grid(True)
 
 plt.tight_layout()
 plt.savefig('memory_cpu_usage_{}.png'.format(input_file))
-plt.show()
+#plt.show()

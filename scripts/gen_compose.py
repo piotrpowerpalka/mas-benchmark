@@ -78,7 +78,7 @@ def gen_compose(xmpp, numOfContainers, numOfAgents, repeats, messageSize, commTy
       build:
         context: .
         dockerfile: Dockerfile
-      command: java -cp /app/jade.jar:. jade.Boot -container -host serverhello -port 1099 
+      command: java -cp /app/jade.jar:. jade.Boot -local-host  serverhello -port 1099  
       deploy:
         resources:
           limits:
@@ -100,7 +100,7 @@ def gen_compose(xmpp, numOfContainers, numOfAgents, repeats, messageSize, commTy
         context: .
       container_name: mas{}
       hostname: mas{}
-      command: python -u main.py -f {} -t {} -n {} -r {} -x {} -i {} -c {} -g {}
+      command: python -u main.py -f {} -t {} -n {} -r {} -x {} -i {} -c {} -g {} 
       deploy:
         resources:
           limits:
@@ -117,13 +117,13 @@ def gen_compose(xmpp, numOfContainers, numOfAgents, repeats, messageSize, commTy
           context: .
         container_name: mas{}
         hostname: mas{}
-        command: java -cp /app/jade.jar:. Main -f {} -t {} -n {} -r {} -x {} -i {} -c {} -g {}
+        command: java -cp /app/jade.jar:. Main -f {} -t {} -n {} -r {} -x {} -i {} -c {} -g {} --container-name mas{}
         deploy:
           resources:
             limits:
               memory: {}
               cpus: {}
-    """.format(i, i, i, i * agentsPerContainers, (i+1) * agentsPerContainers - 1, numOfAgents, repeats, messageSize, "1" if i == numOfContainers - 1 else "0", commType, groupsize, memsize, cpus)
+    """.format(i, i, i, i * agentsPerContainers, (i+1) * agentsPerContainers - 1, numOfAgents, repeats, messageSize, "1" if i == numOfContainers - 1 else "0", commType, groupsize, i, memsize, cpus)
  
   return rv
 

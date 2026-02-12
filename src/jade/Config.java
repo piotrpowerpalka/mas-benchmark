@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 final class Config {
-    String server = "localhost";
+    String server = "serverhello";
     String password = "123456789"; // nieużywane w JADE, zostawione dla kompatybilności CLI
     int numAgents = 10;
     int fromAg = 0;
@@ -14,6 +14,7 @@ final class Config {
     int contentSize = 1024;
     int repetitionsNum = 10;
     int initAg = 1;
+    String containerName = "main-container";
 
     static Config fromCli(String[] args) {
         // Minimalistyczny parser w stylu argparse (klucze dokładnie jak w Pythonie)
@@ -36,6 +37,7 @@ final class Config {
         c.contentSize = Integer.parseInt(m.getOrDefault("-x", m.getOrDefault("--content-size", Integer.toString(c.contentSize))));
         c.repetitionsNum = Integer.parseInt(m.getOrDefault("-r", m.getOrDefault("--repetitions-num", Integer.toString(c.repetitionsNum))));
         c.initAg = Integer.parseInt(m.getOrDefault("-i", m.getOrDefault("--initag", Integer.toString(c.initAg))));
+        c.containerName = m.getOrDefault("--container-name", c.containerName);
         return c;
     }
 
@@ -48,6 +50,7 @@ final class Config {
         Map<String, Object> m = (Map<String, Object>) args[0];
 
         c.server = (String) m.getOrDefault("server", c.server);
+        c.containerName = (String) m.getOrDefault("container-name", c.containerName);
         c.password = (String) m.getOrDefault("password", c.password);
         c.numAgents = ((Number) m.getOrDefault("numagents", c.numAgents)).intValue();
         c.fromAg = ((Number) m.getOrDefault("fromag", c.fromAg)).intValue();
@@ -72,6 +75,7 @@ final class Config {
         m.put("content-size", contentSize);
         m.put("repetitions-num", repetitionsNum);
         m.put("initag", initAg);
+        m.put("container-name", containerName);
         return new Object[]{m};
     }
 }

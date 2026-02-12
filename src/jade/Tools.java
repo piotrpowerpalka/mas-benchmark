@@ -39,7 +39,9 @@ public final class Tools {
      */
     public static void logMessage(ACLMessage msg, String direction) {
         String sender = safeName(msg.getSender());
+        sender = sender.split("@")[0];
         String to = safeName((AID)msg.getAllReceiver().next());
+        to = to.split("@")[0];
         String perf = ACLMessage.getPerformative(msg.getPerformative());
         String replyWith = msg.getReplyWith();
         String convId = msg.getConversationId();

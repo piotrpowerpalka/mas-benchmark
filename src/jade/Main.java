@@ -22,8 +22,10 @@ public class Main {
         p.setParameter(Profile.MAIN_HOST, cfg.server);
         p.setParameter(Profile.GUI, "false");
         p.setParameter(Profile.MAIN_PORT, "1099");
-        
-        ContainerController main = rt.createMainContainer(p);
+        p.setParameter(Profile.LOCAL_HOST, System.getenv().getOrDefault("JADE_LOCAL_HOST", cfg.containerName)); // albo mas1
+
+        //ContainerController main = rt.createMainContainer(p);
+        ContainerController main = rt.createAgentContainer(p);
 
         // Start agents in range
         for (int cnt = cfg.fromAg; cnt <= cfg.toAg; cnt++) {

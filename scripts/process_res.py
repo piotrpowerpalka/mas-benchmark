@@ -7,6 +7,7 @@ import scipy.stats as stats
 import numpy as np
 import seaborn as sns
 from uuid import UUID
+import pandas as pd
 
 input_file = 'out.txt'
 if len(sys.argv) > 1:
@@ -48,24 +49,14 @@ uuidsconv_with_only_sendtime = [uuid for uuid, details in conversations.items() 
 
 for mess in messages:
     if 'receivetime' in messages[mess]:
-        try:
-            sendtime = messages[mess]['sendtime']
-            if 'T' in sendtime and 'Z' in sendtime:
-                sendtime = sendtime.replace('T', ' ').replace('Z', '')
-            rectime  = messages[mess]['receivetime']
-            if 'T' in rectime and 'Z' in rectime:
-                rectime = rectime.replace('T', ' ').replace('Z', '')
-            
-            xxx = datetime.datetime.strptime(sendtime, '%Y-%m-%d %H:%M:%S.%f')
-            yyy = datetime.datetime.strptime(rectime, '%Y-%m-%d %H:%M:%S.%f')
-        except ValueError:
-            xxx = datetime.datetime.strptime(sendtime, '%Y-%m-%d %H:%M:%S')
-            yyy = datetime.datetime.strptime(rectime, '%Y-%m-%d %H:%M:%S')
-        
-        diff = (yyy - xxx).microseconds
-        messages[mess].update({'diff': diff})
+        sendtime = messages[mess]['sendtime']
+        rectime  = messages[mess]['receivetime']
+        xxx = pd.Timestamp(sendtime)
+        yyy = pd.Timestamp(rectime)       
+        diff: pd.Timedelta = yyy - xxx
+        messages[mess].update({'diff': diff.total_seconds()})  # Convert to seconds
     else:
-        print (messages[mess])
+        print (messages[mess])  
 
 diff_values = [messages[mess]['diff'] for mess in messages if 'diff' in messages[mess]]
 
@@ -74,25 +65,14 @@ print("diff value[0:10]:", diff_values[0:10])
 
 for conv in conversations:
     if 'receivetime' in conversations[conv]:
-        try:
-            sendtime = conversations[conv]['sendtime']
-            if 'T' in sendtime and 'Z' in sendtime:
-                sendtime = sendtime.replace('T', ' ').replace('Z', '')
-            rectime  = conversations[conv]['receivetime']
-            if 'T' in rectime and 'Z' in rectime:
-                rectime = rectime.replace('T', ' ').replace('Z', '')
-
-
-            xxx = datetime.datetime.strptime(sendtime, '%Y-%m-%d %H:%M:%S.%f')
-            yyy = datetime.datetime.strptime(rectime, '%Y-%m-%d %H:%M:%S.%f')
-        except ValueError:
-            xxx = datetime.datetime.strptime(sendtime, '%Y-%m-%d %H:%M:%S')
-            yyy = datetime.datetime.strptime(rectime, '%Y-%m-%d %H:%M:%S')
-                
-        diff = (yyy - xxx).microseconds
-        conversations[conv].update({'diff': diff})
+        sendtime = conversations[conv]['sendtime']
+        rectime  = conversations[conv]['receivetime']
+        xxx = pd.Timestamp(sendtime)
+        yyy = pd.Timestamp(rectime)       
+        diff: pd.Timedelta = yyy - xxx
+        conversations[conv].update({'diff': diff.total_seconds()})  # Convert to seconds
     else:
-        print (conversations[conv]['uuid'])
+        print (conversations[conv])
 
 diff_conv_values = [conversations[conv]['diff'] for conv in conversations if 'diff' in conversations[conv]]
 
@@ -105,14 +85,15 @@ kurtosis_diff = stats.kurtosis(diff_values)
 stat, p = stats.shapiro(diff_values)
 
 
-#inits = [datetime.datetime.strptime(t, '%Y-%m-%d %H:%M:%S.%f').timestamp() for t in inits]
+#inits = [pd.Timestamp(t) for t in inits]
 #inits = [t - min(inits) for t in inits]
 
 # Save the mean and standard deviation to a text file
 output_file = 'stats_{}.txt'.format(input_file)
 with open(output_file, 'w') as outfile:
-    outfile.write(f"Initialization started at: {datetime.datetime.strptime(min(inits), '%Y-%m-%d %H:%M:%S.%f').timestamp()}\n")
-    outfile.write(f"Initialization ended at: {datetime.datetime.strptime(max(inits), '%Y-%m-%d %H:%M:%S.%f').timestamp()}\n")
+    outfile.write(f"Initialization started at: {min(inits)}\n")
+    outfile.write(f"Initialization ended at: {max(inits)}\n")
+    outfile.write(f"Initialization duration: {(pd.Timestamp(max(inits)) - pd.Timestamp(min(inits))).total_seconds()} seconds\n")
     #outfile.write(f"Duration of initialization: {np.max(inits)}\n")
 
     outfile.write(f"Mean diff: {mean_diff}\n")
@@ -132,15 +113,16 @@ with open(output_file, 'w') as outfile:
 
     if all_times:
         earliest_time_str = min(all_times)
-        earliest_time = datetime.datetime.strptime(earliest_time_str, '%Y-%m-%d %H:%M:%S.%f')
+        earliest_time = pd.Timestamp(earliest_time_str)
         timestamp_start = earliest_time.timestamp()
         latest_time_str = max(all_times)
-        latest_time = datetime.datetime.strptime(latest_time_str, '%Y-%m-%d %H:%M:%S.%f')
+        latest_time = pd.Timestamp(latest_time_str)
         timestamp = latest_time.timestamp()
         outfile.write(f"Simulation started: {earliest_time_str}\n")
         outfile.write(f"Simulation started (timestamp): {timestamp_start}\n")
         outfile.write(f"Simulation ended: {latest_time_str}\n")
         outfile.write(f"Simulation ended (timestamp): {timestamp}\n")
+        outfile.write(f"Simulation duration: {(latest_time - earliest_time).total_seconds()} seconds\n")
 
     outfile.write(f"Messages lost: {len(uuids_with_only_sendtime)}\n")
     outfile.write(f"Conversations lost: {len(uuidsconv_with_only_sendtime)}\n")

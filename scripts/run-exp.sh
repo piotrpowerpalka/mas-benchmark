@@ -45,7 +45,7 @@ python3 ../../scripts/gen_compose.py "$DOCKER_COMPOSE_NAME" "$XMPP" "$CONTAINERS
 docker compose -f "$DOCKER_COMPOSE_NAME" up > "logs_$DOCKER_COMPOSE_NAME.log" 2>&1 &
 
 for ((i=0; i<CONTAINERS; i++)); do
-    CNT="$LOGDIR-mas$i-1"
+    CNT="mas$i"
     echo "Starting container $CNT"
     ../../scripts/mem.sh $CNT "mem_$DOCKER_COMPOSE_NAME-$CNT.log" &
     PID=$!

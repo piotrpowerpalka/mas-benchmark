@@ -80,8 +80,7 @@ def gen_compose(xmpp, numOfContainers, numOfAgents, repeats, messageSize, commTy
         dockerfile: Dockerfile
       command: java -cp /app/jade.jar:. jade.Boot -local-host  serverhello -port 1099  
       healthcheck:
-        test: ["CMD-SHELL", "nc -z serverhello 1099"]
-#        test: ["CMD-SHELL", "wget -qO- http://localhost:7778/acc >/dev/null 2>&1 || exit 1"]
+        test: ["CMD-SHELL", "curl -fsS http://localhost:7778/acc >/dev/null || exit 1"]
         interval: 2s
         timeout: 1s
         retries: 30

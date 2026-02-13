@@ -2,9 +2,9 @@ FROM eclipse-temurin:17-jdk
 WORKDIR /app
 
 RUN apt-get update \
- && apt-get install -y --no-install-recommends netcat-openbsd \
+ && apt-get install -y --no-install-recommends netcat-openbsd curl wget \
  && rm -rf /var/lib/apt/lists/*
- 
+
 COPY ./lib/jade.jar /app/jade.jar
 COPY ./jade/*.java /app/.
 RUN javac -cp /app/jade.jar:. /app/*.java

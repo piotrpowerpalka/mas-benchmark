@@ -79,6 +79,12 @@ def gen_compose(xmpp, numOfContainers, numOfAgents, repeats, messageSize, commTy
         context: .
         dockerfile: Dockerfile
       command: java -cp /app/jade.jar:. jade.Boot -local-host  serverhello -port 1099  
+      healthcheck:
+        test: ["CMD-SHELL", "nc -z localhost 1099"]
+        interval: 2s
+        timeout: 1s
+        retries: 30
+        start_period: 5s
       deploy:
         resources:
           limits:
@@ -118,6 +124,9 @@ def gen_compose(xmpp, numOfContainers, numOfAgents, repeats, messageSize, commTy
         container_name: mas{}
         hostname: mas{}
         command: java -cp /app/jade.jar:. Main -f {} -t {} -n {} -r {} -x {} -i {} -c {} -g {} --container-name mas{}
+        depends_on:
+          serverhello:
+            condition: service_healthy
         deploy:
           resources:
             limits:

@@ -7,8 +7,9 @@ NUM_AGENTS=${4:-"100"}
 REPEATS=${5:-"100"}
 MESSAGE_SIZE=${6:-$((1024))}
 MEMSIZE=${7:-"512mb"} # smallcase - beacuse the docker name uses it that way
-CPUS=${8:-"1"}
-GROUP_SIZE=${9:-"30"}
+RECOMPILE=${8:-"false"} # true | false
+CPUS=${9:-"1"}
+GROUP_SIZE=${10:-"30"}
 
 mkdir -p logs  || exit 1
 cd logs || exit 1
@@ -41,7 +42,10 @@ DOCKER_COMPOSE_NAME="docker-compose-$XMPP-c$CONTAINERS-n$NUM_AGENTS-r$REPEATS-ms
 echo "Generating docker compose file: $DOCKER_COMPOSE_NAME"
 python3 ../../scripts/gen_compose.py "$DOCKER_COMPOSE_NAME" "$XMPP" "$CONTAINERS" "$NUM_AGENTS" "$REPEATS" "$MESSAGE_SIZE" "$COMM_TYPE" "$GROUP_SIZE" "$MEMSIZE" "$CPUS"
 
-#docker compose -f "$DOCKER_COMPOSE_NAME" up --build
+if [ "$RECOMPILE" == "true" ]; then
+    echo "Recompiling docker images"
+    docker compose -f "$DOCKER_COMPOSE_NAME" build --no-cache
+fi
 docker compose -f "$DOCKER_COMPOSE_NAME" up > "logs_$DOCKER_COMPOSE_NAME.log" 2>&1 &
 
 for ((i=0; i<CONTAINERS; i++)); do

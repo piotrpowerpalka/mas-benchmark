@@ -71,7 +71,7 @@ def gen_compose(xmpp, numOfContainers, numOfAgents, repeats, messageSize, commTy
   """
 
   header_jade = """services:
-    jadeserver: 
+    serverhello: 
       image: jadeserver:latest
       container_name: serverhello
       hostname: serverhello
@@ -125,7 +125,7 @@ def gen_compose(xmpp, numOfContainers, numOfAgents, repeats, messageSize, commTy
         hostname: mas{}
         command: java -cp /app/jade.jar:. Main -f {} -t {} -n {} -r {} -x {} -i {} -c {} -g {} --container-name mas{}
         depends_on:
-          jadeserver:
+          serverhello:
             condition: service_healthy
         deploy:
           resources:

@@ -117,7 +117,15 @@ def gen_compose(xmpp, numOfContainers, numOfAgents, repeats, messageSize, commTy
           context: .
         container_name: mas{}
         hostname: mas{}
-        command: java -cp /app/jade.jar:. Main -f {} -t {} -n {} -r {} -x {} -i {} -c {} -g {} --container-name mas{}
+#        command: java -cp /app/jade.jar:. Main -f {} -t {} -n {} -r {} -x {} -i {} -c {} -g {} --container-name mas{}
+        command: >
+  sh -c '
+    until wget -qO- http://serverhello:7778/acc >/dev/null 2>&1; do
+      echo "Waiting for serverhello HTTP-MTP...";
+      sleep 1;
+    done;
+    exec java -cp /app/jade.jar:. Main -f {} -t {} -n {} -r {} -x {} -i {} -c {} -g {} --container-name mas{}
+  '
         deploy:
           resources:
             limits:

@@ -40,7 +40,6 @@ public class InformAgent extends Agent {
         @Override
         public void action() {
             String to = agentsSet.get(ThreadLocalRandom.current().nextInt(agentsSet.size()));
-
             ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
             msg.setSender(this.myAgent.getAID());
             msg.addReceiver(new AID(to, AID.ISLOCALNAME));

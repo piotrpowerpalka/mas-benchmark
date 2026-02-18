@@ -2,7 +2,7 @@
 admins = { "admin@serverhello" }
 
 log = {
-    info = "*console"
+    error = "*console"
 }
 
 modules_enabled = {

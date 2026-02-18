@@ -30,10 +30,11 @@ with open(input_file, 'r', encoding='utf-8') as infile:
         if match:
             # print(match.group(1))
             rec = match.group(1).split(';')
-            if rec[3] not in messages:
+            if rec[3] not in messages and rec[5] == "S":
                 messages[rec[3]] = {'sender': rec[0], 'receiver': rec[1], 'sendtime': rec[6]}
             else:
-                messages[rec[3]].update({'receivetime': rec[6]})
+                if rec[3] in messages and rec[5] == "R":
+                    messages[rec[3]].update({'receivetime': rec[6]})
 
             if rec[4] not in conversations:
                 conversations[rec[4]] = {'sender': rec[0], 'receiver': rec[1], 'sendtime': rec[6]}

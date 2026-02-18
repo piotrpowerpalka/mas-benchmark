@@ -58,7 +58,7 @@ public class InformAgent extends Agent {
         @Override
         public void action() {
             // Odpowiednik: await self.receive(15)
-            ACLMessage msg = myAgent.blockingReceive(mt, 15_000);
+            ACLMessage msg = myAgent.blockingReceive(mt, 15000);
 
             if (msg != null) {
                 Tools.logMessage(msg, "R");

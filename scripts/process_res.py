@@ -93,9 +93,10 @@ stat, p = stats.shapiro(diff_values)
 # Save the mean and standard deviation to a text file
 output_file = 'stats_{}.txt'.format(input_file)
 with open(output_file, 'w') as outfile:
+    initTime = (pd.Timestamp(max(inits)) - pd.Timestamp(min(inits))).total_seconds()
     outfile.write(f"Initialization started at: {min(inits)}\n")
     outfile.write(f"Initialization ended at: {max(inits)}\n")
-    outfile.write(f"Initialization duration: {(pd.Timestamp(max(inits)) - pd.Timestamp(min(inits))).total_seconds()} seconds\n")
+    outfile.write(f"Initialization duration: {initTime} seconds\n")
     #outfile.write(f"Duration of initialization: {np.max(inits)}\n")
 
     outfile.write(f"Mean diff: {mean_diff}\n")
@@ -114,22 +115,28 @@ with open(output_file, 'w') as outfile:
             all_times.append(conversations[conv]['receivetime'])
 
     if all_times:
+        
         earliest_time_str = min(all_times)
         earliest_time = pd.Timestamp(earliest_time_str)
         timestamp_start = earliest_time.timestamp()
         latest_time_str = max(all_times)
         latest_time = pd.Timestamp(latest_time_str)
         timestamp = latest_time.timestamp()
+
+        simDur = (latest_time - earliest_time).total_seconds()
+        
         outfile.write(f"Simulation started: {earliest_time_str}\n")
         outfile.write(f"Simulation started (timestamp): {timestamp_start}\n")
         outfile.write(f"Simulation ended: {latest_time_str}\n")
         outfile.write(f"Simulation ended (timestamp): {timestamp}\n")
-        outfile.write(f"Simulation duration: {(latest_time - earliest_time).total_seconds()} seconds\n")
+        outfile.write(f"Simulation duration: {simDur} seconds\n")
 
     outfile.write(f"Messages lost: {len(uuids_with_only_sendtime)}\n")
     outfile.write(f"Conversations lost: {len(uuidsconv_with_only_sendtime)}\n")
     outfile.write(f"Messages successful: {len(diff_values)}\n")
     outfile.write(f"Conversations successful: {len(diff_conv_values)}\n")
+
+    outfile.write(f"{initTime};{simDur};{mean_diff};{median_diff};{std_dev_diff};{stat};;;;{uuids_with_only_sendtime}\n")
 
 sns.histplot(diff_values, kde=True, label='Empirical Data', stat="density")
 

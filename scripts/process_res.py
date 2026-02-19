@@ -136,7 +136,7 @@ with open(output_file, 'w') as outfile:
     outfile.write(f"Messages successful: {len(diff_values)}\n")
     outfile.write(f"Conversations successful: {len(diff_conv_values)}\n")
 
-    outfile.write(f"{initTime};{simDur};{mean_diff};{median_diff};{std_dev_diff};{stat};;;;{uuids_with_only_sendtime}\n")
+    outfile.write(f"{initTime};{simDur};{mean_diff};{median_diff};{std_dev_diff};{stat};;;;{len(uuids_with_only_sendtime)}\n")
 
 sns.histplot(diff_values, kde=True, label='Empirical Data', stat="density")
 

@@ -41,6 +41,8 @@ with open(output_file, 'w') as outfile:
     outfile.write(f"Experiment duration: {duration:.2f}s ({duration/60:.2f}min)")
     outfile.write(f"CPU in top 5% (threshold: {cpu_95_percentile:.2f}%): {len(df[df['cpu_usage'] >= cpu_95_percentile])} measurements")
 
+    outfile.write(f"{max_memory};{avg_memory};{cpu_95_percentile}\n")
+
 # Create plots
 fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(12, 8))
 

@@ -64,21 +64,27 @@ public class QueryAgent extends Agent {
                 return;
             }
 
-            Tools.logMessage(msg, "R");
+            if (msg != null) {
+                Tools.logMessage(msg, "R");
 
-            if (msg.getPerformative() == ACLMessage.QUERY_REF) {
-                ACLMessage reply = msg.createReply();
-                reply.setPerformative(ACLMessage.INFORM);
-                reply.setReplyWith("rw-" + UUID.randomUUID());
-                reply.setContent(Tools.randomContent(contentSize));
+                if (msg.getPerformative() == ACLMessage.QUERY_REF) {
+                    ACLMessage reply = msg.createReply();
+                    reply.setPerformative(ACLMessage.INFORM);
+                    reply.setReplyWith("rw-" + UUID.randomUUID());
+                    reply.setContent(Tools.randomContent(contentSize));
 
-                Tools.logMessage(reply, "S");
-                send(reply);
-            }
+                    Tools.logMessage(reply, "S");
+                    send(reply);
 
-            if (repetitions > 0) {
-                repetitions--;
-                myAgent.addBehaviour(new SendQueryBehaviour());
+                    if (repetitions > 0) {
+                        repetitions--;
+                        myAgent.addBehaviour(new SendQueryBehaviour());
+                    }
+                    else if (repetitions == 0) {
+                        System.out.printf("Stoping agent: %s%n", getLocalName());
+                        myAgent.doDelete();
+                    }
+                }  
             }
         }
     }

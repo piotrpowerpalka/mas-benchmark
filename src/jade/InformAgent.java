@@ -59,6 +59,10 @@ public class InformAgent extends Agent {
         public void action() {
             // Odpowiednik: await self.receive(15)
             ACLMessage msg = myAgent.blockingReceive(mt, 15000);
+            if (msg == null) {
+                block();
+                return;
+            }
 
             if (msg != null) {
                 Tools.logMessage(msg, "R");
@@ -66,8 +70,8 @@ public class InformAgent extends Agent {
                     repetitions--;
                     myAgent.addBehaviour(new SendInformBehaviour());
                 }
-            } else {
-                if (repetitions == 0) {
+                
+                else if (repetitions == 0) {
                     System.out.printf("Stoping agent: %s%n", getLocalName());
                     myAgent.doDelete();
                 }

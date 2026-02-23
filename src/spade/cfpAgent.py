@@ -86,6 +86,10 @@ class cfpAgent(Agent):
                     if self.agent.repetitions > 0:
                         self.agent.repetitions -= 1
                         self.agent.add_behaviour(self.agent.sendMessageBehaviour())
+            
+                    elif self.agent.repetitions == 0:
+                        logInfoMessage("Stoping agent", self.agent.name)
+                        await self.agent.stop()
 
 
     class sendMessageBehaviour(OneShotBehaviour):

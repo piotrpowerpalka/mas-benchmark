@@ -3,7 +3,8 @@ FROM python:3.8
 WORKDIR /app
 COPY . /app
 
-RUN apt-get update && apt-get install -y tzdata \
+RUN apt-get update && apt-get install -y tzdata  \
+ && apt-get install -y --no-install-recommends netcat-openbsd curl wget \
  && ln -fs /usr/share/zoneinfo/Europe/Warsaw /etc/localtime \
  && dpkg-reconfigure -f noninteractive tzdata
  

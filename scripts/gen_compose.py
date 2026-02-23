@@ -106,6 +106,8 @@ def gen_compose(xmpp, numOfContainers, numOfAgents, repeats, messageSize, commTy
           limits:
             memory: {}
             cpus: {}
+      depends_on:
+      - serverhello
     """.format(i, i, i, i * agentsPerContainers, (i+1) * agentsPerContainers - 1, numOfAgents, repeats, messageSize, "1" if i == numOfContainers - 1 else "0", commType, groupsize, memsize, cpus)
 
   if (xmpp == "jade"):

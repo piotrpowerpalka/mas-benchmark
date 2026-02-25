@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 CONTAINERS=${1:-"1"}
-XMPP=${2:-"prosody"} # prosody | tigase
+XMPP=${2:-"prosody"} # prosody | tigase | jade
 COMM_TYPE=${3:-"inform"} # inform | query | cfp
 NUM_AGENTS=${4:-"100"}
 REPEATS=${5:-"100"}
@@ -57,6 +57,9 @@ for ((i=0; i<CONTAINERS; i++)); do
     echo "Running container $CNT"
 done
 
+../../scripts/mem.sh serverhello "mem_$DOCKER_COMPOSE_NAME-xmpp.log" &
+
+
 # Wait until the log file stops growing
 LAST_SIZE=0
 STABLE_COUNT=0
@@ -80,8 +83,11 @@ pkill -f "../../scripts/mem.sh $LOGDIR-mas"
 
 python3 ../../scripts/process_res.py "logs_$DOCKER_COMPOSE_NAME.log"
 for ((i=0; i<CONTAINERS; i++)); do
+    CNT="mas$i"
     python3 ../../scripts/process_mem.py "mem_$DOCKER_COMPOSE_NAME-$CNT.log"
 done
+
+python3 ../../scripts/process_mem.py "mem_$DOCKER_COMPOSE_NAME-xmpp.log"
 
 cd ../..
 

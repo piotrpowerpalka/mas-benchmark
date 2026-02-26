@@ -1,6 +1,9 @@
 -- Prosody configuration file
 admins = { "admin@serverhello" }
 
+-- Global settings
+network_backend = "epoll"
+
 log = {
     -- wszystko ważniejsze na konsolę (docker logs)
     { levels = { "info", "warn", "error" }, to = "console" };

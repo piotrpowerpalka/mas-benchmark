@@ -111,6 +111,10 @@ public class CfpAgent extends Agent {
                     repetitions--;
                     myAgent.addBehaviour(new SendCfpBehaviour());
                 }
+                else if (repetitions == 0) {
+                    System.out.printf("Stoping agent: %s%n", getLocalName());
+                    myAgent.doDelete();
+                }
             }
         }
     }

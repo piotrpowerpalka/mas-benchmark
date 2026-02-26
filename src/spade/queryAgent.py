@@ -64,13 +64,14 @@ class queryAgent(Agent):
                     
                     logMessage(rplymsg, "S")    
                     await self.send(rplymsg)
-
-                
-                
-                if self.agent.repetitions > 0:
-                    self.agent.repetitions -= 1
-                    self.agent.add_behaviour(self.agent.sendMessageBehaviour())
-
+            
+                    if self.agent.repetitions > 0:
+                        self.agent.repetitions -= 1
+                        self.agent.add_behaviour(self.agent.sendMessageBehaviour())
+            
+                elif self.agent.repetitions == 0:
+                    logInfoMessage("Stoping agent", self.agent.name)
+                    await self.agent.stop()
     
     
     class ReceiveInit(CyclicBehaviour):

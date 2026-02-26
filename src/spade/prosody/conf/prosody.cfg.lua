@@ -2,7 +2,11 @@
 admins = { "admin@serverhello" }
 
 log = {
-    error = "*console"
+    -- wszystko ważniejsze na konsolę (docker logs)
+    { levels = { "info", "warn", "error" }, to = "console" };
+
+    -- TYLKO błędy do osobnego pliku
+    { levels = { "error" }, to = "file", filename = "/var/log/prosody/prosody.err" };
 }
 
 modules_enabled = {

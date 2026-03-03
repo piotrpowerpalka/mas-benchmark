@@ -150,7 +150,7 @@ normal_dist_scaled = normal_dist * len(diff_values) * (x[1] - x[0])
 # Plot the normal distribution
 plt.plot(x, normal_dist, label='Normal Distribution', color='red')
 plt.title('Histogram of Message Latency')
-plt.xlabel('Latency (microseconds)')
+plt.xlabel('Latency [s]')
 plt.ylabel('Frequency')
 
 # Add legend

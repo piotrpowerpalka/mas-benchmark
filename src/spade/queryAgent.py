@@ -13,7 +13,8 @@ import datetime
 
 class queryAgent(Agent):
     async def setup(self):
-        
+
+        random.seed(self.get("seed"))
         self.repetitions = self.get("repetitions-num")
 
         self.agentsSet = []
@@ -45,7 +46,6 @@ class queryAgent(Agent):
             msg.set_metadata("conversation_id", "cid-" + str(uuid.uuid4()))
             
             msg.body = str(''.join(random.choices(string.ascii_letters + string.digits, k=self.agent.get("content-size"))))
-#             msg.body = "Hello"
 
             logMessage(msg, "S")
             await self.send(msg)

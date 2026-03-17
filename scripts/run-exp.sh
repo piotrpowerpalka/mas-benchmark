@@ -6,10 +6,11 @@ COMM_TYPE=${3:-"inform"} # inform | query | cfp
 NUM_AGENTS=${4:-"100"}
 REPEATS=${5:-"100"}
 MESSAGE_SIZE=${6:-$((1024))}
-MEMSIZE=${7:-"512mb"} # smallcase - beacuse the docker name uses it that way
-RECOMPILE=${8:-"false"} # true | false
-CPUS=${9:-"1"}
-GROUP_SIZE=${10:-"30"}
+RECOMPILE=${7:-"false"} # true | false
+GROUP_SIZE=${8:-"10"}
+
+MEMSIZE="1GB"
+CPUS="1"
 
 mkdir -p logs  || exit 1
 cd logs || exit 1

@@ -1,5 +1,7 @@
 # Containerized Evaluation Framework for Multi-Agent Platforms
 
+<img width="1536" height="1024" alt="f98c2eb5-e938-408a-8fff-16dd56ceb49c" src="https://github.com/user-attachments/assets/007242d0-75f5-410e-8cc6-f08849518c50" />
+
 A reproducible, containerized benchmarking framework for the quantitative evaluation of multi-agent platforms (MAPs) using **FIPA-inspired interaction protocol workloads**.
 
 This project operationalizes three representative interaction patterns - **Inform**, **Query**, and **Contract Net Protocol (CNP)** - and evaluates platforms using a common set of communication, lifecycle, and resource-efficiency metrics. The framework is designed to improve **reproducibility**, **comparability**, and **extensibility** of experimental studies on multi-agent systems.

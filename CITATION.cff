@@ -1,0 +1,25 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+title: "Containerized Evaluation Framework for Multi-Agent Platforms"
+version: "0.1.0"
+date-released: 2026-03-17
+
+authors:
+  - family-names: "Pałka"
+    given-names: "Piotr"
+    orcid: "0000-0002-0006-363X"
+    affiliation: "Politechnika Warszawska"
+
+abstract: "The data presents a reproducible and extensible experimental framework for quantitative evaluation of multi-agent platforms (MAPs). The framework is grounded in recommendations of the Foundation for Intelligent Physical Agents (FIPA) and operationalizes three representative interaction patterns: Inform, Query, and Contract Net Interaction Protocols. To ensure repeatability and comparability across experimental settings, the methodology is implemented in a Docker-based testbed that encapsulates platform runtimes, message transport services, and measurement tooling. We define a preliminary yet systematic set of quantitative performance metrics covering communication latency and variability, throughput, scalability, and resource utilization. The framework is demonstrated through a comparative study of two widely used MAPs---JADE and SPADE---where SPADE is evaluated with two alternative XMPP server backends (Prosody and Tigase). Experiments include (i) single-container scalability from 32 to 2048 agents, (ii) distributed deployments across 1, 2, 4, and 8 machines with a fixed population of 256 agents, and (iii) workload testing across 4 machines, with a fixed population of 256 agents. Results show that JADE consistently achieves lower communication latency, shorter platform readiness and agent creation times, and better CPU and memory efficiency, whereas SPADE provides higher throughput in selected workloads, particularly when paired with Prosody. The study also demonstrates that the choice of XMPP backend has a substantial impact on communication behavior, initialization overhead, and overall scalability. The proposed framework enables consistent benchmarking, supports artifact-based reproducibility, and provides a baseline for future standardized evaluation of MAPs."
+keywords:
+  - "scientific software"
+  - "research"
+  - "computational science"
+  - "informatics"
+
+license: "Apache 2.0"
+repository-code: "https://github.com/piotrpowerpalka/mas-benchmark"
+url: "https://github.com/piotrpowerpalka/mas-benchmark"
+
+# Wstaw po pierwszej publikacji w Zenodo
+doi: "10.5281/zenodo.19068773"

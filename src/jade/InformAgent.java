@@ -18,12 +18,14 @@ public class InformAgent extends Agent {
     private int repetitions;
     private int contentSize;
     private List<String> agentsSet = new ArrayList<>();
-
+    public  final ThreadLocalRandom tlr = ThreadLocalRandom.current();
+    
     @Override
     protected void setup() {
         Config cfg = Config.fromArgs(getArguments());
         this.repetitions = cfg.repetitionsNum;
         this.contentSize = cfg.contentSize;
+        this.tlr.setSeed(cfg.seed);
 
         int myIdx = parseAgentIndex(getLocalName());
         for (int cnt = 0; cnt < cfg.numAgents; cnt++) {
@@ -39,7 +41,7 @@ public class InformAgent extends Agent {
     private class SendInformBehaviour extends OneShotBehaviour {
         @Override
         public void action() {
-            String to = agentsSet.get(ThreadLocalRandom.current().nextInt(agentsSet.size()));
+            String to = agentsSet.get(this.myAgent.tlr.nextInt(agentsSet.size()));
             ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
             msg.setSender(this.myAgent.getAID());
             msg.addReceiver(new AID(to, AID.ISLOCALNAME));

@@ -14,7 +14,8 @@ import datetime
 
 class informAgent(Agent):
     async def setup(self):
-        
+        random.seed(self.get("seed"))
+
         self.repetitions = self.get("repetitions-num")
 
         self.agentsSet = []
@@ -34,6 +35,7 @@ class informAgent(Agent):
         
     class sendMessageBehaviour(OneShotBehaviour):
         async def run(self):
+            
             tojid = random.choice(self.agent.agentsSet)
             msg = Message( to=tojid, sender=self.agent.name)
             msg.set_metadata("performative", "inform")

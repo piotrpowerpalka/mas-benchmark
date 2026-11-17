@@ -1,0 +1,29 @@
+plugins {
+    id 'java'
+    id 'application'
+}
+
+group = 'pl.pw'
+version = '1.0.0'
+
+repositories {
+    mavenCentral()
+}
+
+ext {
+    jadexVersion = '4.0.241'
+}
+
+dependencies {
+    implementation "org.activecomponents.jadex:jadex-distribution-minimal:${jadexVersion}"
+}
+
+application {
+    mainClass = 'pl.pw.agentbench.Main'
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(11)
+    }
+}

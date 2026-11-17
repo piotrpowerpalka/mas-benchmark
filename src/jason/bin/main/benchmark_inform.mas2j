@@ -1,0 +1,7 @@
+MAS benchmark_inform {
+    infrastructure: Local
+
+    agents:
+        init;
+        agent inform.asl #256;
+}

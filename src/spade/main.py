@@ -12,6 +12,7 @@ from tools import *
 import traceback
 import argparse
 import asyncio
+import random
 
 parser = argparse.ArgumentParser(description="Multi-agent benchmark")
 parser.add_argument("-s", "--server", type=str, help="Server hostname", default="serverhello")
@@ -43,6 +44,8 @@ async def main():
     config["repetitions-num"] = args.repetitions_num
     config["groupsize"] = args.groupsize
     config["seed"] = args.seed
+
+    random.seed(config["seed"])
 
     for cnt in range(config["fromag"], config["toag"] + 1):
         aname = "agent{}@{}".format(cnt, config["server"])

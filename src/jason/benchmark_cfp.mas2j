@@ -1,0 +1,7 @@
+MAS benchmark_cfp {
+    infrastructure: Local
+
+    agents:
+        init;
+        cfp #10;
+}

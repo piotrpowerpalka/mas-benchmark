@@ -15,6 +15,7 @@ final class Config {
     int repetitionsNum = 10;
     int initAg = 1;
     String containerName = "main-container";
+    long seed = 213742189290L; 
 
     static Config fromCli(String[] args) {
         // Minimalistyczny parser w stylu argparse (klucze dokładnie jak w Pythonie)
@@ -38,6 +39,7 @@ final class Config {
         c.repetitionsNum = Integer.parseInt(m.getOrDefault("-r", m.getOrDefault("--repetitions-num", Integer.toString(c.repetitionsNum))));
         c.initAg = Integer.parseInt(m.getOrDefault("-i", m.getOrDefault("--initag", Integer.toString(c.initAg))));
         c.containerName = m.getOrDefault("--container-name", c.containerName);
+        c.seed = Long.parseLong(m.getOrDefault("--seed", Long.toString(c.seed)));
         return c;
     }
 
@@ -76,6 +78,7 @@ final class Config {
         m.put("repetitions-num", repetitionsNum);
         m.put("initag", initAg);
         m.put("container-name", containerName);
+        m.put("seed", seed);
         return new Object[]{m};
     }
 }

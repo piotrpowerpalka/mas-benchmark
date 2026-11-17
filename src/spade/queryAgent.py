@@ -13,8 +13,8 @@ import datetime
 
 class queryAgent(Agent):
     async def setup(self):
-
         random.seed(self.get("seed"))
+
         self.repetitions = self.get("repetitions-num")
 
         self.agentsSet = []

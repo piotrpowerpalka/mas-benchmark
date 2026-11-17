@@ -1,0 +1,7 @@
+MAS benchmark_query {
+    infrastructure: Local
+
+    agents:
+        init;
+        query #10;
+}

@@ -175,6 +175,8 @@ This keeps all Python-based workloads and analysis scripts isolated from the glo
 
 The experiment runner is a Bash script. Run it from a Bash-compatible terminal. If you use WSL, create and activate the virtual environment inside WSL; a Windows `.venv` cannot be used by Linux Python.
 
+The runner now resolves the repository root explicitly and passes absolute paths into the Python post-processing scripts. This avoids the `../../scripts` path breakage that happened when Bash was launched from PowerShell or from a nested logs directory.
+
 1. Prepare an experiment configuration.
 2. Generate the containerized deployment.
 3. Start the benchmark environment.

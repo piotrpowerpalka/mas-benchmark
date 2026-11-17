@@ -80,17 +80,17 @@ sleep 5
 
 docker compose -f "$DOCKER_COMPOSE_NAME" down
 
-
 # Stop the memory logging processes
 pkill -f "$ROOT_DIR/scripts/mem.sh"
 
-python3 "$ROOT_DIR/scripts/process_res.py" "logs_$DOCKER_COMPOSE_NAME.log"
+OUTPUT_LOG="$ROOT_DIR/logs/$LOGDIR/logs_$DOCKER_COMPOSE_NAME.log"
+python3 "$ROOT_DIR/scripts/process_res.py" "$OUTPUT_LOG"
 for ((i=0; i<CONTAINERS; i++)); do
     CNT="mas$i"
-    python3 "$ROOT_DIR/scripts/process_mem.py" "mem_$DOCKER_COMPOSE_NAME-$CNT.log"
+    python3 "$ROOT_DIR/scripts/process_mem.py" "$ROOT_DIR/logs/$LOGDIR/mem_$DOCKER_COMPOSE_NAME-$CNT.log"
 done
 
-python3 "$ROOT_DIR/scripts/process_mem.py" "mem_$DOCKER_COMPOSE_NAME-xmpp.log"
+python3 "$ROOT_DIR/scripts/process_mem.py" "$ROOT_DIR/logs/$LOGDIR/mem_$DOCKER_COMPOSE_NAME-xmpp.log"
 
 cd "$ROOT_DIR"
 

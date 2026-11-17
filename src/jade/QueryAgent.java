@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.TimeUnit;
 
 public class QueryAgent extends Agent {
 
@@ -78,11 +79,16 @@ public class QueryAgent extends Agent {
 
                     if (repetitions > 0) {
                         repetitions--;
+                        try {
+                            TimeUnit.MILLISECONDS.sleep(10);
+                        } catch (InterruptedException e) {
+                            Thread.currentThread().interrupt();
+                        }
                         myAgent.addBehaviour(new SendQueryBehaviour());
                     }
                     else if (repetitions == 0) {
-                        System.out.printf("Stoping agent: %s%n", getLocalName());
-                        myAgent.doDelete();
+//                        System.out.printf("Stoping agent: %s%n", getLocalName());
+//                        myAgent.doDelete();
                     }
                 }  
             }

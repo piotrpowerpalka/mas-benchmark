@@ -34,6 +34,9 @@ with open(input_file, 'r', encoding='utf-8') as infile:
         if match:
             # print(match.group(1))
             rec = match.group(1).split(';')
+            if not (re.fullmatch(r"agent\d+", rec[0]) and re.fullmatch(r"agent\d+", rec[1])):
+                continue
+
             if rec[3] not in messages and rec[5] == "S":
                 messages[rec[3]] = {'sender': rec[0], 'receiver': rec[1], 'sendtime': rec[6]}
             else:

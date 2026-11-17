@@ -9,6 +9,7 @@ import jade.lang.acl.MessageTemplate;
 
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.TimeUnit;
 
 public class CfpAgent extends Agent {
 
@@ -109,11 +110,17 @@ public class CfpAgent extends Agent {
 
                 if (repetitions > 0) {
                     repetitions--;
+                    try {
+                        // Również zatrzymuje na 500 milisekund
+                        TimeUnit.MILLISECONDS.sleep(10);
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+}
                     myAgent.addBehaviour(new SendCfpBehaviour());
                 }
                 else if (repetitions == 0) {
-                    System.out.printf("Stoping agent: %s%n", getLocalName());
-                    myAgent.doDelete();
+//                    System.out.printf("Stoping agent: %s%n", getLocalName());
+//                  myAgent.doDelete();
                 }
             }
         }

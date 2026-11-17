@@ -86,11 +86,13 @@ class cfpAgent(Agent):
                     # begin a new round of CFP
                     if self.agent.repetitions > 0:
                         self.agent.repetitions -= 1
+                        await asyncio.sleep(100 / 1000)
                         self.agent.add_behaviour(self.agent.sendMessageBehaviour())
             
                     elif self.agent.repetitions == 0:
-                        logInfoMessage("Stoping agent", self.agent.name)
-                        await self.agent.stop()
+                        pass
+#                        logInfoMessage("Stoping agent", self.agent.name)
+#                        await self.agent.stop()
 
 
     class sendMessageBehaviour(OneShotBehaviour):

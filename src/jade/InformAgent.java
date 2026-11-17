@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 public class InformAgent extends Agent {
 
@@ -70,12 +71,21 @@ public class InformAgent extends Agent {
                 Tools.logMessage(msg, "R");
                 if (repetitions > 0) {
                     repetitions--;
+                    try {
+                        TimeUnit.MILLISECONDS.sleep(10);
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                    }
                     myAgent.addBehaviour(new SendInformBehaviour());
                 }
                 
                 else if (repetitions == 0) {
-                    System.out.printf("Stoping agent: %s%n", getLocalName());
-                    myAgent.doDelete();
+
+//                    ACLMessage fmsg = new ACLMessage(ACLMessage.INFORM);
+//                    fmsg.setSender(this.myAgent.getAID());
+//                    fmsg.addReceiver(new AID("agent-init", AID.ISLOCALNAME));
+//                    Tools.logMessage(fmsg, "S");
+//                    send(fmsg);\7
                 }
             }
         }

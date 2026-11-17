@@ -9,6 +9,7 @@ import seaborn as sns
 from uuid import UUID
 import pandas as pd
 
+
 input_file = 'out.txt'
 if len(sys.argv) > 1:
     print(sys.argv[1])
@@ -86,6 +87,10 @@ skewness_diff = stats.skew(diff_values)
 kurtosis_diff = stats.kurtosis(diff_values)
 stat, p = stats.shapiro(diff_values)
 
+mean_conv_diff = np.mean(diff_conv_values)
+std_dev_conv_diff = np.std(diff_conv_values)
+
+
 
 #inits = [pd.Timestamp(t) for t in inits]
 #inits = [t - min(inits) for t in inits]
@@ -105,6 +110,10 @@ with open(output_file, 'w') as outfile:
     outfile.write(f"Skewness of diff: {skewness_diff}\n")
     outfile.write(f"Kurtosis of diff: {kurtosis_diff}\n")
     outfile.write(f"Shapiro-Wilk statistic {stat}: p-value {p}\n")
+    
+    outfile.write(f"Mean conversation diff: {mean_conv_diff}\n")
+    outfile.write(f"Standard deviation of conversation diff: {std_dev_conv_diff}\n")
+
     # Find the latest timestamp (simulation end time)
     all_times = []
     for mess in messages:
@@ -136,7 +145,9 @@ with open(output_file, 'w') as outfile:
     outfile.write(f"Messages successful: {len(diff_values)}\n")
     outfile.write(f"Conversations successful: {len(diff_conv_values)}\n")
 
+
     outfile.write(f"{initTime};{simDur};{mean_diff};{median_diff};{std_dev_diff};{stat};;;;{len(uuids_with_only_sendtime)};{len(diff_values)}\n")
+    outfile.write(f"{mean_conv_diff};{std_dev_conv_diff}\n")
 
 sns.histplot(diff_values, kde=True, label='Empirical Data', stat="density")
 
@@ -150,7 +161,7 @@ normal_dist_scaled = normal_dist * len(diff_values) * (x[1] - x[0])
 # Plot the normal distribution
 plt.plot(x, normal_dist, label='Normal Distribution', color='red')
 plt.title('Histogram of Message Latency')
-plt.xlabel('Latency (microseconds)')
+plt.xlabel('Latency [s]')
 plt.ylabel('Frequency')
 
 # Add legend

@@ -24,6 +24,7 @@ parser.add_argument("-c", "--communication-type", type=str, help="Type of commun
 parser.add_argument("-x", "--content-size", type=int, help="Size of content [bytes]", default="1024")
 parser.add_argument("-r", "--repetitions-num", type=int, help="Number of repetitions", default="10")
 parser.add_argument("-i", "--initag", type=int, help="Run the initAgent", default=0)
+parser.add_argument("-e", "--seed", type=int, help="Random seed for reproducibility", default=213742189290)
 args = parser.parse_args()
 
 
@@ -41,6 +42,7 @@ async def main():
     config["content-size"] = args.content_size
     config["repetitions-num"] = args.repetitions_num
     config["groupsize"] = args.groupsize
+    config["seed"] = args.seed
 
     for cnt in range(config["fromag"], config["toag"] + 1):
         aname = "agent{}@{}".format(cnt, config["server"])
@@ -55,6 +57,7 @@ async def main():
             agnt.set("numagents", config["numagents"])
             agnt.set("content-size", config["content-size"])
             agnt.set("repetitions-num", config["repetitions-num"])
+            agnt.set("seed", config["seed"])
 
             agarr.append(agnt)
 
@@ -66,6 +69,7 @@ async def main():
             agnt.set("numagents", config["numagents"])
             agnt.set("content-size", config["content-size"])
             agnt.set("repetitions-num", config["repetitions-num"])
+            agnt.set("seed", config["seed"])
 
             agarr.append(agnt)
 
@@ -78,6 +82,7 @@ async def main():
             agnt.set("numagents", config["numagents"])
             agnt.set("content-size", config["content-size"])
             agnt.set("repetitions-num", config["repetitions-num"])
+            agnt.set("seed", config["seed"])
 
             agarr.append(agnt)
 
@@ -87,6 +92,7 @@ async def main():
         initag.set("fromag", config["fromag"])
         initag.set("toag", config["toag"])
         initag.set("numagents", config["numagents"])
+        initag.set("seed", config["seed"])
         logInitMessage("initializing", initag.jid)
                 
 

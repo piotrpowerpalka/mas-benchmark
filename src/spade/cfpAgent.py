@@ -13,7 +13,6 @@ import datetime
 
 class cfpAgent(Agent):
     async def setup(self):
-
         random.seed(self.get("seed"))
         
         self.offers = []  # List to store offers

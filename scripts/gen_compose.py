@@ -73,6 +73,9 @@ def gen_compose(xmpp, numOfContainers, numOfAgents, repeats, messageSize, commTy
   header_jade = """services:
     serverhello: 
       image: jadeserver:latest
+      ports:
+        - "1099:1099"
+        - "7778:7778"
       container_name: serverhello
       hostname: serverhello
       build:
@@ -117,12 +120,13 @@ def gen_compose(xmpp, numOfContainers, numOfAgents, repeats, messageSize, commTy
         image: jademas:latest
         build:
           context: .
+          dockerfile: Dockerfile
         container_name: mas{}
         hostname: mas{}
         command: >
           sh -c '
-            until nc -z serverhello 7778; do
-              echo "Waiting for serverhello TCP 7778...";
+            until nc -z serverhello 1099; do
+              echo "Waiting for serverhello TCP 1099...";
               sleep 1;
             done
             exec java -cp /app/jade.jar:. Main -f {} -t {} -n {} -r {} -x {} -i {} -c {} -g {} --container-name mas{}

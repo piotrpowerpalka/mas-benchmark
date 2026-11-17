@@ -1,6 +1,7 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 import sys
+import os
 
 endofsim = -1
 
@@ -8,6 +9,8 @@ input_file = 'data_mem.csv'
 if len(sys.argv) > 1:
     print(sys.argv[1])
     input_file = sys.argv[1]
+
+input_name = os.path.basename(input_file)
 
 if len(sys.argv) > 2:
     endofsim = sys.argv[2]
@@ -34,7 +37,7 @@ max_memory = df['memory_used'].max()
 duration = df['timestamp'].max() - df['timestamp'].min()
 cpu_95_percentile = df['cpu_usage'].quantile(0.95)
 
-output_file = 'mem_stats_{}.txt'.format(input_file)
+output_file = 'mem_stats_{}.txt'.format(input_name)
 with open(output_file, 'w') as outfile:
     outfile.write(f"Average memory usage: {avg_memory:.2f} MiB")
     outfile.write(f"Maximum memory usage: {max_memory:.2f} MiB")
@@ -62,5 +65,5 @@ ax2.legend()
 ax2.grid(True)
 
 plt.tight_layout()
-plt.savefig('memory_cpu_usage_{}.png'.format(input_file))
+plt.savefig('memory_cpu_usage_{}.png'.format(input_name))
 #plt.show()

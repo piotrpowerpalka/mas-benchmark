@@ -49,7 +49,7 @@ if [ "$RECOMPILE" == "true" ]; then
     echo "Recompiling docker images"
     docker compose -f "$DOCKER_COMPOSE_NAME" build --no-cache
 fi
-docker compose -f "$DOCKER_COMPOSE_NAME" up > "logs_$DOCKER_COMPOSE_NAME.log" 2>&1 &
+docker compose -f "$DOCKER_COMPOSE_NAME" up --build > "logs_$DOCKER_COMPOSE_NAME.log" 2>&1 &
 
 for ((i=0; i<CONTAINERS; i++)); do
     CNT="mas$i"

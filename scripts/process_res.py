@@ -3,6 +3,7 @@ import re
 import datetime
 import matplotlib.pyplot as plt
 import sys
+import os
 import scipy.stats as stats
 import numpy as np
 import seaborn as sns
@@ -14,6 +15,8 @@ input_file = 'out.txt'
 if len(sys.argv) > 1:
     print(sys.argv[1])
     input_file = sys.argv[1]
+
+input_name = os.path.basename(input_file)
 
 messages = {}
 conversations = {}
@@ -96,7 +99,7 @@ std_dev_conv_diff = np.std(diff_conv_values)
 #inits = [t - min(inits) for t in inits]
 
 # Save the mean and standard deviation to a text file
-output_file = 'stats_{}.txt'.format(input_file)
+output_file = 'stats_{}.txt'.format(input_name)
 with open(output_file, 'w') as outfile:
     initTime = (pd.Timestamp(max(inits)) - pd.Timestamp(min(inits))).total_seconds()
     outfile.write(f"Initialization started at: {min(inits)}\n")
@@ -166,7 +169,7 @@ plt.ylabel('Frequency')
 
 # Add legend
 plt.legend()
-plt.savefig('histogram{}.png'.format(input_file))
+plt.savefig('histogram{}.png'.format(input_name))
 plt.clf()
 
 sns.histplot(diff_conv_values, kde=True, label='Conversations Data', stat="density", color='orange')
@@ -183,6 +186,6 @@ plt.xlabel('Latency (microseconds)')
 plt.ylabel('Frequency')
 # Add legend
 plt.legend()
-plt.savefig('histogram_conversations{}.png'.format(input_file))
+plt.savefig('histogram_conversations{}.png'.format(input_name))
 
 

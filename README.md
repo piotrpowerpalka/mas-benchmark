@@ -173,6 +173,8 @@ This keeps all Python-based workloads and analysis scripts isolated from the glo
 
 ### Typical workflow
 
+The experiment runner is a Bash script. Run it from a Bash-compatible terminal. If you use WSL, create and activate the virtual environment inside WSL; a Windows `.venv` cannot be used by Linux Python.
+
 1. Prepare an experiment configuration.
 2. Generate the containerized deployment.
 3. Start the benchmark environment.
@@ -218,6 +220,7 @@ Planned or recommended directions for further development include:
 ## Recent project updates
 
 - 2026-11-17: added a reproducible Python virtual environment setup (`.venv`, `requirements.txt`, and `scripts/setup-venv.sh`) to standardize local development and analysis runs.
+- 2026-11-17: made `scripts/run-exp.sh` resolve project scripts and source files from the repository location, avoiding failures caused by relative Python script paths, and aligned memory-logger cleanup with the resolved path; documented the Bash and WSL virtual-environment requirements.
 
 ## License
 

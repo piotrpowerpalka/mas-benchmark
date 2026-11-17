@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+
 CONTAINERS=${1:-"1"}
 XMPP=${2:-"prosody"} # prosody | tigase | jade
 COMM_TYPE=${3:-"inform"} # inform | query | cfp
@@ -12,8 +14,8 @@ GROUP_SIZE=${8:-"10"}
 MEMSIZE="1GB"
 CPUS="1"
 
-mkdir -p logs  || exit 1
-cd logs || exit 1
+mkdir -p "$ROOT_DIR/logs" || exit 1
+cd "$ROOT_DIR/logs" || exit 1
 
 LOGDIR="logs_$XMPP-c$CONTAINERS-n$NUM_AGENTS-r$REPEATS-ms$MESSAGE_SIZE-$COMM_TYPE-g$GROUP_SIZE-m$MEMSIZE-cpu$CPUS"
 
@@ -22,18 +24,18 @@ mkdir -p "$LOGDIR" || exit 1
 if [ "$XMPP" == "prosody" ] || [ "$XMPP" == "tigase" ]; then
     mkdir -p "$LOGDIR/prosody"
     mkdir -p "$LOGDIR/tigase"
-    cp ../src/spade/prosody/* "$LOGDIR/prosody"/. -r
-    cp ../src/spade/tigase/* "$LOGDIR/tigase"/. -r
-    cp ../dockers/Dockerfile.spade "$LOGDIR"/Dockerfile
-    cp ../src/spade/*.py "$LOGDIR"/. -r 
+    cp "$ROOT_DIR"/src/spade/prosody/* "$LOGDIR/prosody"/. -r
+    cp "$ROOT_DIR"/src/spade/tigase/* "$LOGDIR/tigase"/. -r
+    cp "$ROOT_DIR/dockers/Dockerfile.spade" "$LOGDIR"/Dockerfile
+    cp "$ROOT_DIR"/src/spade/*.py "$LOGDIR"/. -r
 fi
 
 if [ "$XMPP" == "jade" ]; then
     mkdir -p "$LOGDIR/lib"
     mkdir -p "$LOGDIR/jade"
-    cp ../src/jade/* "$LOGDIR"/jade/. -r
-    cp ../lib/jade.jar "$LOGDIR"/lib/. -r
-    cp ../dockers/Dockerfile.jade "$LOGDIR"/Dockerfile
+    cp "$ROOT_DIR"/src/jade/* "$LOGDIR"/jade/. -r
+    cp "$ROOT_DIR/lib/jade.jar" "$LOGDIR"/lib/. -r
+    cp "$ROOT_DIR/dockers/Dockerfile.jade" "$LOGDIR"/Dockerfile
 fi
 
 cd "$LOGDIR" || exit 1
@@ -41,7 +43,7 @@ cd "$LOGDIR" || exit 1
 DOCKER_COMPOSE_NAME="docker-compose-$XMPP-c$CONTAINERS-n$NUM_AGENTS-r$REPEATS-ms$MESSAGE_SIZE-$COMM_TYPE-g$GROUP_SIZE-m$MEMSIZE-cpu$CPUS.yaml"
 
 echo "Generating docker compose file: $DOCKER_COMPOSE_NAME"
-python3 ../../scripts/gen_compose.py "$DOCKER_COMPOSE_NAME" "$XMPP" "$CONTAINERS" "$NUM_AGENTS" "$REPEATS" "$MESSAGE_SIZE" "$COMM_TYPE" "$GROUP_SIZE" "$MEMSIZE" "$CPUS"
+python3 "$ROOT_DIR/scripts/gen_compose.py" "$DOCKER_COMPOSE_NAME" "$XMPP" "$CONTAINERS" "$NUM_AGENTS" "$REPEATS" "$MESSAGE_SIZE" "$COMM_TYPE" "$GROUP_SIZE" "$MEMSIZE" "$CPUS"
 
 if [ "$RECOMPILE" == "true" ]; then
     echo "Recompiling docker images"
@@ -52,13 +54,13 @@ docker compose -f "$DOCKER_COMPOSE_NAME" up > "logs_$DOCKER_COMPOSE_NAME.log" 2>
 for ((i=0; i<CONTAINERS; i++)); do
     CNT="mas$i"
     echo "Starting container $CNT"
-    ../../scripts/mem.sh $CNT "mem_$DOCKER_COMPOSE_NAME-$CNT.log" &
+    "$ROOT_DIR/scripts/mem.sh" "$CNT" "mem_$DOCKER_COMPOSE_NAME-$CNT.log" &
     PID=$!
     echo "Process ID for container $CNT: $PID" >> "process_ids.log"
     echo "Running container $CNT"
 done
 
-../../scripts/mem.sh serverhello "mem_$DOCKER_COMPOSE_NAME-xmpp.log" &
+"$ROOT_DIR/scripts/mem.sh" serverhello "mem_$DOCKER_COMPOSE_NAME-xmpp.log" &
 
 
 # Wait until the log file stops growing
@@ -80,15 +82,15 @@ docker compose -f "$DOCKER_COMPOSE_NAME" down
 
 
 # Stop the memory logging processes
-pkill -f "../../scripts/mem.sh $LOGDIR-mas"
+pkill -f "$ROOT_DIR/scripts/mem.sh"
 
-python3 ../../scripts/process_res.py "logs_$DOCKER_COMPOSE_NAME.log"
+python3 "$ROOT_DIR/scripts/process_res.py" "logs_$DOCKER_COMPOSE_NAME.log"
 for ((i=0; i<CONTAINERS; i++)); do
     CNT="mas$i"
-    python3 ../../scripts/process_mem.py "mem_$DOCKER_COMPOSE_NAME-$CNT.log"
+    python3 "$ROOT_DIR/scripts/process_mem.py" "mem_$DOCKER_COMPOSE_NAME-$CNT.log"
 done
 
-python3 ../../scripts/process_mem.py "mem_$DOCKER_COMPOSE_NAME-xmpp.log"
+python3 "$ROOT_DIR/scripts/process_mem.py" "mem_$DOCKER_COMPOSE_NAME-xmpp.log"
 
-cd ../..
+cd "$ROOT_DIR"
 

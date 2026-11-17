@@ -125,11 +125,51 @@ To make the repository fully reproducible in practice, the following artifacts s
 
 ## Getting Started
 
+### Python virtual environment
+
+To keep the benchmark scripts and analysis tools reproducible, the project now includes a local virtual environment configuration.
+
+1. Create the environment:
+
+```bash
+python -m venv .venv
+```
+
+On Windows PowerShell:
+
+```powershell
+py -3 -m venv .venv
+.\.venv\Scripts\Activate.ps1
+```
+
+On Linux/macOS:
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+```
+
+2. Install dependencies:
+
+```bash
+python -m pip install --upgrade pip
+python -m pip install -r requirements.txt
+```
+
+3. Use the helper script:
+
+```bash
+bash scripts/setup-venv.sh
+```
+
+This keeps all Python-based workloads and analysis scripts isolated from the global interpreter and makes the environment easy to recreate on any machine.
+
 ### Prerequisites
 
 - Docker
 - Docker Compose or another compatible container orchestration tool
 - Python (for analysis scripts)
+- Local virtual environment configured via `.venv`
 
 ### Typical workflow
 
@@ -174,6 +214,10 @@ Planned or recommended directions for further development include:
 - including more failure-oriented and long-duration scenarios,
 - expanding the metric set,
 - improving the standardization of reproducible benchmarking artifacts.
+
+## Recent project updates
+
+- 2026-11-17: added a reproducible Python virtual environment setup (`.venv`, `requirements.txt`, and `scripts/setup-venv.sh`) to standardize local development and analysis runs.
 
 ## License
 

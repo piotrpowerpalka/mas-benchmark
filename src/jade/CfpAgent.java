@@ -4,12 +4,11 @@ import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.core.behaviours.OneShotBehaviour;
+import jade.core.behaviours.TickerBehaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 
 import java.util.*;
-import java.util.concurrent.ThreadLocalRandom;
-import java.util.concurrent.TimeUnit;
 
 public class CfpAgent extends Agent {
 
@@ -20,6 +19,7 @@ public class CfpAgent extends Agent {
     private final List<String> agentsSet = new ArrayList<>();
     private final List<ACLMessage> offers = new ArrayList<>();
     private final List<ACLMessage> refusals = new ArrayList<>();
+    private final Random random = new Random();
 
     @Override
     protected void setup() {
@@ -27,6 +27,7 @@ public class CfpAgent extends Agent {
         this.repetitions = cfg.repetitionsNum;
         this.contentSize = cfg.contentSize;
         this.groupSize = cfg.groupSize;
+        this.random.setSeed(cfg.seed);
 
         int myIdx = parseAgentIndex(getLocalName());
         for (int cnt = 0; cnt < cfg.numAgents; cnt++) {
@@ -43,7 +44,7 @@ public class CfpAgent extends Agent {
         public void action() {
             // losowa próbka agentów o rozmiarze groupSize
             List<String> shuffled = new ArrayList<>(agentsSet);
-            Collections.shuffle(shuffled, ThreadLocalRandom.current());
+            Collections.shuffle(shuffled, random);
 
             List<String> grp = shuffled.subList(0, Math.min(groupSize, shuffled.size()));
             offers.clear();
@@ -72,56 +73,39 @@ public class CfpAgent extends Agent {
         @Override
         public void action() {
             ACLMessage msg = myAgent.receive(mt);
-            if (msg == null) {
-                block();
-                return;
-            }
+            if (msg != null) {
+                Tools.logMessage(msg, "R");
 
-            Tools.logMessage(msg, "R");
+                if (msg.getPerformative() == ACLMessage.PROPOSE) {
+                    offers.add(msg);
+                } else if (msg.getPerformative() == ACLMessage.REFUSE) {
+                    refusals.add(msg);
+                }
 
-            if (msg.getPerformative() == ACLMessage.PROPOSE) {
-                offers.add(msg);
-            } else if (msg.getPerformative() == ACLMessage.REFUSE) {
-                refusals.add(msg);
-            }
+                if (offers.size() + refusals.size() == groupSize && !offers.isEmpty()) {
+                    ACLMessage winner = offers.get(random.nextInt(offers.size()));
+                    offers.remove(winner);
 
-            if (offers.size() + refusals.size() == groupSize) {
-                // Python wybiera random z offers (zakłada, że offers niepuste). Dla bezpieczeństwa:
-                if (!offers.isEmpty()) {
-                    ACLMessage winOffer = offers.get(ThreadLocalRandom.current().nextInt(offers.size()));
-                    offers.remove(winOffer);
-
-                    ACLMessage accept = winOffer.createReply();
+                    ACLMessage accept = winner.createReply();
+                    accept.setSender(this.myAgent.getAID());
                     accept.setPerformative(ACLMessage.ACCEPT_PROPOSAL);
                     accept.setReplyWith("rw-" + UUID.randomUUID());
                     accept.setContent(Tools.randomContent(contentSize));
                     Tools.logMessage(accept, "S");
                     send(accept);
 
-                    for (ACLMessage off : offers) {
-                        ACLMessage rej = off.createReply();
-                        rej.setPerformative(ACLMessage.REJECT_PROPOSAL);
-                        rej.setReplyWith("rw-" + UUID.randomUUID());
-                        rej.setContent(Tools.randomContent(contentSize));
-                        Tools.logMessage(rej, "S");
-                        send(rej);
+                    for (ACLMessage offer : offers) {
+                        ACLMessage reject = offer.createReply();
+                        reject.setSender(this.myAgent.getAID());
+                        reject.setPerformative(ACLMessage.REJECT_PROPOSAL);
+                        reject.setReplyWith("rw-" + UUID.randomUUID());
+                        reject.setContent(Tools.randomContent(contentSize));
+                        Tools.logMessage(reject, "S");
+                        send(reject);
                     }
                 }
-
-                if (repetitions > 0) {
-                    repetitions--;
-                    try {
-                        // Również zatrzymuje na 500 milisekund
-                        TimeUnit.MILLISECONDS.sleep(10);
-                    } catch (InterruptedException e) {
-                        Thread.currentThread().interrupt();
-}
-                    myAgent.addBehaviour(new SendCfpBehaviour());
-                }
-                else if (repetitions == 0) {
-//                    System.out.printf("Stoping agent: %s%n", getLocalName());
-//                  myAgent.doDelete();
-                }
+            } else {
+                block();
             }
         }
     }
@@ -149,12 +133,13 @@ public class CfpAgent extends Agent {
                 ACLMessage reply = msg.createReply();
 
                 // 0.9 propose, 0.1 refuse
-                if (ThreadLocalRandom.current().nextDouble() <= 0.9) {
+                if (random.nextDouble() <= 0.9) {
                     reply.setPerformative(ACLMessage.PROPOSE);
                 } else {
                     reply.setPerformative(ACLMessage.REFUSE);
                 }
 
+                reply.setSender(this.myAgent.getAID());
                 reply.setReplyWith("rw-" + UUID.randomUUID());
                 reply.setContent(Tools.randomContent(contentSize));
                 Tools.logMessage(reply, "S");
@@ -176,8 +161,23 @@ public class CfpAgent extends Agent {
                 return;
             }
             Tools.logMessage(msg, "R");
+            myAgent.addBehaviour(new myTickerBehaviour(myAgent, Config.fromArgs(getArguments()).period));
+        }
+    }
+
+    private class myTickerBehaviour extends TickerBehaviour {
+        public myTickerBehaviour(Agent agent, long period) {
+            super(agent, period);
+        }
+
+        @Override
+        protected void onTick() {
+            CfpAgent.this.repetitions--;
             myAgent.addBehaviour(new SendCfpBehaviour());
-            repetitions--;
+
+            if (CfpAgent.this.repetitions <= 0) {
+                stop();
+            }
         }
     }
 

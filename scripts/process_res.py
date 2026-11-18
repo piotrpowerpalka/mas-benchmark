@@ -37,26 +37,24 @@ with open(input_file, 'r', encoding='utf-8') as infile:
             if not (re.fullmatch(r"agent\d+", rec[0]) and re.fullmatch(r"agent\d+", rec[1])):
                 continue
 
-            if rec[3] not in messages and rec[5] == "S":
-                messages[rec[3]] = {'sender': rec[0], 'receiver': rec[1], 'sendtime': rec[6]}
-            else:
-                if rec[3] in messages and rec[5] == "R":
-                    messages[rec[3]].update({'receivetime': rec[6]})
-
-            if rec[4] not in conversations:
-                conversations[rec[4]] = {'sender': rec[0], 'receiver': rec[1], 'sendtime': rec[6]}
-            else:   
-                conversations[rec[4]].update({'receivetime': rec[6]})
+            message = messages.setdefault(rec[3], {})
+            conversation = conversations.setdefault(rec[4], {})
+            if rec[5] == "S":
+                message.update({'sender': rec[0], 'receiver': rec[1], 'sendtime': rec[6]})
+                conversation.update({'sender': rec[0], 'receiver': rec[1], 'sendtime': rec[6]})
+            elif rec[5] == "R":
+                message.update({'receivetime': rec[6]})
+                conversation.update({'receivetime': rec[6]})
 
 #print(messages)
 #print(conversations)
 
-uuids_with_only_sendtime = [uuid for uuid, details in messages.items() if 'receivetime' not in details]
-uuidsconv_with_only_sendtime = [uuid for uuid, details in conversations.items() if 'receivetime' not in details]
+uuids_with_only_sendtime = [uuid for uuid, details in messages.items() if 'sendtime' in details and 'receivetime' not in details]
+uuidsconv_with_only_sendtime = [uuid for uuid, details in conversations.items() if 'sendtime' in details and 'receivetime' not in details]
 # print("UUIDs with only sendtime:", uuids_with_only_sendtime)
 
 for mess in messages:
-    if 'receivetime' in messages[mess]:
+    if 'sendtime' in messages[mess] and 'receivetime' in messages[mess]:
         sendtime = messages[mess]['sendtime']
         rectime  = messages[mess]['receivetime']
         xxx = pd.Timestamp(sendtime)
@@ -64,7 +62,7 @@ for mess in messages:
         diff: pd.Timedelta = yyy - xxx
         messages[mess].update({'diff': diff.total_seconds()})  # Convert to seconds
 
-    else:
+    elif 'sendtime' in messages[mess]:
         print (messages[mess])  
 
 diff_values = [messages[mess]['diff'] for mess in messages if 'diff' in messages[mess]]
@@ -73,14 +71,14 @@ print("Processed {} messages, {} conversations".format(len(messages), len(conver
 print("diff value[0:10]:", diff_values[0:10])
 
 for conv in conversations:
-    if 'receivetime' in conversations[conv]:
+    if 'sendtime' in conversations[conv] and 'receivetime' in conversations[conv]:
         sendtime = conversations[conv]['sendtime']
         rectime  = conversations[conv]['receivetime']
         xxx = pd.Timestamp(sendtime)
         yyy = pd.Timestamp(rectime)       
         diff: pd.Timedelta = yyy - xxx
         conversations[conv].update({'diff': diff.total_seconds()})  # Convert to seconds
-    else:
+    elif 'sendtime' in conversations[conv]:
         print (conversations[conv])
 
 diff_conv_values = [conversations[conv]['diff'] for conv in conversations if 'diff' in conversations[conv]]

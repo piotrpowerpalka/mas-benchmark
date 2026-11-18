@@ -1,10 +1,8 @@
-
-
-
 import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.core.behaviours.OneShotBehaviour;
+import jade.core.behaviours.TickerBehaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 
@@ -12,11 +10,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 
 public class InformAgent extends Agent {
 
-    private int repetitions;
+    public int repetitions;
     private int contentSize;
     private List<String> agentsSet = new ArrayList<>();
     private final Random random = new Random();
@@ -33,9 +30,7 @@ public class InformAgent extends Agent {
             if (cnt != myIdx) agentsSet.add("agent" + cnt);
         }
 
-        // Init: match treści "Start" (jak w SPADE templateInit.body="Start")
         addBehaviour(new ReceiveInit());
-        // Inform: match performative INFORM
         addBehaviour(new ReceiveInform());
     }
 
@@ -49,9 +44,8 @@ public class InformAgent extends Agent {
             msg.setReplyWith("rw-" + UUID.randomUUID());
             msg.setConversationId("cid-" + UUID.randomUUID());
             msg.setContent(Tools.randomContent(contentSize));
-
-            Tools.logMessage(msg, "S");
             send(msg);
+            Tools.logMessage(msg, "S");
         }
     }
 
@@ -60,33 +54,11 @@ public class InformAgent extends Agent {
 
         @Override
         public void action() {
-            // Odpowiednik: await self.receive(15)
-            ACLMessage msg = myAgent.blockingReceive(mt, 15000);
-            if (msg == null) {
-                block();
-                return;
-            }
-
+            ACLMessage msg = myAgent.receive(mt);
             if (msg != null) {
                 Tools.logMessage(msg, "R");
-                if (repetitions > 0) {
-                    repetitions--;
-                    try {
-                        TimeUnit.MILLISECONDS.sleep(10);
-                    } catch (InterruptedException e) {
-                        Thread.currentThread().interrupt();
-                    }
-                    myAgent.addBehaviour(new SendInformBehaviour());
-                }
-                
-                else if (repetitions == 0) {
-
-//                    ACLMessage fmsg = new ACLMessage(ACLMessage.INFORM);
-//                    fmsg.setSender(this.myAgent.getAID());
-//                    fmsg.addReceiver(new AID("agent-init", AID.ISLOCALNAME));
-//                    Tools.logMessage(fmsg, "S");
-//                    send(fmsg);\7
-                }
+            } else {
+                block();
             }
         }
     }
@@ -97,13 +69,28 @@ public class InformAgent extends Agent {
         @Override
         public void action() {
             ACLMessage msg = myAgent.receive(mt);
-            if (msg == null) {
+            if (msg != null) {
+                Tools.logMessage(msg, "R");
+                myAgent.addBehaviour(new myTickerBehaviour(myAgent, Config.fromArgs(getArguments()).period));  
+            } else {
                 block();
-                return;
             }
-            Tools.logMessage(msg, "R");
+        }
+    }
+
+    private class myTickerBehaviour extends TickerBehaviour {
+        public myTickerBehaviour(Agent agent, long period) {
+            super(agent, period);
+        }
+
+        @Override
+        protected void onTick() {
+            InformAgent.this.repetitions--;
             myAgent.addBehaviour(new SendInformBehaviour());
-            repetitions--;
+
+            if (InformAgent.this.repetitions <= 0) {
+                stop();
+            }
         }
     }
 

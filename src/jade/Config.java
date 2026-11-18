@@ -16,6 +16,7 @@ final class Config {
     int initAg = 1;
     String containerName = "main-container";
     long seed = 213742189290L; 
+    long period = 100L; // okres w ms dla TickerBehaviour
 
     static Config fromCli(String[] args) {
         // Minimalistyczny parser w stylu argparse (klucze dokładnie jak w Pythonie)
@@ -40,6 +41,7 @@ final class Config {
         c.initAg = Integer.parseInt(m.getOrDefault("-i", m.getOrDefault("--initag", Integer.toString(c.initAg))));
         c.containerName = m.getOrDefault("--container-name", c.containerName);
         c.seed = Long.parseLong(m.getOrDefault("--seed", Long.toString(c.seed)));
+        c.period = Long.parseLong(m.getOrDefault("-p", Long.toString(c.period)));
         return c;
     }
 
@@ -62,6 +64,8 @@ final class Config {
         c.contentSize = ((Number) m.getOrDefault("content-size", c.contentSize)).intValue();
         c.repetitionsNum = ((Number) m.getOrDefault("repetitions-num", c.repetitionsNum)).intValue();
         c.initAg = ((Number) m.getOrDefault("initag", c.initAg)).intValue();
+        c.period = ((Number) m.getOrDefault("period", c.period)).longValue();
+        c.seed = ((Number) m.getOrDefault("seed", c.seed)).longValue();
         return c;
     }
 
@@ -79,6 +83,7 @@ final class Config {
         m.put("initag", initAg);
         m.put("container-name", containerName);
         m.put("seed", seed);
+        m.put("period", period);
         return new Object[]{m};
     }
 }

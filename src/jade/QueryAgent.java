@@ -1,29 +1,29 @@
-
-
 import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.core.behaviours.OneShotBehaviour;
+import jade.core.behaviours.TickerBehaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
-
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.UUID;
-import java.util.concurrent.ThreadLocalRandom;
-import java.util.concurrent.TimeUnit;
+
 
 public class QueryAgent extends Agent {
 
     private int repetitions;
     private int contentSize;
     private List<String> agentsSet = new ArrayList<>();
+    private final Random random = new Random();
 
     @Override
     protected void setup() {
         Config cfg = Config.fromArgs(getArguments());
         this.repetitions = cfg.repetitionsNum;
         this.contentSize = cfg.contentSize;
+        this.random.setSeed(cfg.seed);
 
         int myIdx = parseAgentIndex(getLocalName());
         for (int cnt = 0; cnt < cfg.numAgents; cnt++) {
@@ -37,8 +37,7 @@ public class QueryAgent extends Agent {
     private class SendQueryBehaviour extends OneShotBehaviour {
         @Override
         public void action() {
-            String to = agentsSet.get(ThreadLocalRandom.current().nextInt(agentsSet.size()));
-
+            String to = agentsSet.get(QueryAgent.this.random.nextInt(agentsSet.size()));
             ACLMessage msg = new ACLMessage(ACLMessage.QUERY_REF); // "query"
             msg.setSender(this.myAgent.getAID());
             msg.addReceiver(new AID(to, AID.ISLOCALNAME));
@@ -60,38 +59,23 @@ public class QueryAgent extends Agent {
         @Override
         public void action() {
             ACLMessage msg = myAgent.receive(mt);
-            if (msg == null) {
-                block();
-                return;
-            }
-
             if (msg != null) {
                 Tools.logMessage(msg, "R");
 
                 if (msg.getPerformative() == ACLMessage.QUERY_REF) {
                     ACLMessage reply = msg.createReply();
+                    reply.setSender(this.myAgent.getAID());
                     reply.setPerformative(ACLMessage.INFORM);
                     reply.setReplyWith("rw-" + UUID.randomUUID());
                     reply.setContent(Tools.randomContent(contentSize));
 
                     Tools.logMessage(reply, "S");
                     send(reply);
-
-                    if (repetitions > 0) {
-                        repetitions--;
-                        try {
-                            TimeUnit.MILLISECONDS.sleep(10);
-                        } catch (InterruptedException e) {
-                            Thread.currentThread().interrupt();
-                        }
-                        myAgent.addBehaviour(new SendQueryBehaviour());
-                    }
-                    else if (repetitions == 0) {
-//                        System.out.printf("Stoping agent: %s%n", getLocalName());
-//                        myAgent.doDelete();
-                    }
                 }  
             }
+            else {
+                block();
+            }   
         }
     }
 
@@ -101,13 +85,29 @@ public class QueryAgent extends Agent {
         @Override
         public void action() {
             ACLMessage msg = myAgent.receive(mt);
-            if (msg == null) {
+            if (msg != null) {
+                Tools.logMessage(msg, "R");
+                myAgent.addBehaviour(new myTickerBehaviour(myAgent, Config.fromArgs(getArguments()).period));
+            } else {
                 block();
-                return;
             }
-            Tools.logMessage(msg, "R");
+        }
+    }
+
+    
+    private class myTickerBehaviour extends TickerBehaviour {
+        public myTickerBehaviour(Agent agent, long period) {
+            super(agent, period);
+        }
+
+        @Override
+        protected void onTick() {
+            QueryAgent.this.repetitions--;
             myAgent.addBehaviour(new SendQueryBehaviour());
-            repetitions--;
+
+            if (QueryAgent.this.repetitions <= 0) {
+                stop();
+            }
         }
     }
 

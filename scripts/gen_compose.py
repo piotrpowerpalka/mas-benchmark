@@ -1,7 +1,7 @@
 import sys
 
 
-def gen_compose(xmpp, numOfContainers, numOfAgents, repeats, messageSize, commType, groupsize, memsize="128MB", cpus="1"): 
+def gen_compose(xmpp, numOfContainers, numOfAgents, repeats, messageSize, commType, groupsize, memsize="128MB", cpus="1", period="100"): 
   """
   Generate a Docker Compose configuration file for multi-agent system (MAS) benchmark.
     This function creates a Docker Compose YAML configuration that sets up a distributed
@@ -16,6 +16,7 @@ def gen_compose(xmpp, numOfContainers, numOfAgents, repeats, messageSize, commTy
       groupsize (int or str): Size of agent groups for communication.
       memsize (str, optional): Memory limit per container. Defaults to "128MB".
       cpus (str, optional): CPU limit per container. Defaults to "1".
+      period (str, optional): Period for the ticker behavior. Defaults to "100".
     Returns:
       str: A complete Docker Compose YAML configuration as a string, including:
         - XMPP server service configuration
@@ -23,7 +24,7 @@ def gen_compose(xmpp, numOfContainers, numOfAgents, repeats, messageSize, commTy
         - Network configuration (if using Prosody)
         - Resource limits for each container
     Example:
-      >>> compose_config = gen_compose("prosody", 3, 30, 5, 1024, "tcp", 5, "256MB", "0.5")
+      >>> compose_config = gen_compose("prosody", 3, 30, 5, 1024, "tcp", 5, "256MB", "0.5", "200")
       >>> # Returns YAML string with 3 containers, 10 agents each
 
   """  
@@ -103,7 +104,7 @@ def gen_compose(xmpp, numOfContainers, numOfAgents, repeats, messageSize, commTy
         context: .
       container_name: mas{}
       hostname: mas{}
-      command: python -u main.py -f {} -t {} -n {} -r {} -x {} -i {} -c {} -g {} 
+      command: python -u main.py -f {} -t {} -n {} -r {} -x {} -i {} -c {} -g {} -p {}
       deploy:
         resources:
           limits:
@@ -111,7 +112,7 @@ def gen_compose(xmpp, numOfContainers, numOfAgents, repeats, messageSize, commTy
             cpus: {}
       depends_on:
       - serverhello
-    """.format(i, i, i, i * agentsPerContainers, (i+1) * agentsPerContainers - 1, numOfAgents, repeats, messageSize, "1" if i == numOfContainers - 1 else "0", commType, groupsize, memsize, cpus)
+    """.format(i, i, i, i * agentsPerContainers, (i+1) * agentsPerContainers - 1, numOfAgents, repeats, messageSize, "1" if i == numOfContainers - 1 else "0", commType, groupsize, period, memsize, cpus)
 
   if (xmpp == "jade"):
     for i in range(numOfContainers):
@@ -129,18 +130,18 @@ def gen_compose(xmpp, numOfContainers, numOfAgents, repeats, messageSize, commTy
               echo "Waiting for serverhello TCP 1099...";
               sleep 1;
             done
-            exec java -cp /app/jade.jar:. Main -f {} -t {} -n {} -r {} -x {} -i {} -c {} -g {} --container-name mas{}
+            exec java -cp /app/jade.jar:. Main -f {} -t {} -n {} -r {} -x {} -i {} -c {} -g {} -p {} --container-name mas{}
           '
         deploy:
           resources:
             limits:
               memory: {}
               cpus: {}
-    """.format(i, i, i, i * agentsPerContainers, (i+1) * agentsPerContainers - 1, numOfAgents, repeats, messageSize, "1" if i == numOfContainers - 1 else "0", commType, groupsize, i, memsize, cpus)
+    """.format(i, i, i, i * agentsPerContainers, (i+1) * agentsPerContainers - 1, numOfAgents, repeats, messageSize, "1" if i == numOfContainers - 1 else "0", commType, groupsize, period, i, memsize, cpus)
  
   return rv
 
-def compose_tofile(dcname, x, nc, na, repeats, ms, ct, gs, memsize, cpus):
+def compose_tofile(dcname, x, nc, na, repeats, ms, ct, gs, memsize, cpus, period):
   """
   Generate a Docker Compose configuration file with specified parameters.
 
@@ -158,25 +159,26 @@ def compose_tofile(dcname, x, nc, na, repeats, ms, ct, gs, memsize, cpus):
     gs (str): group size - only for "cfp" communication type.
     memsize (str): Memory size allocation.
     cpus (str): CPU allocation.
+    period (str): Period for the ticker behavior.
 
   Returns:
     None
 
   Side Effects:
-    Creates and writes to a file named: docker-compose-{nc}c-{na}a-{ms}ms-{ct}-{gs}g-{x}-{memsize}-{cpus}.yml
+    Creates and writes to a file named: docker-compose-{nc}c-{na}a-{ms}ms-{ct}-{gs}g-{x}-{memsize}-{cpus}-p{period}.yml
     The file contains the generated Docker Compose configuration content.
 
   Raises:
     IOError: If the file cannot be written to the filesystem.
   """
-  compose_content = gen_compose(x, nc, na, repeats, ms, ct, gs, memsize, cpus)
+  compose_content = gen_compose(x, nc, na, repeats, ms, ct, gs, memsize, cpus, period)
   with open(dcname, "w") as f:
       f.write(compose_content)
 
 
 if __name__ == "__main__":
-  if len(sys.argv) != 11:
-    print("Usage: python gen_compose.py <dcname> <xmpp> <num_containers> <num_agents> <repeats> <message_size> <comm_type> <group_size> <memsize> <cpus>")
+  if len(sys.argv) != 12:
+    print("Usage: python gen_compose.py <dcname> <xmpp> <num_containers> <num_agents> <repeats> <message_size> <comm_type> <group_size> <memsize> <cpus> <period>")
     sys.exit(1)
 
   compose_tofile(
@@ -189,6 +191,7 @@ if __name__ == "__main__":
     sys.argv[7],           # comm_type
     sys.argv[8],           # group_size
     sys.argv[9],           # memsize
-    sys.argv[10]           # cpus
+    sys.argv[10],          # cpus
+    sys.argv[11]           # period
   )
   print(f"Docker Compose file generated successfully!")

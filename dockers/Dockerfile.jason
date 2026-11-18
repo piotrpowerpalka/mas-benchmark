@@ -1,0 +1,13 @@
+FROM gradle:8.10.2-jdk21 AS build
+WORKDIR /workspace
+COPY --chown=gradle:gradle jason/ ./
+RUN gradle --no-daemon shadowJar
+
+FROM eclipse-temurin:21-jre
+WORKDIR /app
+COPY --from=build /workspace/build/libs/*-all.jar /app/jason.jar
+COPY --from=build /workspace/*.asl /app/
+COPY --from=build /workspace/*.mas2j /app/
+COPY --from=build /workspace/logging.properties /app/
+
+ENTRYPOINT ["java", "-Djava.util.logging.config.file=/app/logging.properties", "-cp", "/app/jason.jar", "jason.infra.jade.RunJadeMAS"]

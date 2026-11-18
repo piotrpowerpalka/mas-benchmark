@@ -1,6 +1,5 @@
-import asyncio
 from spade.agent import Agent
-from spade.behaviour import OneShotBehaviour, CyclicBehaviour
+from spade.behaviour import OneShotBehaviour, CyclicBehaviour, PeriodicBehaviour
 from spade.message import Message
 from spade.template import Template, ANDTemplate, ORTemplate
 from tools import *
@@ -19,6 +18,7 @@ class cfpAgent(Agent):
         self.refusals = []  # List to store refusals
 
         self.repetitions = self.get("repetitions-num")
+        self.period = self.get("period") / 1000
         self.groupsize = self.get("groupsize")
 
         self.agentsSet = []
@@ -64,7 +64,7 @@ class cfpAgent(Agent):
                     self.agent.refusals.append(msg)
 
                 # end of collecting offers and refusals
-                if len(self.agent.offers) + len(self.agent.refusals) == self.agent.groupsize:
+                if len(self.agent.offers) + len(self.agent.refusals) == self.agent.groupsize and self.agent.offers:
                     winOffer = random.choice(self.agent.offers)  # Randomly select one offer
                     self.agent.offers.remove(winOffer)  # Remove the winning offer from the list
 
@@ -82,18 +82,6 @@ class cfpAgent(Agent):
                             rplymsg.body = str(''.join(random.choices(string.ascii_letters + string.digits, k=self.agent.get("content-size"))))
                             logMessage(rplymsg, "S")    
                             await self.send(rplymsg) 
-
-                    # begin a new round of CFP
-                    if self.agent.repetitions > 0:
-                        self.agent.repetitions -= 1
-                        await asyncio.sleep(100 / 1000)
-                        self.agent.add_behaviour(self.agent.sendMessageBehaviour())
-            
-                    elif self.agent.repetitions == 0:
-                        pass
-#                        logInfoMessage("Stoping agent", self.agent.name)
-#                        await self.agent.stop()
-
 
     class sendMessageBehaviour(OneShotBehaviour):
         async def run(self):
@@ -135,6 +123,17 @@ class cfpAgent(Agent):
             msg = await self.receive()  
             if msg:
                 logMessage(msg, "R")
-                self.agent.add_behaviour(self.agent.sendMessageBehaviour())
-                self.agent.repetitions -= 1
+                self.agent.add_behaviour(self.agent.SendTickerBehaviour(period=self.agent.period))
+
+    class SendTickerBehaviour(PeriodicBehaviour):
+        async def run(self):
+            if self.agent.repetitions <= 0:
+                self.kill()
+                return
+
+            self.agent.repetitions -= 1
+            self.agent.add_behaviour(self.agent.sendMessageBehaviour())
+
+            if self.agent.repetitions <= 0:
+                self.kill()
     

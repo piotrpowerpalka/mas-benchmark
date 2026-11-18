@@ -3,7 +3,7 @@
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
 CONTAINERS=${1:-"1"}
-XMPP=${2:-"prosody"} # prosody | tigase | jade
+XMPP=${2:-"prosody"} # prosody | tigase | jade | jason
 COMM_TYPE=${3:-"inform"} # inform | query | cfp
 NUM_AGENTS=${4:-"100"}
 REPEATS=${5:-"100"}
@@ -37,6 +37,15 @@ if [ "$XMPP" == "jade" ]; then
     cp "$ROOT_DIR"/src/jade/* "$LOGDIR"/jade/. -r
     cp "$ROOT_DIR/lib/jade.jar" "$LOGDIR"/lib/. -r
     cp "$ROOT_DIR/dockers/Dockerfile.jade" "$LOGDIR"/Dockerfile
+fi
+
+if [ "$XMPP" == "jason" ]; then
+    mkdir -p "$LOGDIR/lib"
+    mkdir -p "$LOGDIR/jade"
+    cp "$ROOT_DIR"/src/jade/* "$LOGDIR"/jade/. -r
+    cp "$ROOT_DIR/lib/jade.jar" "$LOGDIR"/lib/. -r
+    cp "$ROOT_DIR/dockers/Dockerfile.jade" "$LOGDIR"/Dockerfile.jade
+    cp "$ROOT_DIR/dockers/Dockerfile.jason" "$LOGDIR"/Dockerfile.jason
 fi
 
 cd "$LOGDIR" || exit 1

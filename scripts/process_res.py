@@ -29,7 +29,8 @@ with open(input_file, 'r', encoding='utf-8') as infile:
         match = re.search(r"\| (agent.*)", line)
         if matchinit:
             rec = matchinit.group(1).split(';')
-            inits.append(rec[3])
+            if len(rec) == 4 and rec[1] in ("initializing", "running"):
+                inits.append(rec[3])
 
         if match:
             # print(match.group(1))
@@ -45,6 +46,13 @@ with open(input_file, 'r', encoding='utf-8') as infile:
             elif rec[5] == "R":
                 message.update({'receivetime': rec[6]})
                 conversation.update({'receivetime': rec[6]})
+
+if not inits:
+    raise ValueError("No initialization timestamps found in {}".format(input_file))
+
+init_start = min(inits, key=pd.Timestamp)
+init_end = max(inits, key=pd.Timestamp)
+initTime = (pd.Timestamp(init_end) - pd.Timestamp(init_start)).total_seconds()
 
 #print(messages)
 #print(conversations)
@@ -102,9 +110,8 @@ std_dev_conv_diff = np.std(diff_conv_values)
 # Save the mean and standard deviation to a text file
 output_file = 'stats_{}.txt'.format(input_name)
 with open(output_file, 'w') as outfile:
-    initTime = (pd.Timestamp(max(inits)) - pd.Timestamp(min(inits))).total_seconds()
-    outfile.write(f"Initialization started at: {min(inits)}\n")
-    outfile.write(f"Initialization ended at: {max(inits)}\n")
+    outfile.write(f"Initialization started at: {init_start}\n")
+    outfile.write(f"Initialization ended at: {init_end}\n")
     outfile.write(f"Initialization duration: {initTime} seconds\n")
     #outfile.write(f"Duration of initialization: {np.max(inits)}\n")
 

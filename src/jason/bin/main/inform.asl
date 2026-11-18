@@ -48,7 +48,7 @@ seed(213742189290).
 +!new_ids(Rw, Cid) <-
     .myLib.uuid(R);
     .nano_time(T2);
-    .concat("rw-", R, Rw)
+    .concat("rw-", R, Rw);
     Cid = cid(T2).
 
 +!new_payload(Payload) <-

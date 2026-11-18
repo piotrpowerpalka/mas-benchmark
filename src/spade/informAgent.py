@@ -1,6 +1,5 @@
-import asyncio
 from spade.agent import Agent
-from spade.behaviour import OneShotBehaviour, CyclicBehaviour
+from spade.behaviour import OneShotBehaviour, CyclicBehaviour, PeriodicBehaviour
 from spade.message import Message
 from spade.template import Template 
 from tools import *
@@ -17,6 +16,7 @@ class informAgent(Agent):
         random.seed(self.get("seed"))
 
         self.repetitions = self.get("repetitions-num")
+        self.period = self.get("period") / 1000
 
         self.agentsSet = []
         for cnt in range(0, self.get("numagents")):
@@ -53,24 +53,25 @@ class informAgent(Agent):
             msg = await self.receive(15)  # wait for a message for 15 seconds
             if msg:
                 logMessage(msg, "R")
-                
-                if self.agent.repetitions > 0:
-                    self.agent.repetitions -= 1
-                    await asyncio.sleep(100 / 1000)
-                    self.agent.add_behaviour(self.agent.sendMessageBehaviour())
-           
-                elif self.agent.repetitions == 0:
-                    pass
-#                    logInfoMessage("Stoping agent", self.agent.name)
-#                    await self.agent.stop()
     
     class ReceiveInit(CyclicBehaviour):
         async def run(self):
             msg = await self.receive(30)  # wait for a message for 300 seconds
             if msg:
                 logMessage(msg, "R")
-                self.agent.add_behaviour(self.agent.sendMessageBehaviour())
-                self.agent.repetitions -= 1
+                self.agent.add_behaviour(self.agent.SendTickerBehaviour(period=self.agent.period))
 #            else:
 #               logInfoMessage("No init message received - something is wrong", self.agent.name)
+
+    class SendTickerBehaviour(PeriodicBehaviour):
+        async def run(self):
+            if self.agent.repetitions <= 0:
+                self.kill()
+                return
+
+            self.agent.repetitions -= 1
+            self.agent.add_behaviour(self.agent.sendMessageBehaviour())
+
+            if self.agent.repetitions <= 0:
+                self.kill()
     

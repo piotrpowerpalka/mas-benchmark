@@ -22,6 +22,7 @@ The framework is demonstrated on a comparative study of:
 - **JADE**
 - **SPADE + Prosody**
 - **SPADE + Tigase**
+- **Jason on JADE infrastructure**
 
 ---
 
@@ -185,6 +186,14 @@ The runner now resolves the repository root explicitly and passes absolute paths
 6. Run the analysis scripts.
 7. Export processed metrics and plots/tables.
 
+Jason experiments can be started with the same runner, using `jason` as the
+platform argument. Jason uses the JADE main container for distributed
+communication:
+
+```bash
+bash scripts/run-exp.sh 2 jason inform 10 10 1024 false 3 100
+```
+
 ### Example placeholder commands
 
 ```bash
@@ -203,8 +212,8 @@ cat mem_stats_mem_docker-compose-<platform>-c<no-of-containers>-n<no-of-agents>-
 
 Currently thera are several current limitations of the framework and evaluation scope:
 
-- only two multi-agent platforms are compared [JADE/SPADE],
-- only two SPADE XMPP backends are considered [Prosody/Tigase],
+- only three multi-agent platforms are compared [JADE/SPADE/Jason],
+- only two SPADE XMPP backends are considered [Prosody/Tigase]; Jason uses JADE infrastructure,
 - additional dimensions such as fault tolerance, long-running endurance, discovery-service performance, and migration-related metrics are outside the present scope.
 
 ---

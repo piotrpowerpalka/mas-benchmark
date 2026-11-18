@@ -1,4 +1,4 @@
-package myLib;
+package jason.stdlib.myLib;
 
 import java.util.UUID;
 import jason.asSemantics.DefaultInternalAction;

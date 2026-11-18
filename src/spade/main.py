@@ -26,7 +26,10 @@ parser.add_argument("-x", "--content-size", type=int, help="Size of content [byt
 parser.add_argument("-r", "--repetitions-num", type=int, help="Number of repetitions", default="10")
 parser.add_argument("-i", "--initag", type=int, help="Run the initAgent", default=0)
 parser.add_argument("-e", "--seed", type=int, help="Random seed for reproducibility", default=213742189290)
+parser.add_argument("--period", type=int, help="Agent send period in milliseconds", default=100)
 args = parser.parse_args()
+if args.period <= 0:
+    parser.error("--period must be positive")
 
 
 async def main():
@@ -44,6 +47,7 @@ async def main():
     config["repetitions-num"] = args.repetitions_num
     config["groupsize"] = args.groupsize
     config["seed"] = args.seed
+    config["period"] = args.period
 
     random.seed(config["seed"])
 
@@ -61,6 +65,7 @@ async def main():
             agnt.set("content-size", config["content-size"])
             agnt.set("repetitions-num", config["repetitions-num"])
             agnt.set("seed", config["seed"])
+            agnt.set("period", config["period"])
 
             agarr.append(agnt)
 
@@ -73,6 +78,7 @@ async def main():
             agnt.set("content-size", config["content-size"])
             agnt.set("repetitions-num", config["repetitions-num"])
             agnt.set("seed", config["seed"])
+            agnt.set("period", config["period"])
 
             agarr.append(agnt)
 
@@ -86,6 +92,7 @@ async def main():
             agnt.set("content-size", config["content-size"])
             agnt.set("repetitions-num", config["repetitions-num"])
             agnt.set("seed", config["seed"])
+            agnt.set("period", config["period"])
 
             agarr.append(agnt)
 

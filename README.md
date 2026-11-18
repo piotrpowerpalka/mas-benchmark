@@ -205,8 +205,21 @@ cd logs/logs_<platform>-c<no-of-containers>-n<no-of-agents>-r<repeats>-ms<messag
 cat stats_logs_docker-compose-<platform>-c<no-of-containers>-n<no-of-agents>-r<repeats>-ms<message-size>-g<group-size>-m1GB-cpu1.yaml.log.txt
 cat mem_stats_mem_docker-compose-<platform>-c<no-of-containers>-n<no-of-agents>-r<repeats>-ms<message-size>-g<group-size>-m1GB-cpu1.yaml.mas[0..containers]log.txt
 
+# 3. Analyze a group of experiment directories together
+python3 ../../scripts/process_res_group.py ../logs_<platform>-c1-* ../logs_<platform>-c2-*
 
 ```
+
+`process_res.py` accepts one log or multiple log paths. `process_res_group.py`
+recursively finds `logs_docker-compose-*.yaml.log` in each supplied directory
+(wildcard patterns are supported). Each input log is treated as one independent
+run; retain separate log files for repeated runs of the same configuration.
+The per-run report includes latency percentiles and the current Git commit.
+When multiple logs are supplied, `comparison_stats.txt` reports run-level
+confidence intervals, matched-platform Welch tests with Holm correction,
+one-container-baseline scalability efficiency, and guarded OLS diagnostics.
+Insufficient replication or unmatched configurations are reported instead of
+being treated as statistically significant.
 ---
 ## Limitations
 

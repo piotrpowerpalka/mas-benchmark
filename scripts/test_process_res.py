@@ -42,6 +42,34 @@ class ProcessResTests(unittest.TestCase):
         self.assertLess(low, 2.0)
         self.assertGreater(high, 2.0)
 
+    def test_independent_run_count_groups_seed_replicates_by_experiment(self):
+        config = {
+            "platform": "jade",
+            "containers": 1,
+            "agents": 2,
+            "repeats": 1,
+            "message_size": 10,
+            "workload": "inform",
+            "group_size": 1,
+            "memory": "1GB",
+            "cpus": 1.0,
+            "period": None,
+            "seed": 7,
+        }
+        run = {"config": config}
+        seed_replicate = {"config": dict(config, seed=8)}
+        other_platform = {"config": dict(config, platform="jason")}
+
+        self.assertEqual(
+            process_res.independent_run_count(
+                run, [run, seed_replicate, other_platform]
+            ),
+            2,
+        )
+        self.assertEqual(
+            process_res.independent_run_count({"config": None}, [run]), 1
+        )
+
     def test_welch_test_and_holm_adjustment(self):
         result = process_res.welch_comparison([1.0, 2.0, 3.0], [5.0, 6.0, 7.0])
         self.assertIsNotNone(result)
@@ -245,6 +273,14 @@ class ProcessResTests(unittest.TestCase):
             self.assertTrue(
                 (jade_directory / ("stats_{}.txt".format(paths[0].name))).is_file()
             )
+            for path in paths:
+                report_path = path.parent / ("stats_{}.txt".format(path.name))
+                report = report_path.read_text(encoding="utf-8")
+                self.assertIn("Independent log runs supplied: 1", report)
+                self.assertIn(
+                    "Run-level confidence intervals and significance tests: unavailable",
+                    report,
+                )
             self.assertTrue(
                 (jade_directory / ("histogram{}.png".format(paths[0].name))).is_file()
             )
@@ -281,11 +317,68 @@ class ProcessResTests(unittest.TestCase):
 
         with tempfile.TemporaryDirectory() as temporary_directory:
             gen_compose._write_jason_project(
-                temporary_directory, 1, 2, 1, 10, "inform", 1, 77
+                temporary_directory, 1, 2, 1, 10, "inform", 1, 77, 250
             )
             project = Path(temporary_directory) / "jason"
-            self.assertIn("seed(77).", (project / "inform.asl").read_text(encoding="utf-8"))
+            inform = (project / "inform.asl").read_text(encoding="utf-8")
+            self.assertIn("seed(77).", inform)
+            self.assertIn("period_ms(250).", inform)
+            self.assertIn(".wait(P);", inform)
+            self.assertIn(".myLib.random_payload(Sz, S, Me, Sequence, Payload);", inform)
+            self.assertTrue((project / "myLib" / "random_payload.java").is_file())
             self.assertTrue((project / "myLib" / "timestamp.java").is_file())
+
+    def test_jason_period_is_applied_to_all_workloads(self):
+        for workload in ("inform", "query", "cfp"):
+            with tempfile.TemporaryDirectory() as temporary_directory:
+                gen_compose._write_jason_project(
+                    temporary_directory,
+                    1,
+                    2,
+                    3,
+                    10,
+                    workload,
+                    1,
+                    77,
+                    250,
+                )
+                project = Path(temporary_directory) / "jason"
+                agent_source = (project / "{}.asl".format(workload)).read_text(
+                    encoding="utf-8"
+                )
+
+            self.assertIn("period_ms(250).", agent_source)
+            self.assertIn(".wait(P);", agent_source)
+
+    def test_jason_logs_use_uuid_prefixed_ids_for_all_workloads(self):
+        for workload in ("inform", "query", "cfp"):
+            with tempfile.TemporaryDirectory() as temporary_directory:
+                gen_compose._write_jason_project(
+                    temporary_directory,
+                    1,
+                    2,
+                    3,
+                    10,
+                    workload,
+                    1,
+                    77,
+                    250,
+                )
+                project = Path(temporary_directory) / "jason"
+                agent_source = (project / "{}.asl".format(workload)).read_text(
+                    encoding="utf-8"
+                )
+                init_source = (project / "init.asl").read_text(encoding="utf-8")
+
+            for source in (agent_source, init_source):
+                self.assertIn('.concat("rw-",', source)
+                self.assertIn('.concat("cid-",', source)
+                self.assertNotRegex(
+                    source,
+                    r"(?m)^\s*(?:Rw|ReplyRw|Cid)\s*=\s*(?:rw|cid)\(",
+                )
+            self.assertIn("+start(Rw, Cid)[source(A)]", agent_source)
+            self.assertIn(".send(A, signal, start(Rw, Cid));", init_source)
 
 
 if __name__ == "__main__":

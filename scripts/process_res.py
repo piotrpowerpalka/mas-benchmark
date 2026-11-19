@@ -374,7 +374,21 @@ def save_histogram(values, output_path, title, xlabel, color):
         plt.close(figure)
 
 
-def write_run_report(run, analysis_run_count):
+def independent_run_count(run, runs):
+    config = run["config"]
+    if config is None:
+        return 1
+
+    fields = tuple(field for field in CONFIG_FIELDS if field != "seed")
+    return sum(
+        1
+        for candidate in runs
+        if candidate["config"] is not None
+        and all(candidate["config"][field] == config[field] for field in fields)
+    )
+
+
+def write_run_report(run, independent_runs_supplied):
     path = run["path"]
     output_path = path.with_name("stats_{}.txt".format(path.name))
     message = run["message_stats"]
@@ -444,9 +458,9 @@ def write_run_report(run, analysis_run_count):
             format_value(run["run_metrics"]["throughput"])
         ))
         outfile.write(
-            "  Independent log runs supplied: {}\n".format(analysis_run_count)
+            "  Independent log runs supplied: {}\n".format(independent_runs_supplied)
         )
-        if analysis_run_count < 2:
+        if independent_runs_supplied < 2:
             outfile.write(
                 "  Run-level confidence intervals and significance tests: unavailable; "
                 "supply independent log files for this workload.\n"
@@ -1053,7 +1067,7 @@ def process_logs(log_paths, comparison_output=None):
     commit, worktree_dirty = git_metadata()
     runs = [analyze_log(path, commit, worktree_dirty) for path in paths]
     for run in runs:
-        output_path = write_run_report(run, len(runs))
+        output_path = write_run_report(run, independent_run_count(run, runs))
         print("Wrote {}".format(output_path))
 
     if len(runs) > 1 or comparison_output is not None:

@@ -15,11 +15,16 @@
 +!send_starts([]) <- true.
 
 +!send_starts([A|Rest]) <-
-    .nano_time(T);
-    Rw = rw(T);
-    !log_send(A, start, Rw, none);
-    .send(A, signal, start);
+    !new_ids(Rw, Cid);
+    !log_send(A, start, Rw, Cid);
+    .send(A, signal, start(Rw, Cid));
     !send_starts(Rest).
+
++!new_ids(Rw, Cid) <-
+    .myLib.uuid(RwId);
+    .concat("rw-", RwId, Rw);
+    .myLib.uuid(CidId);
+    .concat("cid-", CidId, Cid).
 
 +!log_send(To, Perf, Rw, Cid) <-
     .my_name(Me);

@@ -1,6 +1,7 @@
 repetitions_left(100).
 content_size(1024).
 seed(213742189290).
+period_ms(100).
 
 !boot.
 
@@ -10,32 +11,32 @@ seed(213742189290).
     .set_random_seed(S);
     !log_init(running).
 
-+start[source(A)] <-
-    !log_recv(A, start, none, none);
-    ?repetitions_left(R);
-    if (R > 0) {
-        R1 = R - 1;
-        .abolish(repetitions_left(_));
-        +repetitions_left(R1);
-        !send_inform;
-    }.
++start(Rw, Cid)[source(A)] <-
+    !log_recv(A, start, Rw, Cid);
+    !send_periodic_informs.
 
 +inform_msg(Cid, Rw, Payload)[source(A)] <-
-    !log_recv(A, inform, Rw, Cid);
+    !log_recv(A, inform, Rw, Cid).
+
++!send_periodic_informs <-
     ?repetitions_left(R);
     if (R > 0) {
+        ?period_ms(P);
+        .wait(P);
+        !send_inform(R);
         R1 = R - 1;
         .abolish(repetitions_left(_));
         +repetitions_left(R1);
-        !send_inform;
-    } else {
-        !stop_me;
+        !send_periodic_informs;
     }.
 
-+!send_inform <-
++!send_inform(Sequence) <-
     !pick_random_other(To);
     !new_ids(Rw, Cid);
-    !new_payload(Payload);
+    ?content_size(Sz);
+    ?seed(S);
+    .my_name(Me);
+    .myLib.random_payload(Sz, S, Me, Sequence, Payload);
     !log_send(To, inform, Rw, Cid);
     .send(To, signal, inform_msg(Cid, Rw, Payload)).
 
@@ -46,15 +47,10 @@ seed(213742189290).
     .random(Others, To).
 
 +!new_ids(Rw, Cid) <-
-    .myLib.uuid(R);
-    .nano_time(T2);
-    .concat("rw-", R, Rw);
-    Cid = cid(T2).
-
-+!new_payload(Payload) <-
-    ?content_size(Sz);
-    .nano_time(T);
-    Payload = payload(Sz, T).
+    .myLib.uuid(RwId);
+    .concat("rw-", RwId, Rw);
+    .myLib.uuid(CidId);
+    .concat("cid-", CidId, Cid).
 
 +!log_send(To, Perf, Rw, Cid) <-
     .my_name(Me);
@@ -70,8 +66,3 @@ seed(213742189290).
     .my_name(Me);
     .myLib.timestamp(Timestamp);
     .println("init;",State,";",Me,";",Timestamp).
-
-+!stop_me <-
-    .my_name(Me);
-    .println("info;Stoping agent;",Me);
-    .kill_agent(Me).

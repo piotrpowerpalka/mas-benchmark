@@ -46,8 +46,9 @@ of Jason agent containers. No Jason CLI, Gradle, or JDK installation is needed
 on the host; Docker is required. The workload can be `inform`, `query`, or
 `cfp`. The generated MAS project assigns each agent to a container and waits
 for all workers to signal readiness before starting the workload. Jason's
-plans are event-driven, so the runner's `period` argument does not affect
-Jason execution.
+inform, query, and CFP workloads initiate the configured number of operations
+per agent at the runner's `period` interval. Receivers continue handling
+in-flight protocol messages after the final initiation.
 
 ## What is preserved
 
@@ -60,4 +61,6 @@ Jason execution.
 
 ## Deliberate adaptation
 
-In SPADE the body was a random alphanumeric string of a configured byte size. In this Jason version the body is represented symbolically as `payload(Size, Stamp)`. This preserves the protocol shape and the size parameter in a Jason-friendly way without adding Java helper classes.
+Inform payloads are random alphanumeric strings of the configured length, matching the payload content used by JADE and SPADE. Jason includes the protocol identifiers in the message term, so serialized messages have additional framework overhead beyond the payload itself.
+
+Message logs use UUID-based `rw-...` reply identifiers and `cid-...` conversation identifiers, matching the JADE and SPADE log fields.

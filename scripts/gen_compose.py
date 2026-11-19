@@ -12,7 +12,17 @@ def _replace_jason_belief(text, belief, value, filename):
   return updated
 
 
-def _write_jason_project(output_dir, numOfContainers, numOfAgents, repeats, messageSize, commType, groupsize, seed):
+def _write_jason_project(
+  output_dir,
+  numOfContainers,
+  numOfAgents,
+  repeats,
+  messageSize,
+  commType,
+  groupsize,
+  seed,
+  period="100",
+):
   seed = int(seed)
   if commType not in ("inform", "query", "cfp"):
     raise ValueError("Unsupported Jason communication type: {}".format(commType))
@@ -41,6 +51,11 @@ def _write_jason_project(output_dir, numOfContainers, numOfAgents, repeats, mess
   library_dir = project_dir / "myLib"
   library_dir.mkdir(exist_ok=True)
   shutil.copy2(source_dir / "myLib" / "uuid.java", library_dir / "uuid.java")
+  if commType == "inform":
+    shutil.copy2(
+      source_dir / "myLib" / "random_payload.java",
+      library_dir / "random_payload.java",
+    )
   shutil.copy2(source_dir / "myLib" / "timestamp.java", library_dir / "timestamp.java")
 
   init_path = project_dir / "init.asl"
@@ -52,6 +67,7 @@ def _write_jason_project(output_dir, numOfContainers, numOfAgents, repeats, mess
   agent_text = _replace_jason_belief(agent_text, "repetitions_left", repeats, agent_path.name)
   agent_text = _replace_jason_belief(agent_text, "content_size", messageSize, agent_path.name)
   agent_text = _replace_jason_belief(agent_text, "seed", seed, agent_path.name)
+  agent_text = _replace_jason_belief(agent_text, "period_ms", period, agent_path.name)
   if commType == "cfp":
     agent_text = _replace_jason_belief(agent_text, "groupsize", groupsize, agent_path.name)
 
@@ -353,7 +369,9 @@ def compose_tofile(dcname, x, nc, na, repeats, ms, ct, gs, memsize, cpus, period
   """
   compose_content = gen_compose(x, nc, na, repeats, ms, ct, gs, memsize, cpus, period, seed)
   if x == "jason":
-    _write_jason_project(Path(dcname).resolve().parent, nc, na, repeats, ms, ct, gs, seed)
+    _write_jason_project(
+      Path(dcname).resolve().parent, nc, na, repeats, ms, ct, gs, seed, period
+    )
   with open(dcname, "w") as f:
       f.write(compose_content)
 

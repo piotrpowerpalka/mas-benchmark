@@ -1,6 +1,7 @@
 repetitions_left(10).
 content_size(1024).
 seed(213742189290).
+period_ms(100).
 
 !boot.
 
@@ -10,36 +11,28 @@ seed(213742189290).
     .set_random_seed(S);
     !log_init(running).
 
-+start[source(A)] <-
-    !log_recv(A, start, none, none);
++start(Rw, Cid)[source(A)] <-
+    !log_recv(A, start, Rw, Cid);
     ?repetitions_left(R);
-    if (R > 0) {
-        R1 = R - 1;
-        .abolish(repetitions_left(_));
-        +repetitions_left(R1);
-        !send_query;
-    }.
+    !send_periodic_queries(R).
+
++!send_periodic_queries(0) <- true.
+
++!send_periodic_queries(R) : R > 0 <-
+    ?period_ms(P);
+    .wait(P);
+    !send_query;
+    R1 = R - 1;
+    !send_periodic_queries(R1).
 
 +query_msg(Cid, Rw, Payload)[source(A)] <-
     !log_recv(A, query, Rw, Cid);
     !new_payload(ReplyPayload);
-    .nano_time(T);
-    ReplyRw = rw(T);
+    !new_rw(ReplyRw);
     !log_send(A, inform, ReplyRw, Cid);
-    .send(A, signal, inform_msg(Cid, ReplyRw, ReplyPayload));
-    ?repetitions_left(R);
-    if (R > 0) {
-        R1 = R - 1;
-        .abolish(repetitions_left(_));
-        +repetitions_left(R1);
-        !send_query;
-    }.
+    .send(A, signal, inform_msg(Cid, ReplyRw, ReplyPayload)).
 
-+inform_msg(Cid, Rw, Payload)[source(A)] : repetitions_left(0) <-
-    !log_recv(A, inform, Rw, Cid);
-    !stop_me.
-
-+inform_msg(Cid, Rw, Payload)[source(A)] : repetitions_left(R) & R > 0 <-
++inform_msg(Cid, Rw, Payload)[source(A)] <-
     !log_recv(A, inform, Rw, Cid).
 
 +!send_query <-
@@ -56,10 +49,14 @@ seed(213742189290).
     .random(Others, To).
 
 +!new_ids(Rw, Cid) <-
-    .nano_time(T1);
-    .nano_time(T2);
-    Rw = rw(T1);
-    Cid = cid(T2).
+    .myLib.uuid(RwId);
+    .concat("rw-", RwId, Rw);
+    .myLib.uuid(CidId);
+    .concat("cid-", CidId, Cid).
+
++!new_rw(Rw) <-
+    .myLib.uuid(Id);
+    .concat("rw-", Id, Rw).
 
 +!new_payload(Payload) <-
     ?content_size(Sz);
@@ -80,8 +77,3 @@ seed(213742189290).
     .my_name(Me);
     .myLib.timestamp(Timestamp);
     .println("init;",State,";",Me,";",Timestamp).
-
-+!stop_me <-
-    .my_name(Me);
-    .println("info;Stoping agent;",Me);
-    .kill_agent(Me).

@@ -1,0 +1,61 @@
+Benchmark analysis
+Git commit: 587ce21b4c547435f65f869adf2a280e07a38926
+Git worktree dirty: yes
+Input logs: 3
+Each input log is treated as one independent run. Message observations within a log are not treated as independent experimental replicates.
+
+Input files:
+  C:\Users\piotr\git\mas-benchmark\logs\logs_jason-c2-n10-r10-ms1024-cfp-g3-m1GB-cpu1-p500-seed2138\logs_docker-compose-jason-c2-n10-r10-ms1024-cfp-g3-m1GB-cpu1-p500-seed2138.yaml.log | commit=587ce21b4c547435f65f869adf2a280e07a38926 | config=platform=jason, containers=2, agents=10, repeats=10, message_size=1024, workload=cfp, group_size=3, memory=1GB, cpus=1, period=500, seed=2138
+  C:\Users\piotr\git\mas-benchmark\logs\logs_jason-c2-n10-r10-ms1024-cfp-g3-m1GB-cpu1-p500-seed2139\logs_docker-compose-jason-c2-n10-r10-ms1024-cfp-g3-m1GB-cpu1-p500-seed2139.yaml.log | commit=587ce21b4c547435f65f869adf2a280e07a38926 | config=platform=jason, containers=2, agents=10, repeats=10, message_size=1024, workload=cfp, group_size=3, memory=1GB, cpus=1, period=500, seed=2139
+  C:\Users\piotr\git\mas-benchmark\logs\logs_jason-c2-n10-r10-ms1024-cfp-g3-m1GB-cpu1-p500-seed424267\logs_docker-compose-jason-c2-n10-r10-ms1024-cfp-g3-m1GB-cpu1-p500-seed424267.yaml.log | commit=587ce21b4c547435f65f869adf2a280e07a38926 | config=platform=jason, containers=2, agents=10, repeats=10, message_size=1024, workload=cfp, group_size=3, memory=1GB, cpus=1, period=500, seed=424267
+Run-level descriptive statistics (each input file is one independent run)
+
+Configuration: platform=jason, containers=2, agents=10, repeats=10, message_size=1024, workload=cfp, group_size=3, memory=1GB, cpus=1, period=500, seed=2138
+  mean_latency [µs]: n_runs=1, mean=15737.8, sample_sd=n/a, 95%_CI=[n/a, n/a]
+    CI unavailable: at least two independent runs with this metric are required.
+  p95_latency [µs]: n_runs=1, mean=89515, sample_sd=n/a, 95%_CI=[n/a, n/a]
+    CI unavailable: at least two independent runs with this metric are required.
+  init_duration [s]: n_runs=1, mean=0.159331, sample_sd=n/a, 95%_CI=[n/a, n/a]
+    CI unavailable: at least two independent runs with this metric are required.
+  throughput [messages/s]: n_runs=1, mean=162.363, sample_sd=n/a, 95%_CI=[n/a, n/a]
+    CI unavailable: at least two independent runs with this metric are required.
+  message_loss_rate: n_runs=1, mean=0, sample_sd=n/a, 95%_CI=[n/a, n/a]
+    CI unavailable: at least two independent runs with this metric are required.
+
+Configuration: platform=jason, containers=2, agents=10, repeats=10, message_size=1024, workload=cfp, group_size=3, memory=1GB, cpus=1, period=500, seed=2139
+  mean_latency [µs]: n_runs=1, mean=11450.9, sample_sd=n/a, 95%_CI=[n/a, n/a]
+    CI unavailable: at least two independent runs with this metric are required.
+  p95_latency [µs]: n_runs=1, mean=84358, sample_sd=n/a, 95%_CI=[n/a, n/a]
+    CI unavailable: at least two independent runs with this metric are required.
+  init_duration [s]: n_runs=1, mean=0.179571, sample_sd=n/a, 95%_CI=[n/a, n/a]
+    CI unavailable: at least two independent runs with this metric are required.
+  throughput [messages/s]: n_runs=1, mean=160.511, sample_sd=n/a, 95%_CI=[n/a, n/a]
+    CI unavailable: at least two independent runs with this metric are required.
+  message_loss_rate: n_runs=1, mean=0, sample_sd=n/a, 95%_CI=[n/a, n/a]
+    CI unavailable: at least two independent runs with this metric are required.
+
+Configuration: platform=jason, containers=2, agents=10, repeats=10, message_size=1024, workload=cfp, group_size=3, memory=1GB, cpus=1, period=500, seed=424267
+  mean_latency [µs]: n_runs=1, mean=20899.2, sample_sd=n/a, 95%_CI=[n/a, n/a]
+    CI unavailable: at least two independent runs with this metric are required.
+  p95_latency [µs]: n_runs=1, mean=86618.2, sample_sd=n/a, 95%_CI=[n/a, n/a]
+    CI unavailable: at least two independent runs with this metric are required.
+  init_duration [s]: n_runs=1, mean=0.080607, sample_sd=n/a, 95%_CI=[n/a, n/a]
+    CI unavailable: at least two independent runs with this metric are required.
+  throughput [messages/s]: n_runs=1, mean=168.509, sample_sd=n/a, 95%_CI=[n/a, n/a]
+    CI unavailable: at least two independent runs with this metric are required.
+  message_loss_rate: n_runs=1, mean=0, sample_sd=n/a, 95%_CI=[n/a, n/a]
+    CI unavailable: at least two independent runs with this metric are required.
+
+Matched platform comparisons
+Method: two-sided Welch t-tests on independent per-log run metrics; 95% Welch confidence intervals for mean differences; Holm adjustment within each matched configuration and metric. Tests are approximate; interpret results cautiously when replication is low.
+Latency metrics and differences are in microseconds; initialization time is in seconds.
+Difference direction is platform A minus platform B.
+No matched workload configurations with at least two platforms were supplied.
+
+Scalability efficiency
+For fixed workload dimensions, throughput speedup = mean throughput at C containers / mean throughput at 1 container; efficiency = speedup / C * 100%.
+Unavailable: matching one-container baseline logs were not supplied.
+
+Run-level OLS regression diagnostics
+Predictors: varying container count, agent count, message size and group size, plus platform/workload indicators when they vary. Each log contributes one row.
+Regression unavailable: no workload or platform predictors vary across runs.

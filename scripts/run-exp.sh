@@ -3,7 +3,7 @@
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
 CONTAINERS=${1:-"1"}
-XMPP=${2:-"prosody"} # prosody | tigase | jade | jason
+XMPP=${2:-"prosody"} # prosody | tigase | jade | jason | uagents
 COMM_TYPE=${3:-"inform"} # inform | query | cfp
 NUM_AGENTS=${4:-"100"}
 REPEATS=${5:-"100"}
@@ -49,6 +49,12 @@ if [ "$XMPP" == "jason" ]; then
     cp "$ROOT_DIR/dockers/Dockerfile.jason" "$LOGDIR"/Dockerfile.jason
 fi
 
+if [ "$XMPP" == "uagents" ]; then
+    cp "$ROOT_DIR/src/uagents/main.py" "$LOGDIR"/main.py
+    cp "$ROOT_DIR/src/uagents/requirements.txt" "$LOGDIR"/requirements.txt
+    cp "$ROOT_DIR/dockers/Dockerfile.uagents" "$LOGDIR"/Dockerfile.uagents
+fi
+
 cd "$LOGDIR" || exit 1
 
 DOCKER_COMPOSE_NAME="docker-compose-$XMPP-c$CONTAINERS-n$NUM_AGENTS-r$REPEATS-ms$MESSAGE_SIZE-$COMM_TYPE-g$GROUP_SIZE-m$MEMSIZE-cpu$CPUS-p$PERIOD-seed$SEED.yaml"
@@ -71,7 +77,9 @@ for ((i=0; i<CONTAINERS; i++)); do
     echo "Running container $CNT"
 done
 
-"$ROOT_DIR/scripts/mem.sh" serverhello "mem_$DOCKER_COMPOSE_NAME-xmpp.log" &
+if [ "$XMPP" != "uagents" ]; then
+    "$ROOT_DIR/scripts/mem.sh" serverhello "mem_$DOCKER_COMPOSE_NAME-xmpp.log" &
+fi
 
 
 # Wait until the log file stops growing
@@ -101,7 +109,9 @@ for ((i=0; i<CONTAINERS; i++)); do
     python3 "$ROOT_DIR/scripts/process_mem.py" "$ROOT_DIR/logs/$LOGDIR/mem_$DOCKER_COMPOSE_NAME-$CNT.log"
 done
 
-python3 "$ROOT_DIR/scripts/process_mem.py" "$ROOT_DIR/logs/$LOGDIR/mem_$DOCKER_COMPOSE_NAME-xmpp.log"
+if [ "$XMPP" != "uagents" ]; then
+    python3 "$ROOT_DIR/scripts/process_mem.py" "$ROOT_DIR/logs/$LOGDIR/mem_$DOCKER_COMPOSE_NAME-xmpp.log"
+fi
 
 cd "$ROOT_DIR"
 

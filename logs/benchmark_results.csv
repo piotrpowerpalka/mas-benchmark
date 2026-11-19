@@ -1,0 +1,4 @@
+﻿agents,repetitions,containers,int protocol,message size,platform,where,seed,Initialization time [s],Simulation time [s],latency [µs],Median latency [µs],Stddev [µs],Shapiro-Wilk,Max memory [MiB],Avg memory [MiB],CPU in top 5% [threshold %],Messages lost,Messages successful,Messages lost %
+10,10,2,cfp,1024,jason,logs_jason-c2-n10-r10-ms1024-cfp-g3-m1GB-cpu1-p500-seed2138,2138,0.159331,4.871814,15737.825537294564,2407.0,31848.261637209765,0.523649140902059,86.75,63.425633802816904,38.375,0,791,0.0
+10,10,2,cfp,1024,jason,logs_jason-c2-n10-r10-ms1024-cfp-g3-m1GB-cpu1-p500-seed2139,2139,0.179571,4.9093219999999995,11450.94543147208,2262.0,25073.809169274115,0.44302563629879843,88.05,65.11126760563378,37.65,0,788,0.0
+10,10,2,cfp,1024,jason,logs_jason-c2-n10-r10-ms1024-cfp-g3-m1GB-cpu1-p500-seed424267,424267,0.080607,4.83061,20899.184275184274,2515.0,32156.562483148402,0.6748504349689761,86.89,64.69958333333332,41.856,0,814,0.0

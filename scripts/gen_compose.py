@@ -147,7 +147,7 @@ def gen_compose(xmpp, numOfContainers, numOfAgents, repeats, messageSize, commTy
     This function creates a Docker Compose YAML configuration that sets up a distributed
     multi-agent system with the selected transport/platform and multiple MAS containers.
     Args:
-      xmpp (str): Platform type: "prosody", "tigase", "jade", or "jason".
+      xmpp (str): Platform type: "prosody", "tigase", "jade", "jason", or "uagents".
       numOfContainers (int): Number of MAS containers to generate in the composition.
       numOfAgents (int): Total number of agents to distribute across containers.
       repeats (int): Number of times to repeat the benchmark/test.
@@ -170,6 +170,14 @@ def gen_compose(xmpp, numOfContainers, numOfAgents, repeats, messageSize, commTy
 
   """  
   seed = int(seed)
+  if numOfContainers <= 0 or numOfAgents <= 0:
+    raise ValueError("At least one container and one agent are required")
+  if xmpp == "uagents" and numOfAgents < 2:
+    raise ValueError("uAgents requires at least two agents")
+  if xmpp == "uagents" and numOfAgents < numOfContainers:
+    raise ValueError("uAgents requires at least one agent per container")
+  if xmpp == "uagents" and commType not in ("inform", "query", "cfp"):
+    raise ValueError("Unsupported uAgents workload: {}".format(commType))
   rv = ""
   agentsPerContainers = numOfAgents // numOfContainers
 
@@ -255,10 +263,14 @@ def gen_compose(xmpp, numOfContainers, numOfAgents, repeats, messageSize, commTy
             memory: 128MB
 """
 
+  header_uagents = """services:
+"""
+
   if (xmpp == "prosody"):  rv += header_prosody
   elif (xmpp == "tigase"): rv += header_tigase
   elif (xmpp == "jade"):   rv += header_jade
   elif (xmpp == "jason"):  rv += header_jason
+  elif (xmpp == "uagents"): rv += header_uagents
   else:
     raise ValueError("Unsupported platform type: {}".format(xmpp))
 
@@ -334,6 +346,60 @@ def gen_compose(xmpp, numOfContainers, numOfAgents, repeats, messageSize, commTy
             memory: {}
             cpus: {}
     """.format(i, i, i, i, memsize, cpus)
+
+  if (xmpp == "uagents"):
+    for i in range(numOfContainers):
+        rv += """
+    mas{}:
+      image: uagentsmas:latest
+      build:
+        context: .
+        dockerfile: Dockerfile.uagents
+      container_name: mas{}
+      hostname: mas{}
+      command:
+        - python
+        - -u
+        - main.py
+        - --agent-count
+        - "{}"
+        - --container-count
+        - "{}"
+        - --container-index
+        - "{}"
+        - --workload
+        - {}
+        - --repeats
+        - "{}"
+        - --message-size
+        - "{}"
+        - --group-size
+        - "{}"
+        - --period-ms
+        - "{}"
+        - --seed
+        - "{}"
+      deploy:
+        resources:
+          limits:
+            memory: {}
+            cpus: {}
+    """.format(
+            i,
+            i,
+            i,
+            numOfAgents,
+            numOfContainers,
+            i,
+            commType,
+            repeats,
+            messageSize,
+            groupsize,
+            period,
+            seed,
+            memsize,
+            cpus,
+        )
 
   return rv
 

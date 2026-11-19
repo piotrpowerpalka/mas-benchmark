@@ -23,6 +23,7 @@ The framework is demonstrated on a comparative study of:
 - **SPADE + Prosody**
 - **SPADE + Tigase**
 - **Jason on JADE infrastructure**
+- **uAgents**
 
 ---
 
@@ -200,6 +201,19 @@ The optional tenth argument sets the random seed; it defaults to
 bash scripts/run-exp.sh 2 jason inform 10 10 1024 false 3 100 42
 ```
 
+uAgents experiments use the same runner. The Docker image pins `uagents` to
+version `0.26.1` on Python 3.11. Each MAS container runs a Bureau and uses a
+static in-network resolver, so the benchmark does not depend on external
+Almanac registration or agent-status services:
+
+```bash
+bash scripts/run-exp.sh 2 uagents query 10 10 1024 false 3 100 42
+```
+
+uAgents requires at least one agent per container. Agents in the same Bureau
+use uAgents' local dispatcher; messages between containers use its HTTP
+`/submit` endpoint. Thus the transport path depends on container placement.
+
 ### Example placeholder commands
 
 ```bash
@@ -245,10 +259,10 @@ missing precision.
 ---
 ## Limitations
 
-Currently thera are several current limitations of the framework and evaluation scope:
+The framework and evaluation scope have several limitations:
 
-- only three multi-agent platforms are compared [JADE/SPADE/Jason],
-- only two SPADE XMPP backends are considered [Prosody/Tigase]; Jason uses JADE infrastructure,
+- the implemented platforms are JADE, SPADE, Jason, and uAgents; the SPADE variants use Prosody or Tigase, while Jason uses JADE infrastructure,
+- uAgents uses its local dispatcher for agents in one Bureau and HTTP between containers, so results depend on placement,
 - additional dimensions such as fault tolerance, long-running endurance, discovery-service performance, and migration-related metrics are outside the present scope.
 
 ---

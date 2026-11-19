@@ -36,6 +36,12 @@ class ProcessResTests(unittest.TestCase):
         )
         self.assertIsNone(process_res.parse_config(path)["seed"])
 
+    def test_parse_config_accepts_uagents_platform(self):
+        path = Path(
+            "logs_docker-compose-uagents-c2-n5-r3-ms1024-cfp-g2-m1GB-cpu1-p250-seed77.yaml.log"
+        )
+        self.assertEqual(process_res.parse_config(path)["platform"], "uagents")
+
     def test_confidence_interval_requires_independent_replicates(self):
         self.assertEqual(process_res.mean_confidence_interval([3.0]), (None, None))
         low, high = process_res.mean_confidence_interval([1.0, 2.0, 3.0])
@@ -126,6 +132,31 @@ class ProcessResTests(unittest.TestCase):
             run = process_res.analyze_log(log_path, "test-commit", False)
 
         self.assertEqual(run["message_stats"]["mean"], 3.0)
+
+    def test_analyze_uagents_log_format_and_uuid_identifiers(self):
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            log_path = Path(temporary_directory) / (
+                "logs_docker-compose-uagents-c1-n2-r1-ms10-inform-g1-m1GB-cpu1-seed5.yaml.log"
+            )
+            log_path.write_text(
+                "\n".join(
+                    [
+                        "mas0 | init;initializing;agent0;2025-01-01T10:00:00.000000",
+                        "mas0 | init;running;agent0;2025-01-01T10:00:00.000001",
+                        "mas0 | agent0;agent1;inform;rw-00000000-0000-0000-0000-000000000001;cid-00000000-0000-0000-0000-000000000002;S;2025-01-01T10:00:00.123456",
+                        "mas0 | agent0;agent1;inform;rw-00000000-0000-0000-0000-000000000001;cid-00000000-0000-0000-0000-000000000002;R;2025-01-01T10:00:00.123956",
+                        "",
+                    ]
+                ),
+                encoding="utf-8",
+            )
+
+            run = process_res.analyze_log(log_path, "test-commit", False)
+
+        self.assertEqual(run["config"]["platform"], "uagents")
+        self.assertEqual(run["message_stats"]["count"], 1)
+        self.assertEqual(run["message_stats"]["mean"], 500.0)
+        self.assertEqual(run["messages_lost"], 0)
 
     def test_timestamp_parser_handles_quoted_and_epoch_microsecond_values(self):
         expected = process_res.pd.Timestamp("2025-01-01T10:00:00.123456")
@@ -327,6 +358,37 @@ class ProcessResTests(unittest.TestCase):
             self.assertIn(".myLib.random_payload(Sz, S, Me, Sequence, Payload);", inform)
             self.assertTrue((project / "myLib" / "random_payload.java").is_file())
             self.assertTrue((project / "myLib" / "timestamp.java").is_file())
+
+    def test_uagents_compose_uses_agents_without_a_server_container(self):
+        compose = gen_compose.gen_compose(
+            "uagents",
+            2,
+            5,
+            3,
+            1024,
+            "cfp",
+            2,
+            seed=77,
+            period=250,
+        )
+
+        self.assertIn("mas0:", compose)
+        self.assertIn("mas1:", compose)
+        self.assertIn("dockerfile: Dockerfile.uagents", compose)
+        self.assertIn('- "5"', compose)
+        self.assertIn("- cfp", compose)
+        self.assertIn('- "77"', compose)
+        self.assertNotIn("serverhello", compose)
+
+    def test_uagents_compose_requires_an_agent_per_container(self):
+        with self.assertRaisesRegex(ValueError, "at least one agent per container"):
+            gen_compose.gen_compose("uagents", 3, 2, 1, 10, "inform", 1)
+
+    def test_uagents_compose_requires_multiple_agents_and_known_workloads(self):
+        with self.assertRaisesRegex(ValueError, "at least two agents"):
+            gen_compose.gen_compose("uagents", 1, 1, 1, 10, "inform", 1)
+        with self.assertRaisesRegex(ValueError, "Unsupported uAgents workload"):
+            gen_compose.gen_compose("uagents", 1, 2, 1, 10, "unknown", 1)
 
     def test_jason_period_is_applied_to_all_workloads(self):
         for workload in ("inform", "query", "cfp"):

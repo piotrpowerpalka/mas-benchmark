@@ -17,7 +17,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import scipy.stats as stats
-import seaborn as sns
 
 
 AGENT_RE = re.compile(r"agent\d+")
@@ -333,32 +332,46 @@ def format_config(config):
 
 
 def save_histogram(values, output_path, title, xlabel, color):
-    if not values:
-        return
     data = np.asarray(values, dtype=float)
-    is_constant = bool(np.all(data == data[0]))
-    sns.histplot(
-        data,
-        kde=len(data) > 1 and not is_constant,
-        label="Observed",
-        stat="density",
-        color=color,
-    )
-    standard_deviation = float(np.std(data))
-    if standard_deviation > 0:
-        x_values = np.linspace(float(np.min(data)), float(np.max(data)), 500)
-        plt.plot(
-            x_values,
-            stats.norm.pdf(x_values, float(np.mean(data)), standard_deviation),
-            label="Normal reference",
-            color="red",
-        )
-    plt.title(title)
-    plt.xlabel(xlabel)
-    plt.ylabel("Density")
-    plt.legend()
-    plt.savefig(str(output_path))
-    plt.close()
+    if data.ndim != 1 or not np.all(np.isfinite(data)):
+        raise ValueError("Histogram values must be a one-dimensional finite sequence.")
+
+    figure, axis = plt.subplots()
+    try:
+        axis.set_title("{} (n={})".format(title, len(data)))
+        axis.set_xlabel(xlabel)
+        axis.set_ylabel("Messages")
+        if data.size == 0:
+            axis.text(
+                0.5,
+                0.5,
+                "No successful latency observations",
+                horizontalalignment="center",
+                verticalalignment="center",
+                transform=axis.transAxes,
+            )
+            axis.set_yticks([])
+        else:
+            axis.hist(
+                data,
+                bins="auto",
+                color=color,
+                edgecolor="black",
+                alpha=0.75,
+                label="Observed",
+            )
+            median = float(np.median(data))
+            p95 = float(np.percentile(data, 95))
+            if median == p95:
+                axis.axvline(median, color="black", linestyle="--", label="Median / p95")
+            else:
+                axis.axvline(median, color="black", linestyle="--", label="Median")
+                axis.axvline(p95, color="red", linestyle=":", label="p95")
+            axis.legend()
+        figure.tight_layout()
+        figure.savefig(str(output_path))
+    finally:
+        plt.close(figure)
 
 
 def write_run_report(run, analysis_run_count):

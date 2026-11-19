@@ -110,6 +110,22 @@ class ProcessResTests(unittest.TestCase):
             process_res.pd.Timestamp(1735725600123456, unit="us"),
         )
 
+    def test_histogram_is_written_for_empty_and_constant_samples(self):
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            root = Path(temporary_directory)
+            empty_path = root / "empty.png"
+            constant_path = root / "constant.png"
+
+            process_res.save_histogram([], empty_path, "Empty latency", "Latency [µs]", "blue")
+            process_res.save_histogram(
+                [5.0, 5.0, 5.0], constant_path, "Constant latency", "Latency [µs]", "orange"
+            )
+
+            for output_path in (empty_path, constant_path):
+                self.assertTrue(output_path.is_file())
+                self.assertGreater(output_path.stat().st_size, 8)
+                self.assertEqual(output_path.read_bytes()[:8], b"\x89PNG\r\n\x1a\n")
+
     def test_group_collector_finds_logs_recursively(self):
         with tempfile.TemporaryDirectory() as temporary_directory:
             root = Path(temporary_directory)

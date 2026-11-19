@@ -226,6 +226,9 @@ requested per-run columns; its `where` value is the parent experiment-directory
 name. Memory values are calculated across the run's available MAS and XMPP
 Docker-stat logs: max is the maximum observed value and average is the pooled
 sample mean. The CPU threshold is their pooled 95th percentile.
+Message and conversation latency histograms show observation counts and mark
+the median and 95th percentile; runs without successful observations get an
+explicit empty histogram.
 The `Shapiro-Wilk` CSV column contains the W statistic (blank when the test
 cannot be computed).
 For a single log the CSV is written beside that log; group analysis writes it

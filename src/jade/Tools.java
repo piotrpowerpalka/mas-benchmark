@@ -13,7 +13,7 @@ public final class Tools {
 
     private static final char[] ALNUM = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789".toCharArray();
     //private static final DateTimeFormatter TS = DateTimeFormatter.ISO_OFFSET_DATE_TIME;
-    private static final DateTimeFormatter TS = DateTimeFormatter.ofPattern("yyyy-MM-dd' 'HH:mm:ss.SSSXXX");
+    private static final DateTimeFormatter TS = DateTimeFormatter.ofPattern("yyyy-MM-dd' 'HH:mm:ss.SSSSSSXXX");
 
     public static String nowTs() {
         return OffsetDateTime.now().format(TS);

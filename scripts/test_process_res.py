@@ -1,15 +1,17 @@
+import csv
 import tempfile
 import unittest
 from pathlib import Path
 
 import process_res
 import process_res_group
+import gen_compose
 
 
 class ProcessResTests(unittest.TestCase):
     def test_parse_config_from_log_filename(self):
         path = Path(
-            "logs_docker-compose-jason-c2-n10-r100-ms1024-inform-g3-m1GB-cpu1-p500.yaml.log"
+            "logs_docker-compose-jason-c2-n10-r100-ms1024-inform-g3-m1GB-cpu1-p500-seed123.yaml.log"
         )
         self.assertEqual(
             process_res.parse_config(path),
@@ -24,8 +26,15 @@ class ProcessResTests(unittest.TestCase):
                 "memory": "1GB",
                 "cpus": 1.0,
                 "period": 500,
+                "seed": 123,
             },
         )
+
+    def test_parse_config_preserves_legacy_names_without_seed(self):
+        path = Path(
+            "logs_docker-compose-jason-c2-n10-r100-ms1024-inform-g3-m1GB-cpu1-p500.yaml.log"
+        )
+        self.assertIsNone(process_res.parse_config(path)["seed"])
 
     def test_confidence_interval_requires_independent_replicates(self):
         self.assertEqual(process_res.mean_confidence_interval([3.0]), (None, None))
@@ -64,10 +73,42 @@ class ProcessResTests(unittest.TestCase):
 
         self.assertEqual(run["init_duration"], 1.0)
         self.assertEqual(run["message_stats"]["count"], 2)
-        self.assertEqual(run["message_stats"]["mean"], 1.0)
+        self.assertEqual(run["message_stats"]["mean"], 1_000_000.0)
         self.assertEqual(run["messages_lost"], 0)
         self.assertEqual(run["config"]["platform"], "jade")
         self.assertEqual(run["run_metrics"]["throughput"], 1.0)
+
+    def test_latency_uses_microsecond_timestamp_precision(self):
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            log_path = Path(temporary_directory) / (
+                "logs_docker-compose-jade-c1-n2-r1-ms10-inform-g1-m1GB-cpu1-seed5.yaml.log"
+            )
+            log_path.write_text(
+                "\n".join(
+                    [
+                        "INFO | init;running;agent0;2025-01-01T10:00:00.000001",
+                        "INFO | agent0;agent1;message;rw(1);cid(1);S;2025-01-01T10:00:00.123456",
+                        "INFO | agent0;agent1;message;rw(1);cid(1);R;2025-01-01T10:00:00.123459",
+                        "",
+                    ]
+                ),
+                encoding="utf-8",
+            )
+
+            run = process_res.analyze_log(log_path, "test-commit", False)
+
+        self.assertEqual(run["message_stats"]["mean"], 3.0)
+
+    def test_timestamp_parser_handles_quoted_and_epoch_microsecond_values(self):
+        expected = process_res.pd.Timestamp("2025-01-01T10:00:00.123456")
+        self.assertEqual(
+            process_res.parse_timestamp('"2025-01-01T10:00:00.123456"'),
+            expected,
+        )
+        self.assertEqual(
+            process_res.parse_timestamp("1735725600123456"),
+            process_res.pd.Timestamp(1735725600123456, unit="us"),
+        )
 
     def test_group_collector_finds_logs_recursively(self):
         with tempfile.TemporaryDirectory() as temporary_directory:
@@ -104,6 +145,7 @@ class ProcessResTests(unittest.TestCase):
                         "memory": "1GB",
                         "cpus": 1.0,
                         "period": None,
+                        "seed": 77,
                     }
                     factor = 1.0 if platform == "jade" else 1.5
                     runs.append(
@@ -136,8 +178,8 @@ class ProcessResTests(unittest.TestCase):
     def test_process_logs_writes_reports_and_commit_metadata(self):
         with tempfile.TemporaryDirectory() as temporary_directory:
             root = Path(temporary_directory)
-            jade_directory = root / "logs_jade-c1-n2-r1-ms10-inform-g1-m1GB-cpu1"
-            jason_directory = root / "logs_jason-c1-n2-r1-ms10-inform-g1-m1GB-cpu1"
+            jade_directory = root / "logs_jade-c1-n2-r1-ms10-inform-g1-m1GB-cpu1-seed7"
+            jason_directory = root / "logs_jason-c1-n2-r1-ms10-inform-g1-m1GB-cpu1-seed7"
             jade_directory.mkdir()
             jason_directory.mkdir()
             paths = []
@@ -146,7 +188,7 @@ class ProcessResTests(unittest.TestCase):
                 (jason_directory, "jason"),
             ):
                 path = directory / (
-                    "logs_docker-compose-{}-c1-n2-r1-ms10-inform-g1-m1GB-cpu1.yaml.log".format(
+                    "logs_docker-compose-{}-c1-n2-r1-ms10-inform-g1-m1GB-cpu1-seed7.yaml.log".format(
                         platform
                     )
                 )
@@ -166,6 +208,21 @@ class ProcessResTests(unittest.TestCase):
                 )
                 paths.append(path)
 
+            memory_log = jade_directory / (
+                "mem_{}-mas0.log".format(paths[0].name[len("logs_") : -len(".log")])
+            )
+            memory_log.write_text(
+                "\n".join(
+                    [
+                        "1;mas0;32.00MiB / 512MiB;5.00%",
+                        "2;mas0;40.00MiB / 512MiB;50.00%",
+                        "3;mas0;60.00MiB / 512MiB;95.00%",
+                        "",
+                    ]
+                ),
+                encoding="utf-8",
+            )
+
             comparison_path = root / "comparison_stats.txt"
             process_res.process_logs(paths, comparison_path)
 
@@ -179,6 +236,40 @@ class ProcessResTests(unittest.TestCase):
             report = comparison_path.read_text(encoding="utf-8")
             self.assertIn("Git commit:", report)
             self.assertIn("need at least 2 per platform", report)
+            csv_path = root / "benchmark_results.csv"
+            with csv_path.open("r", encoding="utf-8-sig", newline="") as csv_file:
+                reader = csv.DictReader(csv_file)
+                rows = list(reader)
+            self.assertEqual(reader.fieldnames, list(process_res.CSV_FIELDS))
+            self.assertEqual(len(rows), 2)
+            self.assertEqual(rows[0]["seed"], "7")
+            self.assertEqual(rows[0]["where"], jade_directory.name)
+            self.assertEqual(rows[0]["latency [µs]"], "1000000.0")
+            self.assertEqual(rows[0]["Max memory [MiB]"], "60.0")
+            self.assertEqual(rows[0]["Avg memory [MiB]"], "44.0")
+            self.assertEqual(rows[0]["CPU in top 5% [threshold %]"], "90.5")
+
+    def test_seed_is_applied_to_generated_compose_and_jason_files(self):
+        compose = gen_compose.gen_compose(
+            "jade", 1, 2, 1, 10, "inform", 1, seed=77
+        )
+        self.assertIn("--seed 77", compose)
+        spade_compose = gen_compose.gen_compose(
+            "prosody", 1, 2, 1, 10, "inform", 1, seed=88
+        )
+        self.assertIn("--seed 88", spade_compose)
+        jason_compose = gen_compose.gen_compose(
+            "jason", 1, 2, 1, 10, "inform", 1, seed=99
+        )
+        self.assertIn("mas0:", jason_compose)
+
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            gen_compose._write_jason_project(
+                temporary_directory, 1, 2, 1, 10, "inform", 1, 77
+            )
+            project = Path(temporary_directory) / "jason"
+            self.assertIn("seed(77).", (project / "inform.asl").read_text(encoding="utf-8"))
+            self.assertTrue((project / "myLib" / "timestamp.java").is_file())
 
 
 if __name__ == "__main__":

@@ -11,6 +11,7 @@ MESSAGE_SIZE=${6:-$((1024))}
 RECOMPILE=${7:-"false"} # true | false
 GROUP_SIZE=${8:-"10"}
 PERIOD=${9:-"100"} # in milliseconds
+SEED=${10:-"213742189290"}
 
 MEMSIZE="1GB"
 CPUS="1"
@@ -18,7 +19,7 @@ CPUS="1"
 mkdir -p "$ROOT_DIR/logs" || exit 1
 cd "$ROOT_DIR/logs" || exit 1
 
-LOGDIR="logs_$XMPP-c$CONTAINERS-n$NUM_AGENTS-r$REPEATS-ms$MESSAGE_SIZE-$COMM_TYPE-g$GROUP_SIZE-m$MEMSIZE-cpu$CPUS-p$PERIOD"
+LOGDIR="logs_$XMPP-c$CONTAINERS-n$NUM_AGENTS-r$REPEATS-ms$MESSAGE_SIZE-$COMM_TYPE-g$GROUP_SIZE-m$MEMSIZE-cpu$CPUS-p$PERIOD-seed$SEED"
 
 mkdir -p "$LOGDIR" || exit 1
 
@@ -50,10 +51,10 @@ fi
 
 cd "$LOGDIR" || exit 1
 
-DOCKER_COMPOSE_NAME="docker-compose-$XMPP-c$CONTAINERS-n$NUM_AGENTS-r$REPEATS-ms$MESSAGE_SIZE-$COMM_TYPE-g$GROUP_SIZE-m$MEMSIZE-cpu$CPUS-p$PERIOD.yaml"
+DOCKER_COMPOSE_NAME="docker-compose-$XMPP-c$CONTAINERS-n$NUM_AGENTS-r$REPEATS-ms$MESSAGE_SIZE-$COMM_TYPE-g$GROUP_SIZE-m$MEMSIZE-cpu$CPUS-p$PERIOD-seed$SEED.yaml"
 
 echo "Generating docker compose file: $DOCKER_COMPOSE_NAME"
-python3 "$ROOT_DIR/scripts/gen_compose.py" "$DOCKER_COMPOSE_NAME" "$XMPP" "$CONTAINERS" "$NUM_AGENTS" "$REPEATS" "$MESSAGE_SIZE" "$COMM_TYPE" "$GROUP_SIZE" "$MEMSIZE" "$CPUS" "$PERIOD"
+python3 "$ROOT_DIR/scripts/gen_compose.py" "$DOCKER_COMPOSE_NAME" "$XMPP" "$CONTAINERS" "$NUM_AGENTS" "$REPEATS" "$MESSAGE_SIZE" "$COMM_TYPE" "$GROUP_SIZE" "$MEMSIZE" "$CPUS" "$PERIOD" "$SEED"
 
 if [ "$RECOMPILE" == "true" ]; then
     echo "Recompiling docker images"

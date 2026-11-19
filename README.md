@@ -193,17 +193,23 @@ communication:
 ```bash
 bash scripts/run-exp.sh 2 jason inform 10 10 1024 false 3 100
 ```
+The optional tenth argument sets the random seed; it defaults to
+`213742189290` and is included in the experiment directory and log filenames:
+
+```bash
+bash scripts/run-exp.sh 2 jason inform 10 10 1024 false 3 100 42
+```
 
 ### Example placeholder commands
 
 ```bash
 # 1. Run experiment
- bash scripts/run-exp.sh <no-of-containers> <platform> <workload> <no-of-agents> <repeats> <message-size> <rebuild-docker> <group-size>
+ bash scripts/run-exp.sh <no-of-containers> <platform> <workload> <no-of-agents> <repeats> <message-size> <rebuild-docker> <group-size> <period-ms> <seed>
 
 # 2. Analyze results
-cd logs/logs_<platform>-c<no-of-containers>-n<no-of-agents>-r<repeats>-ms<message-size>-g<group-size>-m1GB-cpu1/
-cat stats_logs_docker-compose-<platform>-c<no-of-containers>-n<no-of-agents>-r<repeats>-ms<message-size>-g<group-size>-m1GB-cpu1.yaml.log.txt
-cat mem_stats_mem_docker-compose-<platform>-c<no-of-containers>-n<no-of-agents>-r<repeats>-ms<message-size>-g<group-size>-m1GB-cpu1.yaml.mas[0..containers]log.txt
+cd logs/logs_<platform>-c<containers>-n<agents>-r<repeats>-ms<size>-<workload>-g<group-size>-m1GB-cpu1-p<period>-seed<seed>/
+cat stats_logs_docker-compose-<platform>-c<containers>-n<agents>-r<repeats>-ms<size>-<workload>-g<group-size>-m1GB-cpu1-p<period>-seed<seed>.yaml.log.txt
+cat benchmark_results.csv
 
 # 3. Analyze a group of experiment directories together
 python3 ../../scripts/process_res_group.py ../logs_<platform>-c1-* ../logs_<platform>-c2-*
@@ -214,12 +220,25 @@ python3 ../../scripts/process_res_group.py ../logs_<platform>-c1-* ../logs_<plat
 recursively finds `logs_docker-compose-*.yaml.log` in each supplied directory
 (wildcard patterns are supported). Each input log is treated as one independent
 run; retain separate log files for repeated runs of the same configuration.
-The per-run report includes latency percentiles and the current Git commit.
+The per-run report includes message and conversation latency in microseconds
+and the current Git commit. A separate `benchmark_results.csv` contains the
+requested per-run columns; its `where` value is the parent experiment-directory
+name. Memory values are calculated across the run's available MAS and XMPP
+Docker-stat logs: max is the maximum observed value and average is the pooled
+sample mean. The CPU threshold is their pooled 95th percentile.
+The `Shapiro-Wilk` CSV column contains the W statistic (blank when the test
+cannot be computed).
+For a single log the CSV is written beside that log; group analysis writes it
+to the common parent directory of the input logs.
 When multiple logs are supplied, `comparison_stats.txt` reports run-level
 confidence intervals, matched-platform Welch tests with Holm correction,
 one-container-baseline scalability efficiency, and guarded OLS diagnostics.
 Insufficient replication or unmatched configurations are reported instead of
 being treated as statistically significant.
+New JADE and Jason logs record fractional-second timestamps. Existing logs
+whose timestamps only contain whole seconds cannot provide microsecond
+precision; converting their latency to microseconds does not restore that
+missing precision.
 ---
 ## Limitations
 

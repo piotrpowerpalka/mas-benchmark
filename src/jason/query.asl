@@ -68,21 +68,18 @@ seed(213742189290).
 
 +!log_send(To, Perf, Rw, Cid) <-
     .my_name(Me);
-    .date(Y,Mo,D);
-    .time(H,Mi,S);
-    .println(Me,";",To,";",Perf,";",Rw,";",Cid,";S;",Y,"-",Mo,"-",D,"T",H,":",Mi,":",S).
+    .myLib.timestamp(Timestamp);
+    .println(Me,";",To,";",Perf,";",Rw,";",Cid,";S;",Timestamp).
 
 +!log_recv(From, Perf, Rw, Cid) <-
     .my_name(Me);
-    .date(Y,Mo,D);
-    .time(H,Mi,S);
-    .println(From,";",Me,";",Perf,";",Rw,";",Cid,";R;",Y,"-",Mo,"-",D,"T",H,":",Mi,":",S).
+    .myLib.timestamp(Timestamp);
+    .println(From,";",Me,";",Perf,";",Rw,";",Cid,";R;",Timestamp).
 
 +!log_init(State) <-
     .my_name(Me);
-    .date(Y,Mo,D);
-    .time(H,Mi,S);
-    .println("init;",State,";",Me,";",Y,"-",Mo,"-",D,"T",H,":",Mi,":",S).
+    .myLib.timestamp(Timestamp);
+    .println("init;",State,";",Me,";",Timestamp).
 
 +!stop_me <-
     .my_name(Me);

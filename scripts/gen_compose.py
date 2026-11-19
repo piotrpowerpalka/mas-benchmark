@@ -12,7 +12,8 @@ def _replace_jason_belief(text, belief, value, filename):
   return updated
 
 
-def _write_jason_project(output_dir, numOfContainers, numOfAgents, repeats, messageSize, commType, groupsize):
+def _write_jason_project(output_dir, numOfContainers, numOfAgents, repeats, messageSize, commType, groupsize, seed):
+  seed = int(seed)
   if commType not in ("inform", "query", "cfp"):
     raise ValueError("Unsupported Jason communication type: {}".format(commType))
   if numOfContainers <= 0 or numOfAgents <= 0:
@@ -40,6 +41,7 @@ def _write_jason_project(output_dir, numOfContainers, numOfAgents, repeats, mess
   library_dir = project_dir / "myLib"
   library_dir.mkdir(exist_ok=True)
   shutil.copy2(source_dir / "myLib" / "uuid.java", library_dir / "uuid.java")
+  shutil.copy2(source_dir / "myLib" / "timestamp.java", library_dir / "timestamp.java")
 
   init_path = project_dir / "init.asl"
   init_text = init_path.read_text(encoding="utf-8")
@@ -49,6 +51,7 @@ def _write_jason_project(output_dir, numOfContainers, numOfAgents, repeats, mess
   agent_text = agent_path.read_text(encoding="utf-8")
   agent_text = _replace_jason_belief(agent_text, "repetitions_left", repeats, agent_path.name)
   agent_text = _replace_jason_belief(agent_text, "content_size", messageSize, agent_path.name)
+  agent_text = _replace_jason_belief(agent_text, "seed", seed, agent_path.name)
   if commType == "cfp":
     agent_text = _replace_jason_belief(agent_text, "groupsize", groupsize, agent_path.name)
 
@@ -91,6 +94,8 @@ def _write_jason_project(output_dir, numOfContainers, numOfAgents, repeats, mess
   for filename in ("inform.asl", "query.asl", "cfp.asl"):
     path = project_dir / filename
     text = agent_text if filename == agent_source else path.read_text(encoding="utf-8")
+    if filename != agent_source:
+      text = _replace_jason_belief(text, "seed", seed, path.name)
     if text.count(".all_names(All);") != 1:
       raise ValueError("Expected exactly one .all_names(All) call in {}".format(filename))
     text = text.replace(".all_names(All);", "?benchmark_agents(All);", 1)
@@ -120,7 +125,7 @@ def _write_jason_project(output_dir, numOfContainers, numOfAgents, repeats, mess
   (project_dir / "benchmark.mas2j").write_text("\n".join(mas_lines) + "\n", encoding="utf-8")
 
 
-def gen_compose(xmpp, numOfContainers, numOfAgents, repeats, messageSize, commType, groupsize, memsize="128MB", cpus="1", period="100"): 
+def gen_compose(xmpp, numOfContainers, numOfAgents, repeats, messageSize, commType, groupsize, memsize="128MB", cpus="1", period="100", seed="213742189290"):
   """
   Generate a Docker Compose configuration file for multi-agent system (MAS) benchmark.
     This function creates a Docker Compose YAML configuration that sets up a distributed
@@ -136,6 +141,7 @@ def gen_compose(xmpp, numOfContainers, numOfAgents, repeats, messageSize, commTy
       memsize (str, optional): Memory limit per container. Defaults to "128MB".
       cpus (str, optional): CPU limit per container. Defaults to "1".
       period (str, optional): Period for the ticker behavior. Defaults to "100".
+      seed (str, optional): Random seed for reproducible benchmark execution.
     Returns:
       str: A complete Docker Compose YAML configuration as a string, including:
         - Platform or transport service configuration
@@ -147,6 +153,7 @@ def gen_compose(xmpp, numOfContainers, numOfAgents, repeats, messageSize, commTy
       >>> # Returns YAML string with 3 containers, 10 agents each
 
   """  
+  seed = int(seed)
   rv = ""
   agentsPerContainers = numOfAgents // numOfContainers
 
@@ -248,7 +255,7 @@ def gen_compose(xmpp, numOfContainers, numOfAgents, repeats, messageSize, commTy
         context: .
       container_name: mas{}
       hostname: mas{}
-      command: python -u main.py -f {} -t {} -n {} -r {} -x {} -i {} -c {} -g {} --period {}
+      command: python -u main.py -f {} -t {} -n {} -r {} -x {} -i {} -c {} -g {} --period {} --seed {}
       deploy:
         resources:
           limits:
@@ -256,7 +263,7 @@ def gen_compose(xmpp, numOfContainers, numOfAgents, repeats, messageSize, commTy
             cpus: {}
       depends_on:
       - serverhello
-    """.format(i, i, i, i * agentsPerContainers, (i+1) * agentsPerContainers - 1, numOfAgents, repeats, messageSize, "1" if i == numOfContainers - 1 else "0", commType, groupsize, period, memsize, cpus)
+    """.format(i, i, i, i * agentsPerContainers, (i+1) * agentsPerContainers - 1, numOfAgents, repeats, messageSize, "1" if i == numOfContainers - 1 else "0", commType, groupsize, period, seed, memsize, cpus)
 
   if (xmpp == "jade"):
     for i in range(numOfContainers):
@@ -274,14 +281,14 @@ def gen_compose(xmpp, numOfContainers, numOfAgents, repeats, messageSize, commTy
               echo "Waiting for serverhello TCP 1099...";
               sleep 1;
             done
-            exec java -cp /app/jade.jar:. Main -f {} -t {} -n {} -r {} -x {} -i {} -c {} -g {} -p {} --container-name mas{}
+            exec java -cp /app/jade.jar:. Main -f {} -t {} -n {} -r {} -x {} -i {} -c {} -g {} -p {} --seed {} --container-name mas{}
           '
         deploy:
           resources:
             limits:
               memory: {}
               cpus: {}
-    """.format(i, i, i, i * agentsPerContainers, (i+1) * agentsPerContainers - 1, numOfAgents, repeats, messageSize, "1" if i == numOfContainers - 1 else "0", commType, groupsize, period, i, memsize, cpus)
+    """.format(i, i, i, i * agentsPerContainers, (i+1) * agentsPerContainers - 1, numOfAgents, repeats, messageSize, "1" if i == numOfContainers - 1 else "0", commType, groupsize, period, seed, i, memsize, cpus)
  
   if (xmpp == "jason"):
     for i in range(numOfContainers):
@@ -314,7 +321,7 @@ def gen_compose(xmpp, numOfContainers, numOfAgents, repeats, messageSize, commTy
 
   return rv
 
-def compose_tofile(dcname, x, nc, na, repeats, ms, ct, gs, memsize, cpus, period):
+def compose_tofile(dcname, x, nc, na, repeats, ms, ct, gs, memsize, cpus, period, seed="213742189290"):
   """
   Generate a Docker Compose configuration file with specified parameters.
 
@@ -344,16 +351,16 @@ def compose_tofile(dcname, x, nc, na, repeats, ms, ct, gs, memsize, cpus, period
   Raises:
     IOError: If the file cannot be written to the filesystem.
   """
-  compose_content = gen_compose(x, nc, na, repeats, ms, ct, gs, memsize, cpus, period)
+  compose_content = gen_compose(x, nc, na, repeats, ms, ct, gs, memsize, cpus, period, seed)
   if x == "jason":
-    _write_jason_project(Path(dcname).resolve().parent, nc, na, repeats, ms, ct, gs)
+    _write_jason_project(Path(dcname).resolve().parent, nc, na, repeats, ms, ct, gs, seed)
   with open(dcname, "w") as f:
       f.write(compose_content)
 
 
 if __name__ == "__main__":
-  if len(sys.argv) != 12:
-    print("Usage: python gen_compose.py <dcname> <platform> <num_containers> <num_agents> <repeats> <message_size> <comm_type> <group_size> <memsize> <cpus> <period>")
+  if len(sys.argv) not in (12, 13):
+    print("Usage: python gen_compose.py <dcname> <platform> <num_containers> <num_agents> <repeats> <message_size> <comm_type> <group_size> <memsize> <cpus> <period> [seed]")
     sys.exit(1)
 
   compose_tofile(
@@ -367,6 +374,7 @@ if __name__ == "__main__":
     sys.argv[8],           # group_size
     sys.argv[9],           # memsize
     sys.argv[10],          # cpus
-    sys.argv[11]           # period
+    sys.argv[11],          # period
+    sys.argv[12] if len(sys.argv) == 13 else "213742189290"
   )
   print(f"Docker Compose file generated successfully!")

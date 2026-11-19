@@ -55,6 +55,13 @@ RUN_METRICS = (
     "throughput",
     "message_loss_rate",
 )
+RUN_METRIC_LABELS = {
+    "mean_latency": "mean_latency [µs]",
+    "p95_latency": "p95_latency [µs]",
+    "init_duration": "init_duration [s]",
+    "throughput": "throughput [messages/s]",
+    "message_loss_rate": "message_loss_rate",
+}
 
 CSV_FIELDS = (
     "agents",
@@ -419,6 +426,7 @@ def write_run_report(run, analysis_run_count):
                 outfile.write("  Shapiro-Wilk: not computed (requires 3-5000 non-constant values)\n")
 
         outfile.write("\nRun-level metrics for cross-run analysis:\n")
+        outfile.write("  Message latency metrics use microseconds.\n")
         outfile.write("  Successful-message throughput (messages/second): {}\n".format(
             format_value(run["run_metrics"]["throughput"])
         ))
@@ -497,6 +505,8 @@ def memory_metrics(log_path):
     memory_values = []
     cpu_values = []
     for memory_file in memory_files:
+        if memory_file.stat().st_size == 0:
+            continue
         frame = pd.read_csv(
             memory_file,
             sep=";",
@@ -525,7 +535,7 @@ def memory_metrics(log_path):
 
 
 def write_results_csv(runs, output_path):
-    with output_path.open("w", encoding="utf-8", newline="") as outfile:
+    with output_path.open("w", encoding="utf-8-sig", newline="") as outfile:
         writer = csv.DictWriter(outfile, fieldnames=CSV_FIELDS)
         writer.writeheader()
         for run in runs:
@@ -664,7 +674,7 @@ def _run_summary_lines(runs):
             ci_low, ci_high = mean_confidence_interval(values)
             lines.append(
                 "  {}: n_runs={}, mean={}, sample_sd={}, 95%_CI=[{}, {}]".format(
-                    metric,
+                    RUN_METRIC_LABELS[metric],
                     n,
                     format_value(mean),
                     format_value(standard_deviation),
@@ -695,6 +705,7 @@ def _comparison_lines(runs):
         "95% Welch confidence intervals for mean differences; Holm adjustment "
         "within each matched configuration and metric. Tests are approximate; "
         "interpret results cautiously when replication is low.",
+        "Latency metrics and differences are in microseconds; initialization time is in seconds.",
         "Difference direction is platform A minus platform B.",
     ]
     found_comparison = False
@@ -758,7 +769,7 @@ def _comparison_lines(runs):
                     "95%_CI=[{}, {}], Welch_df={}, p={}, Holm_p={}{}".format(
                         platform_a,
                         platform_b,
-                        metric,
+                        RUN_METRIC_LABELS[metric],
                         count_a,
                         count_b,
                         format_value(result["difference"]),
@@ -910,7 +921,7 @@ def _regression_lines(runs):
         if len(selected) <= rank:
             lines.append(
                 "{}: unavailable ({} valid run observations; {} fitted parameters).".format(
-                    metric, len(selected), rank
+                    RUN_METRIC_LABELS[metric], len(selected), rank
                 )
             )
             continue
@@ -944,7 +955,9 @@ def _regression_lines(runs):
         if selected_rank < selected_matrix.shape[1] or len(selected) <= selected_rank:
             lines.append(
                 "{}: unavailable for valid rows (predictor matrix is rank-deficient "
-                "or has no residual degrees of freedom).".format(metric)
+                "or has no residual degrees of freedom).".format(
+                    RUN_METRIC_LABELS[metric]
+                )
             )
             continue
 
@@ -965,7 +978,7 @@ def _regression_lines(runs):
         lines.append(
             "{}: n={}, R_squared={}, RMSE={}, residual_SE={}, "
             "mean_residual={}, max_abs_residual={}".format(
-                metric,
+                RUN_METRIC_LABELS[metric],
                 len(response),
                 format_value(r_squared),
                 format_value(rmse),

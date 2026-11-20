@@ -28,16 +28,57 @@ async def _tcp_port_ready(host, port):
 
 
 class StartupBarrier:
-    def __init__(self, args, coordinator_agent_id):
+    def __init__(self, args, coordinator_agent_id, local_agent_count):
         self.args = args
         self.coordinator_agent_id = coordinator_agent_id
+        self.local_agent_count = local_agent_count
         self.ready = False
         self._event = asyncio.Event()
+        self._local_ready_event = asyncio.Event()
+        self._local_ready_agents = set()
+        self._failure = None
         self._server = None
 
+    def fail(self, agent_id, error, logger):
+        if self._failure is None:
+            self._failure = error
+        logger.error(
+            "uAgents startup preparation failed for agent%s: %s",
+            agent_id,
+            error,
+        )
+        self._local_ready_event.set()
+        self._event.set()
+
     async def wait(self, agent_id, logger):
+        self._local_ready_agents.add(agent_id)
+        if len(self._local_ready_agents) == self.local_agent_count:
+            self._local_ready_event.set()
+
         if agent_id == self.coordinator_agent_id:
             try:
+                if self._failure is not None:
+                    return False
+                try:
+                    await asyncio.wait_for(
+                        self._local_ready_event.wait(),
+                        timeout=self.args.startup_timeout,
+                    )
+                except asyncio.TimeoutError as error:
+                    missing_agents = sorted(
+                        set(
+                            range(
+                                self.coordinator_agent_id,
+                                self.coordinator_agent_id + self.local_agent_count,
+                            )
+                        )
+                        - self._local_ready_agents
+                    )
+                    raise TimeoutError(
+                        "local agents did not become ready: {}".format(missing_agents)
+                    ) from error
+                if self._failure is not None:
+                    return False
                 self._server = await self._wait_for_containers()
                 self.ready = True
             except (OSError, TimeoutError, asyncio.TimeoutError) as error:

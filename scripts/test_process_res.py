@@ -43,6 +43,14 @@ class ProcessResTests(unittest.TestCase):
         )
         self.assertEqual(process_res.parse_config(path)["platform"], "uagents")
 
+    def test_parse_config_accepts_uagents_agentverse_platform(self):
+        path = Path(
+            "logs_docker-compose-uagents-agentverse-c2-n2-r3-ms1024-cfp-g2-m1GB-cpu1-p250-seed77.yaml.log"
+        )
+        self.assertEqual(
+            process_res.parse_config(path)["platform"], "uagents-agentverse"
+        )
+
     def test_confidence_interval_requires_independent_replicates(self):
         self.assertEqual(process_res.mean_confidence_interval([3.0]), (None, None))
         low, high = process_res.mean_confidence_interval([1.0, 2.0, 3.0])
@@ -432,8 +440,38 @@ class ProcessResTests(unittest.TestCase):
         self.assertIn("dockerfile: Dockerfile.uagents", compose)
         self.assertIn('- "5"', compose)
         self.assertIn("- cfp", compose)
+        self.assertIn("- local", compose)
         self.assertIn('- "77"', compose)
         self.assertNotIn("serverhello", compose)
+
+    def test_uagents_agentverse_compose_uses_mailbox_transport(self):
+        compose = gen_compose.gen_compose(
+            "uagents-agentverse",
+            2,
+            2,
+            3,
+            1024,
+            "cfp",
+            2,
+            seed=77,
+            period=250,
+        )
+
+        self.assertIn("- agentverse", compose)
+        self.assertIn(
+            'AGENTVERSE_API_TOKEN: "${AGENTVERSE_API_TOKEN:?Set AGENTVERSE_API_TOKEN}"',
+            compose,
+        )
+        self.assertIn('AGENTVERSE_TEAM: "${AGENTVERSE_TEAM:-}"', compose)
+        self.assertNotIn("serverhello", compose)
+
+    def test_uagents_agentverse_supports_multiple_agents_per_container(self):
+        compose = gen_compose.gen_compose(
+            "uagents-agentverse", 2, 10, 1, 10, "inform", 1
+        )
+
+        self.assertIn("- agentverse", compose)
+        self.assertIn('- "10"', compose)
 
     def test_uagents_workloads_are_separate_agent_classes(self):
         source_dir = Path(__file__).resolve().parents[1] / "src" / "uagents"

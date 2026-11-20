@@ -30,6 +30,11 @@ def parse_args(argv=None):
     parser.add_argument("--container-count", type=int, required=True)
     parser.add_argument("--container-index", type=int, required=True)
     parser.add_argument("--workload", choices=tuple(AGENT_CLASSES), required=True)
+    parser.add_argument(
+        "--transport",
+        choices=("local", "agentverse"),
+        default="local",
+    )
     parser.add_argument("--repeats", type=int, required=True)
     parser.add_argument("--message-size", type=int, required=True)
     parser.add_argument("--group-size", type=int, required=True)
@@ -82,15 +87,22 @@ def main(argv=None):
         address: "agent{}".format(agent_id)
         for agent_id, address in address_by_id.items()
     }
-    endpoints = {
-        address: "http://mas{}:{}/submit".format(
-            _container_for_agent(agent_id, args),
-            args.port,
-        )
-        for agent_id, address in address_by_id.items()
-    }
-    resolver = RulesBasedResolver(endpoints)
-    startup_barrier = StartupBarrier(args, first_agent_id)
+    if args.transport == "agentverse":
+        resolver = None
+    else:
+        endpoints = {
+            address: "http://mas{}:{}/submit".format(
+                _container_for_agent(agent_id, args),
+                args.port,
+            )
+            for agent_id, address in address_by_id.items()
+        }
+        resolver = RulesBasedResolver(endpoints)
+    startup_barrier = StartupBarrier(
+        args,
+        first_agent_id,
+        after_last_agent_id - first_agent_id,
+    )
     agent_class = AGENT_CLASSES[args.workload]
     agents = []
 

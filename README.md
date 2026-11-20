@@ -216,6 +216,27 @@ use uAgents' local dispatcher; messages between containers use its HTTP
 `InformAgent`, `QueryAgent`, and `CfpAgent`, sharing common message and startup
 handling. Thus the transport path depends on container placement.
 
+The `uagents-agentverse` platform uses Agentverse Mailboxes for message
+delivery. It requires an Agentverse API token in `AGENTVERSE_API_TOKEN`; the
+optional `AGENTVERSE_TEAM` selects a team. The runner registers each seeded
+agent as a mailbox agent at startup. Set the token in the environment rather
+than saving it in the repository:
+
+```bash
+export AGENTVERSE_API_TOKEN="<your-agentverse-api-token>"
+# Optional:
+export AGENTVERSE_TEAM="<your-agentverse-team>"
+bash scripts/run-exp.sh 10 uagents-agentverse query 10 10 1024 false 3 100 42
+```
+
+Messages between agents in different containers use Agentverse Mailboxes;
+messages within the same Bureau still use uAgents' local dispatcher. Use one
+agent per container if every benchmark message must traverse Agentverse. The
+default `uagents` platform remains unchanged and uses its static in-network
+resolver. See the [Agent Mailbox guide](https://uagents.fetch.ai/docs/agentverse/mailbox)
+for details. Use different seeds for concurrently running experiments so
+their Agentverse identities do not overlap.
+
 ### Example placeholder commands
 
 ```bash

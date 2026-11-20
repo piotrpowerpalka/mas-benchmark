@@ -3,7 +3,7 @@
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
 CONTAINERS=${1:-"1"}
-XMPP=${2:-"prosody"} # prosody | tigase | jade | jason | uagents
+XMPP=${2:-"prosody"} # prosody | tigase | jade | jason | uagents | uagents-agentverse
 COMM_TYPE=${3:-"inform"} # inform | query | cfp
 NUM_AGENTS=${4:-"100"}
 REPEATS=${5:-"100"}
@@ -12,6 +12,11 @@ RECOMPILE=${7:-"false"} # true | false
 GROUP_SIZE=${8:-"10"}
 PERIOD=${9:-"100"} # in milliseconds
 SEED=${10:-"213742189290"}
+
+if [ "$XMPP" == "uagents-agentverse" ] && [ -z "${AGENTVERSE_API_TOKEN:-}" ]; then
+    echo "Set AGENTVERSE_API_TOKEN to run uAgents with Agentverse transport." >&2
+    exit 1
+fi
 
 MEMSIZE="1GB"
 CPUS="1"
@@ -49,7 +54,7 @@ if [ "$XMPP" == "jason" ]; then
     cp "$ROOT_DIR/dockers/Dockerfile.jason" "$LOGDIR"/Dockerfile.jason
 fi
 
-if [ "$XMPP" == "uagents" ]; then
+if [ "$XMPP" == "uagents" ] || [ "$XMPP" == "uagents-agentverse" ]; then
     cp "$ROOT_DIR"/src/uagents/*.py "$LOGDIR"/.
     cp "$ROOT_DIR/src/uagents/requirements.txt" "$LOGDIR"/requirements.txt
     cp "$ROOT_DIR/dockers/Dockerfile.uagents" "$LOGDIR"/Dockerfile.uagents
@@ -77,7 +82,7 @@ for ((i=0; i<CONTAINERS; i++)); do
     echo "Running container $CNT"
 done
 
-if [ "$XMPP" != "uagents" ]; then
+if [ "$XMPP" != "uagents" ] && [ "$XMPP" != "uagents-agentverse" ]; then
     "$ROOT_DIR/scripts/mem.sh" serverhello "mem_$DOCKER_COMPOSE_NAME-xmpp.log" &
 fi
 
@@ -109,7 +114,7 @@ for ((i=0; i<CONTAINERS; i++)); do
     python3 "$ROOT_DIR/scripts/process_mem.py" "$ROOT_DIR/logs/$LOGDIR/mem_$DOCKER_COMPOSE_NAME-$CNT.log"
 done
 
-if [ "$XMPP" != "uagents" ]; then
+if [ "$XMPP" != "uagents" ] && [ "$XMPP" != "uagents-agentverse" ]; then
     python3 "$ROOT_DIR/scripts/process_mem.py" "$ROOT_DIR/logs/$LOGDIR/mem_$DOCKER_COMPOSE_NAME-xmpp.log"
 fi
 

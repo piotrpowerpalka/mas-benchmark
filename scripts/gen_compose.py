@@ -147,7 +147,7 @@ def gen_compose(xmpp, numOfContainers, numOfAgents, repeats, messageSize, commTy
     This function creates a Docker Compose YAML configuration that sets up a distributed
     multi-agent system with the selected transport/platform and multiple MAS containers.
     Args:
-      xmpp (str): Platform type: "prosody", "tigase", "jade", "jason", or "uagents".
+      xmpp (str): Platform type, including "uagents" or "uagents-agentverse".
       numOfContainers (int): Number of MAS containers to generate in the composition.
       numOfAgents (int): Total number of agents to distribute across containers.
       repeats (int): Number of times to repeat the benchmark/test.
@@ -172,11 +172,11 @@ def gen_compose(xmpp, numOfContainers, numOfAgents, repeats, messageSize, commTy
   seed = int(seed)
   if numOfContainers <= 0 or numOfAgents <= 0:
     raise ValueError("At least one container and one agent are required")
-  if xmpp == "uagents" and numOfAgents < 2:
+  if xmpp in ("uagents", "uagents-agentverse") and numOfAgents < 2:
     raise ValueError("uAgents requires at least two agents")
-  if xmpp == "uagents" and numOfAgents < numOfContainers:
+  if xmpp in ("uagents", "uagents-agentverse") and numOfAgents < numOfContainers:
     raise ValueError("uAgents requires at least one agent per container")
-  if xmpp == "uagents" and commType not in ("inform", "query", "cfp"):
+  if xmpp in ("uagents", "uagents-agentverse") and commType not in ("inform", "query", "cfp"):
     raise ValueError("Unsupported uAgents workload: {}".format(commType))
   rv = ""
   agentsPerContainers = numOfAgents // numOfContainers
@@ -270,7 +270,7 @@ def gen_compose(xmpp, numOfContainers, numOfAgents, repeats, messageSize, commTy
   elif (xmpp == "tigase"): rv += header_tigase
   elif (xmpp == "jade"):   rv += header_jade
   elif (xmpp == "jason"):  rv += header_jason
-  elif (xmpp == "uagents"): rv += header_uagents
+  elif (xmpp in ("uagents", "uagents-agentverse")): rv += header_uagents
   else:
     raise ValueError("Unsupported platform type: {}".format(xmpp))
 
@@ -347,7 +347,8 @@ def gen_compose(xmpp, numOfContainers, numOfAgents, repeats, messageSize, commTy
             cpus: {}
     """.format(i, i, i, i, memsize, cpus)
 
-  if (xmpp == "uagents"):
+  if (xmpp in ("uagents", "uagents-agentverse")):
+    uagents_transport = "agentverse" if xmpp == "uagents-agentverse" else "local"
     for i in range(numOfContainers):
         rv += """
     mas{}:
@@ -369,6 +370,8 @@ def gen_compose(xmpp, numOfContainers, numOfAgents, repeats, messageSize, commTy
         - "{}"
         - --workload
         - {}
+        - --transport
+        - {}
         - --repeats
         - "{}"
         - --message-size
@@ -379,6 +382,7 @@ def gen_compose(xmpp, numOfContainers, numOfAgents, repeats, messageSize, commTy
         - "{}"
         - --seed
         - "{}"
+      {}
       deploy:
         resources:
           limits:
@@ -392,11 +396,17 @@ def gen_compose(xmpp, numOfContainers, numOfAgents, repeats, messageSize, commTy
             numOfContainers,
             i,
             commType,
+            uagents_transport,
             repeats,
             messageSize,
             groupsize,
             period,
             seed,
+            (
+                'environment:\n        AGENTVERSE_API_TOKEN: "${AGENTVERSE_API_TOKEN:?Set AGENTVERSE_API_TOKEN}"\n        AGENTVERSE_TEAM: "${AGENTVERSE_TEAM:-}"'
+                if xmpp == "uagents-agentverse"
+                else ""
+            ),
             memsize,
             cpus,
         )

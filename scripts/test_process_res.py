@@ -1,3 +1,4 @@
+import ast
 import csv
 import tempfile
 import unittest
@@ -433,6 +434,28 @@ class ProcessResTests(unittest.TestCase):
         self.assertIn("- cfp", compose)
         self.assertIn('- "77"', compose)
         self.assertNotIn("serverhello", compose)
+
+    def test_uagents_workloads_are_separate_agent_classes(self):
+        source_dir = Path(__file__).resolve().parents[1] / "src" / "uagents"
+        workload_classes = (
+            ("informAgent.py", "InformAgent"),
+            ("queryAgent.py", "QueryAgent"),
+            ("cfpAgent.py", "CfpAgent"),
+        )
+
+        for filename, class_name in workload_classes:
+            tree = ast.parse((source_dir / filename).read_text(encoding="utf-8"))
+            class_definitions = [
+                node for node in tree.body
+                if isinstance(node, ast.ClassDef) and node.name == class_name
+            ]
+            self.assertEqual(len(class_definitions), 1)
+            self.assertTrue(
+                any(
+                    isinstance(base, ast.Name) and base.id == "BenchmarkAgent"
+                    for base in class_definitions[0].bases
+                )
+            )
 
     def test_uagents_compose_requires_an_agent_per_container(self):
         with self.assertRaisesRegex(ValueError, "at least one agent per container"):

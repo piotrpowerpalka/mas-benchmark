@@ -1,55 +1,65 @@
 Benchmark analysis
-Git commit: 587ce21b4c547435f65f869adf2a280e07a38926
-Git worktree dirty: yes
+Git commit: 2fcb4e8ccd444621cfe2edc3682481d02d62836d
+Git worktree dirty: no
 Input logs: 3
 Each input log is treated as one independent run. Message observations within a log are not treated as independent experimental replicates.
 
 Input files:
-  C:\Users\piotr\git\mas-benchmark\logs\logs_jason-c2-n10-r10-ms1024-cfp-g3-m1GB-cpu1-p500-seed2138\logs_docker-compose-jason-c2-n10-r10-ms1024-cfp-g3-m1GB-cpu1-p500-seed2138.yaml.log | commit=587ce21b4c547435f65f869adf2a280e07a38926 | config=platform=jason, containers=2, agents=10, repeats=10, message_size=1024, workload=cfp, group_size=3, memory=1GB, cpus=1, period=500, seed=2138
-  C:\Users\piotr\git\mas-benchmark\logs\logs_jason-c2-n10-r10-ms1024-cfp-g3-m1GB-cpu1-p500-seed2139\logs_docker-compose-jason-c2-n10-r10-ms1024-cfp-g3-m1GB-cpu1-p500-seed2139.yaml.log | commit=587ce21b4c547435f65f869adf2a280e07a38926 | config=platform=jason, containers=2, agents=10, repeats=10, message_size=1024, workload=cfp, group_size=3, memory=1GB, cpus=1, period=500, seed=2139
-  C:\Users\piotr\git\mas-benchmark\logs\logs_jason-c2-n10-r10-ms1024-cfp-g3-m1GB-cpu1-p500-seed424267\logs_docker-compose-jason-c2-n10-r10-ms1024-cfp-g3-m1GB-cpu1-p500-seed424267.yaml.log | commit=587ce21b4c547435f65f869adf2a280e07a38926 | config=platform=jason, containers=2, agents=10, repeats=10, message_size=1024, workload=cfp, group_size=3, memory=1GB, cpus=1, period=500, seed=424267
+  C:\Users\piotr\git\mas-benchmark\logs\logs_jason-c2-n10-r10-ms1024-cfp-g3-m1GB-cpu1-p500-seed2138\logs_docker-compose-jason-c2-n10-r10-ms1024-cfp-g3-m1GB-cpu1-p500-seed2138.yaml.log | commit=2fcb4e8ccd444621cfe2edc3682481d02d62836d | config=platform=jason, containers=2, agents=10, repeats=10, message_size=1024, workload=cfp, group_size=3, memory=1GB, cpus=1, period=500, seed=2138
+  C:\Users\piotr\git\mas-benchmark\logs\logs_jason-c2-n10-r10-ms1024-cfp-g3-m1GB-cpu1-p500-seed2139\logs_docker-compose-jason-c2-n10-r10-ms1024-cfp-g3-m1GB-cpu1-p500-seed2139.yaml.log | commit=2fcb4e8ccd444621cfe2edc3682481d02d62836d | config=platform=jason, containers=2, agents=10, repeats=10, message_size=1024, workload=cfp, group_size=3, memory=1GB, cpus=1, period=500, seed=2139
+  C:\Users\piotr\git\mas-benchmark\logs\logs_jason-c2-n10-r10-ms1024-cfp-g3-m1GB-cpu1-p500-seed424267\logs_docker-compose-jason-c2-n10-r10-ms1024-cfp-g3-m1GB-cpu1-p500-seed424267.yaml.log | commit=2fcb4e8ccd444621cfe2edc3682481d02d62836d | config=platform=jason, containers=2, agents=10, repeats=10, message_size=1024, workload=cfp, group_size=3, memory=1GB, cpus=1, period=500, seed=424267
 Run-level descriptive statistics (each input file is one independent run)
+Runs with different seeds are pooled as independent replicates; message events within one log are not treated as independent runs.
+95% confidence intervals are Student-t intervals for the mean across runs.
 
-Configuration: platform=jason, containers=2, agents=10, repeats=10, message_size=1024, workload=cfp, group_size=3, memory=1GB, cpus=1, period=500, seed=2138
-  mean_latency [µs]: n_runs=1, mean=15737.8, sample_sd=n/a, 95%_CI=[n/a, n/a]
-    CI unavailable: at least two independent runs with this metric are required.
-  p95_latency [µs]: n_runs=1, mean=89515, sample_sd=n/a, 95%_CI=[n/a, n/a]
-    CI unavailable: at least two independent runs with this metric are required.
-  init_duration [s]: n_runs=1, mean=0.159331, sample_sd=n/a, 95%_CI=[n/a, n/a]
-    CI unavailable: at least two independent runs with this metric are required.
-  throughput [messages/s]: n_runs=1, mean=162.363, sample_sd=n/a, 95%_CI=[n/a, n/a]
-    CI unavailable: at least two independent runs with this metric are required.
-  message_loss_rate: n_runs=1, mean=0, sample_sd=n/a, 95%_CI=[n/a, n/a]
-    CI unavailable: at least two independent runs with this metric are required.
+Configuration: platform=jason, containers=2, agents=10, repeats=10, message_size=1024, workload=cfp, group_size=3, memory=1GB, cpus=1, period=500
+  independent_runs=3, seeds=2138, 2139, 424267
+  mean_latency [µs]: n_runs=3, mean=16029.3, median=15737.8, sample_sd=4730.86, 95%_CI_for_mean=[4277.21, 27781.4]
+  median_latency [µs]: n_runs=3, mean=2394.67, median=2407, sample_sd=126.95, 95%_CI_for_mean=[2079.31, 2710.03]
+  std_latency [µs]: n_runs=3, mean=29692.9, median=31848.3, sample_sd=4003.2, 95%_CI_for_mean=[19748.4, 39637.4]
+  p50_latency [µs]: n_runs=3, mean=2394.67, median=2407, sample_sd=126.95, 95%_CI_for_mean=[2079.31, 2710.03]
+  p90_latency [µs]: n_runs=3, mean=66645.4, median=68053, sample_sd=3645.36, 95%_CI_for_mean=[57589.8, 75701]
+  p95_latency [µs]: n_runs=3, mean=86830.4, median=86618.2, sample_sd=2585.04, 95%_CI_for_mean=[80408.8, 93252]
+  p99_latency [µs]: n_runs=3, mean=125878, median=125250, sample_sd=34018.9, 95%_CI_for_mean=[41370.5, 210386]
+  min_latency [µs]: n_runs=3, mean=-961, median=-935, sample_sd=685.37, 95%_CI_for_mean=[-2663.55, 741.553]
+  max_latency [µs]: n_runs=3, mean=170871, median=191574, sample_sd=58651.5, 95%_CI_for_mean=[25172.8, 316570]
+  skewness_latency: n_runs=3, mean=2.35676, median=2.52178, sample_sd=0.440049, 95%_CI_for_mean=[1.26362, 3.4499]
+  kurtosis_latency: n_runs=3, mean=5.19606, median=4.61846, sample_sd=2.01256, 95%_CI_for_mean=[0.196575, 10.1955]
+  message_latency_Shapiro_W: n_runs=3, mean=0.547175, median=0.523649, sample_sd=0.117689, 95%_CI_for_mean=[0.254818, 0.839532]
+  conversation_mean_latency [µs]: n_runs=3, mean=24414.6, median=20779.5, sample_sd=8677.51, 95%_CI_for_mean=[2858.47, 45970.7]
+  conversation_median_latency [µs]: n_runs=3, mean=7458.33, median=4444, sample_sd=5783.2, 95%_CI_for_mean=[-6907.93, 21824.6]
+  conversation_std_latency [µs]: n_runs=3, mean=35420.2, median=36340.2, sample_sd=3642.18, 95%_CI_for_mean=[26372.6, 44467.9]
+  conversation_p50_latency [µs]: n_runs=3, mean=7458.33, median=4444, sample_sd=5783.2, 95%_CI_for_mean=[-6907.93, 21824.6]
+  conversation_p90_latency [µs]: n_runs=3, mean=81867, median=84482.1, sample_sd=5453.03, 95%_CI_for_mean=[68321, 95413.1]
+  conversation_p95_latency [µs]: n_runs=3, mean=99861.7, median=91298.2, sample_sd=17499.5, 95%_CI_for_mean=[56390.5, 143333]
+  conversation_p99_latency [µs]: n_runs=3, mean=131029, median=127389, sample_sd=30273.8, 95%_CI_for_mean=[55824.3, 206233]
+  conversation_min_latency [µs]: n_runs=3, mean=-14839.7, median=-7654, sample_sd=14787.6, 95%_CI_for_mean=[-51574.2, 21894.9]
+  conversation_max_latency [µs]: n_runs=3, mean=142484, median=131202, sample_sd=44534, 95%_CI_for_mean=[31855.4, 253113]
+  conversation_skewness: n_runs=3, mean=1.59092, median=1.6988, sample_sd=0.692816, 95%_CI_for_mean=[-0.130132, 3.31197]
+  conversation_kurtosis: n_runs=3, mean=2.09773, median=1.17344, sample_sd=3.10291, 95%_CI_for_mean=[-5.61033, 9.80579]
+  conversation_latency_Shapiro_W: n_runs=3, mean=0.702002, median=0.675195, sample_sd=0.112361, 95%_CI_for_mean=[0.422882, 0.981122]
+  initialization_time [s]: n_runs=3, mean=0.139836, median=0.159331, sample_sd=0.0522829, 95%_CI_for_mean=[0.00995845, 0.269714]
+  simulation_time [s]: n_runs=3, mean=4.87058, median=4.87181, sample_sd=0.0393705, 95%_CI_for_mean=[4.77278, 4.96838]
+  message_throughput [messages/s]: n_runs=3, mean=163.794, median=162.363, sample_sd=4.18666, 95%_CI_for_mean=[153.394, 174.194]
+  conversation_throughput [conversations/s]: n_runs=3, mean=20.5323, median=20.5262, sample_sd=0.166038, 95%_CI_for_mean=[20.1199, 20.9448]
+  messages_sent: n_runs=3, mean=797.667, median=791, sample_sd=14.2244, 95%_CI_for_mean=[762.331, 833.002]
+  messages_successful: n_runs=3, mean=797.667, median=791, sample_sd=14.2244, 95%_CI_for_mean=[762.331, 833.002]
+  messages_lost: n_runs=3, mean=0, median=0, sample_sd=0, 95%_CI_for_mean=[0, 0]
+  message_loss_rate: n_runs=3, mean=0, median=0, sample_sd=0, 95%_CI_for_mean=[0, 0]
+  conversations_sent: n_runs=3, mean=100, median=100, sample_sd=0, 95%_CI_for_mean=[100, 100]
+  conversations_successful: n_runs=3, mean=100, median=100, sample_sd=0, 95%_CI_for_mean=[100, 100]
+  conversations_lost: n_runs=3, mean=0, median=0, sample_sd=0, 95%_CI_for_mean=[0, 0]
+  conversation_loss_rate: n_runs=3, mean=0, median=0, sample_sd=0, 95%_CI_for_mean=[0, 0]
+  orphan_messages: n_runs=3, mean=0, median=0, sample_sd=0, 95%_CI_for_mean=[0, 0]
+  orphan_conversations: n_runs=3, mean=0, median=0, sample_sd=0, 95%_CI_for_mean=[0, 0]
+  malformed_records: n_runs=3, mean=0, median=0, sample_sd=0, 95%_CI_for_mean=[0, 0]
+  max_memory [MiB]: n_runs=3, mean=87.23, median=86.89, sample_sd=0.713583, 95%_CI_for_mean=[85.4574, 89.0026]
+  avg_memory [MiB]: n_runs=3, mean=64.4122, median=64.6996, sample_sd=0.878805, 95%_CI_for_mean=[62.2291, 66.5952]
+  CPU_p95_threshold [%]: n_runs=3, mean=39.2937, median=38.375, sample_sd=2.24846, 95%_CI_for_mean=[33.7082, 44.8791]
 
-Configuration: platform=jason, containers=2, agents=10, repeats=10, message_size=1024, workload=cfp, group_size=3, memory=1GB, cpus=1, period=500, seed=2139
-  mean_latency [µs]: n_runs=1, mean=11450.9, sample_sd=n/a, 95%_CI=[n/a, n/a]
-    CI unavailable: at least two independent runs with this metric are required.
-  p95_latency [µs]: n_runs=1, mean=84358, sample_sd=n/a, 95%_CI=[n/a, n/a]
-    CI unavailable: at least two independent runs with this metric are required.
-  init_duration [s]: n_runs=1, mean=0.179571, sample_sd=n/a, 95%_CI=[n/a, n/a]
-    CI unavailable: at least two independent runs with this metric are required.
-  throughput [messages/s]: n_runs=1, mean=160.511, sample_sd=n/a, 95%_CI=[n/a, n/a]
-    CI unavailable: at least two independent runs with this metric are required.
-  message_loss_rate: n_runs=1, mean=0, sample_sd=n/a, 95%_CI=[n/a, n/a]
-    CI unavailable: at least two independent runs with this metric are required.
-
-Configuration: platform=jason, containers=2, agents=10, repeats=10, message_size=1024, workload=cfp, group_size=3, memory=1GB, cpus=1, period=500, seed=424267
-  mean_latency [µs]: n_runs=1, mean=20899.2, sample_sd=n/a, 95%_CI=[n/a, n/a]
-    CI unavailable: at least two independent runs with this metric are required.
-  p95_latency [µs]: n_runs=1, mean=86618.2, sample_sd=n/a, 95%_CI=[n/a, n/a]
-    CI unavailable: at least two independent runs with this metric are required.
-  init_duration [s]: n_runs=1, mean=0.080607, sample_sd=n/a, 95%_CI=[n/a, n/a]
-    CI unavailable: at least two independent runs with this metric are required.
-  throughput [messages/s]: n_runs=1, mean=168.509, sample_sd=n/a, 95%_CI=[n/a, n/a]
-    CI unavailable: at least two independent runs with this metric are required.
-  message_loss_rate: n_runs=1, mean=0, sample_sd=n/a, 95%_CI=[n/a, n/a]
-    CI unavailable: at least two independent runs with this metric are required.
-
-Matched platform comparisons
-Method: two-sided Welch t-tests on independent per-log run metrics; 95% Welch confidence intervals for mean differences; Holm adjustment within each matched configuration and metric. Tests are approximate; interpret results cautiously when replication is low.
-Latency metrics and differences are in microseconds; initialization time is in seconds.
-Difference direction is platform A minus platform B.
+Non-parametric matched-platform comparisons
+Method: Kruskal-Wallis omnibus tests across platforms for each matched configuration and metric. If the Holm-adjusted omnibus p-value is below 0.05, two-sided Mann-Whitney U post-hoc tests are reported with Holm adjustment across platform pairs. Each input log is one independent run; seed is treated as a replicate identifier, not a matching dimension.
+At least two independent runs per platform are required. Omnibus p-values are Holm-adjusted across metrics within each matched configuration.
 No matched workload configurations with at least two platforms were supplied.
 
 Scalability efficiency

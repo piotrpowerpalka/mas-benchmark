@@ -50,7 +50,7 @@ if [ "$XMPP" == "jason" ]; then
 fi
 
 if [ "$XMPP" == "uagents" ]; then
-    cp "$ROOT_DIR/src/uagents/main.py" "$LOGDIR"/main.py
+    cp "$ROOT_DIR"/src/uagents/*.py "$LOGDIR"/.
     cp "$ROOT_DIR/src/uagents/requirements.txt" "$LOGDIR"/requirements.txt
     cp "$ROOT_DIR/dockers/Dockerfile.uagents" "$LOGDIR"/Dockerfile.uagents
 fi

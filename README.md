@@ -212,7 +212,9 @@ bash scripts/run-exp.sh 2 uagents query 10 10 1024 false 3 100 42
 
 uAgents requires at least one agent per container. Agents in the same Bureau
 use uAgents' local dispatcher; messages between containers use its HTTP
-`/submit` endpoint. Thus the transport path depends on container placement.
+`/submit` endpoint. The workload implementations are separated into
+`InformAgent`, `QueryAgent`, and `CfpAgent`, sharing common message and startup
+handling. Thus the transport path depends on container placement.
 
 ### Example placeholder commands
 

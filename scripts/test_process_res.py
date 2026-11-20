@@ -244,11 +244,65 @@ class ProcessResTests(unittest.TestCase):
             process_res.write_group_report(runs, output_path)
             report = output_path.read_text(encoding="utf-8")
 
-        self.assertIn("Welch", report)
+        self.assertIn("Kruskal-Wallis", report)
+        self.assertIn("Mann-Whitney U", report)
         self.assertIn("Holm_p", report)
         self.assertIn("efficiency=", report)
         self.assertIn("R_squared=", report)
         self.assertIn("residual [", report)
+
+    def test_group_report_aggregates_seeds_and_tests_all_metrics(self):
+        runs = []
+        for platform, baseline in (("jade", 1.0), ("uagents", 101.0)):
+            for replicate, seed in enumerate(range(11, 21)):
+                config = {
+                    "platform": platform,
+                    "containers": 2,
+                    "agents": 10,
+                    "repeats": 5,
+                    "message_size": 1024,
+                    "workload": "inform",
+                    "group_size": 2,
+                    "memory": "1GB",
+                    "cpus": 1.0,
+                    "period": 500,
+                    "seed": seed,
+                }
+                metrics = {
+                    metric: baseline + replicate
+                    for metric in process_res.RUN_METRICS
+                }
+                runs.append(
+                    {
+                        "path": Path("run-{}-seed{}.log".format(platform, seed)),
+                        "commit": "test-commit",
+                        "worktree_dirty": False,
+                        "config": config,
+                        "run_metrics": metrics,
+                    }
+                )
+
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            output_path = Path(temporary_directory) / "comparison_stats.txt"
+            process_res.write_group_report(runs, output_path)
+            report = output_path.read_text(encoding="utf-8")
+
+        jade_configuration = next(
+            line for line in report.splitlines()
+            if line.startswith("Configuration: platform=jade")
+        )
+        self.assertNotIn("seed=", jade_configuration)
+        self.assertIn(
+            "independent_runs=10, seeds=11, 12, 13, 14, 15, 16, 17, 18, 19, 20",
+            report,
+        )
+        self.assertIn("mean_latency [µs]: n_runs=10", report)
+        self.assertIn("median=5.5", report)
+        self.assertIn("max_memory [MiB]: n_runs=10", report)
+        self.assertIn("CPU_p95_threshold [%]: n_runs=10", report)
+        self.assertIn("Kruskal-Wallis / mean_latency [µs]", report)
+        self.assertIn("Mann-Whitney U / jade vs uagents", report)
+        self.assertIn("adjusted p < 0.05", report)
 
     def test_process_logs_writes_reports_and_commit_metadata(self):
         with tempfile.TemporaryDirectory() as temporary_directory:
@@ -299,7 +353,7 @@ class ProcessResTests(unittest.TestCase):
             )
 
             comparison_path = root / "comparison_stats.txt"
-            process_res.process_logs(paths, comparison_path)
+            process_res_group.main([str(root)])
 
             self.assertTrue(
                 (jade_directory / ("stats_{}.txt".format(paths[0].name))).is_file()
@@ -318,7 +372,7 @@ class ProcessResTests(unittest.TestCase):
             self.assertTrue(comparison_path.is_file())
             report = comparison_path.read_text(encoding="utf-8")
             self.assertIn("Git commit:", report)
-            self.assertIn("need at least 2 per platform", report)
+            self.assertIn("need at least 2 independent runs per platform", report)
             csv_path = root / "benchmark_results.csv"
             with csv_path.open("r", encoding="utf-8-sig", newline="") as csv_file:
                 reader = csv.DictReader(csv_file)

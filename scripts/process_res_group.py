@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Discover benchmark logs in a group of directories and analyze them together."""
+"""Collect raw benchmark logs and produce a run-level group analysis."""
 
 import argparse
 import glob
@@ -34,8 +34,8 @@ def collect_logs(inputs):
 def main(argv=None):
     parser = argparse.ArgumentParser(
         description=(
-            "Analyze the standard benchmark log from each experiment directory. "
-            "Pass multiple directories or wildcard patterns to compare a group."
+            "Analyze every standard benchmark log found in the supplied directories. "
+            "Runs with different seeds are aggregated as independent replicates."
         )
     )
     parser.add_argument(
@@ -50,7 +50,11 @@ def main(argv=None):
             "no {} files found in the supplied directories".format(LOG_PATTERN)
         )
 
-    print("Discovered {} benchmark log(s).".format(len(log_paths)))
+    print(
+        "Discovered {} benchmark log(s); aggregating metrics across runs.".format(
+            len(log_paths)
+        )
+    )
     try:
         output_directory = Path(
             os.path.commonpath([str(path.parent) for path in log_paths])

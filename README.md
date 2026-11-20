@@ -247,11 +247,22 @@ The `Shapiro-Wilk` CSV column contains the W statistic (blank when the test
 cannot be computed).
 For a single log the CSV is written beside that log; group analysis writes it
 to the common parent directory of the input logs.
-When multiple logs are supplied, `comparison_stats.txt` reports run-level
-confidence intervals, matched-platform Welch tests with Holm correction,
-one-container-baseline scalability efficiency, and guarded OLS diagnostics.
-Insufficient replication or unmatched configurations are reported instead of
-being treated as statistically significant.
+`process_res_group.py` recursively collects raw benchmark logs from the supplied
+directories and wildcard patterns. In `comparison_stats.txt`, runs with the
+same configuration but different seeds are aggregated as independent
+replicates. For every available numeric metric, the report includes the mean,
+median, sample standard deviation, and 95% Student-t confidence interval for
+the mean across runs. Metrics include message and conversation latency
+statistics, initialization and simulation duration, throughput, message and
+conversation loss/counts, memory, and CPU.
+
+Matched platform groups are compared with Kruskal-Wallis tests. Omnibus
+p-values are Holm-adjusted across metrics within each configuration; significant
+results are followed by two-sided Mann-Whitney U tests with Holm adjustment
+across platform pairs. At least two independent logs per platform are required
+for significance tests. The report also includes one-container-baseline
+scalability efficiency and guarded OLS diagnostics. Message events within one
+log are not treated as independent experimental replicates.
 New JADE and Jason logs record fractional-second timestamps. Existing logs
 whose timestamps only contain whole seconds cannot provide microsecond
 precision; converting their latency to microseconds does not restore that

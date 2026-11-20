@@ -42,24 +42,103 @@ CONFIG_FIELDS = (
     "period",
     "seed",
 )
-MATCH_FIELDS = tuple(field for field in CONFIG_FIELDS if field != "platform")
-SCALABILITY_FIELDS = tuple(
-    field for field in CONFIG_FIELDS if field not in ("platform", "containers")
+MATCH_FIELDS = tuple(
+    field for field in CONFIG_FIELDS if field not in ("platform", "seed")
 )
+SCALABILITY_FIELDS = tuple(
+    field
+    for field in CONFIG_FIELDS
+    if field not in ("containers", "seed")
+)
+REPLICATION_FIELDS = tuple(field for field in CONFIG_FIELDS if field != "seed")
 
 RUN_METRICS = (
     "mean_latency",
+    "median_latency",
+    "std_latency",
+    "p50_latency",
+    "p90_latency",
     "p95_latency",
+    "p99_latency",
+    "min_latency",
+    "max_latency",
+    "skewness_latency",
+    "kurtosis_latency",
+    "shapiro_w",
+    "conversation_mean_latency",
+    "conversation_median_latency",
+    "conversation_std_latency",
+    "conversation_p50_latency",
+    "conversation_p90_latency",
+    "conversation_p95_latency",
+    "conversation_p99_latency",
+    "conversation_min_latency",
+    "conversation_max_latency",
+    "conversation_skewness",
+    "conversation_kurtosis",
+    "conversation_shapiro_w",
     "init_duration",
+    "simulation_duration",
     "throughput",
+    "conversation_throughput",
+    "messages_sent",
+    "messages_successful",
+    "messages_lost",
     "message_loss_rate",
+    "conversations_sent",
+    "conversations_successful",
+    "conversations_lost",
+    "conversation_loss_rate",
+    "orphan_messages",
+    "orphan_conversations",
+    "malformed_records",
+    "max_memory",
+    "avg_memory",
+    "cpu_top5_threshold",
 )
 RUN_METRIC_LABELS = {
     "mean_latency": "mean_latency [µs]",
+    "median_latency": "median_latency [µs]",
+    "std_latency": "std_latency [µs]",
+    "p50_latency": "p50_latency [µs]",
+    "p90_latency": "p90_latency [µs]",
     "p95_latency": "p95_latency [µs]",
-    "init_duration": "init_duration [s]",
-    "throughput": "throughput [messages/s]",
+    "p99_latency": "p99_latency [µs]",
+    "min_latency": "min_latency [µs]",
+    "max_latency": "max_latency [µs]",
+    "skewness_latency": "skewness_latency",
+    "kurtosis_latency": "kurtosis_latency",
+    "shapiro_w": "message_latency_Shapiro_W",
+    "conversation_mean_latency": "conversation_mean_latency [µs]",
+    "conversation_median_latency": "conversation_median_latency [µs]",
+    "conversation_std_latency": "conversation_std_latency [µs]",
+    "conversation_p50_latency": "conversation_p50_latency [µs]",
+    "conversation_p90_latency": "conversation_p90_latency [µs]",
+    "conversation_p95_latency": "conversation_p95_latency [µs]",
+    "conversation_p99_latency": "conversation_p99_latency [µs]",
+    "conversation_min_latency": "conversation_min_latency [µs]",
+    "conversation_max_latency": "conversation_max_latency [µs]",
+    "conversation_skewness": "conversation_skewness",
+    "conversation_kurtosis": "conversation_kurtosis",
+    "conversation_shapiro_w": "conversation_latency_Shapiro_W",
+    "init_duration": "initialization_time [s]",
+    "simulation_duration": "simulation_time [s]",
+    "throughput": "message_throughput [messages/s]",
+    "conversation_throughput": "conversation_throughput [conversations/s]",
+    "messages_sent": "messages_sent",
+    "messages_successful": "messages_successful",
+    "messages_lost": "messages_lost",
     "message_loss_rate": "message_loss_rate",
+    "conversations_sent": "conversations_sent",
+    "conversations_successful": "conversations_successful",
+    "conversations_lost": "conversations_lost",
+    "conversation_loss_rate": "conversation_loss_rate",
+    "orphan_messages": "orphan_messages",
+    "orphan_conversations": "orphan_conversations",
+    "malformed_records": "malformed_records",
+    "max_memory": "max_memory [MiB]",
+    "avg_memory": "avg_memory [MiB]",
+    "cpu_top5_threshold": "CPU_p95_threshold [%]",
 }
 
 CSV_FIELDS = (
@@ -275,15 +354,56 @@ def analyze_log(path, commit, worktree_dirty):
         simulation_duration = None
 
     throughput = None
+    conversation_throughput = None
     if simulation_duration is not None and simulation_duration > 0:
         throughput = len(message_latencies) / simulation_duration
+        conversation_throughput = len(conversation_latencies) / simulation_duration
+
+    memory = memory_metrics(path)
 
     run_metrics = {
         "mean_latency": message_stats["mean"],
+        "median_latency": message_stats["median"],
+        "std_latency": message_stats["std"],
+        "p50_latency": message_stats["p50"],
+        "p90_latency": message_stats["p90"],
         "p95_latency": message_stats["p95"],
+        "p99_latency": message_stats["p99"],
+        "min_latency": message_stats["min"],
+        "max_latency": message_stats["max"],
+        "skewness_latency": message_stats["skewness"],
+        "kurtosis_latency": message_stats["kurtosis"],
+        "shapiro_w": message_stats["shapiro_stat"],
+        "conversation_mean_latency": conversation_stats["mean"],
+        "conversation_median_latency": conversation_stats["median"],
+        "conversation_std_latency": conversation_stats["std"],
+        "conversation_p50_latency": conversation_stats["p50"],
+        "conversation_p90_latency": conversation_stats["p90"],
+        "conversation_p95_latency": conversation_stats["p95"],
+        "conversation_p99_latency": conversation_stats["p99"],
+        "conversation_min_latency": conversation_stats["min"],
+        "conversation_max_latency": conversation_stats["max"],
+        "conversation_skewness": conversation_stats["skewness"],
+        "conversation_kurtosis": conversation_stats["kurtosis"],
+        "conversation_shapiro_w": conversation_stats["shapiro_stat"],
         "init_duration": init_duration,
+        "simulation_duration": simulation_duration,
         "throughput": throughput,
+        "conversation_throughput": conversation_throughput,
+        "messages_sent": messages_sent,
+        "messages_successful": message_stats["count"],
+        "messages_lost": messages_lost,
         "message_loss_rate": message_loss_rate,
+        "conversations_sent": conversations_sent,
+        "conversations_successful": conversation_stats["count"],
+        "conversations_lost": conversations_lost,
+        "conversation_loss_rate": conversation_loss_rate,
+        "orphan_messages": orphan_messages,
+        "orphan_conversations": orphan_conversations,
+        "malformed_records": malformed_records,
+        "max_memory": memory["max_memory"],
+        "avg_memory": memory["avg_memory"],
+        "cpu_top5_threshold": memory["cpu_top5_threshold"],
     }
     return {
         "path": path,
@@ -306,6 +426,7 @@ def analyze_log(path, commit, worktree_dirty):
         "conversation_loss_rate": conversation_loss_rate,
         "message_stats": message_stats,
         "conversation_stats": conversation_stats,
+        "memory_metrics": memory,
         "message_latencies": message_latencies,
         "conversation_latencies": conversation_latencies,
         "malformed_records": malformed_records,
@@ -567,7 +688,7 @@ def write_results_csv(runs, output_path):
         writer.writeheader()
         for run in runs:
             config = run["config"] or {}
-            memory = memory_metrics(run["path"])
+            memory = run["memory_metrics"]
             message = run["message_stats"]
             writer.writerow(
                 {
@@ -674,47 +795,81 @@ def _key_label(config, fields):
     )
 
 
+def _metric_values(runs, metric):
+    values = []
+    for run in runs:
+        value = run.get("run_metrics", {}).get(metric)
+        if value is not None and math.isfinite(float(value)):
+            values.append(float(value))
+    return values
+
+
+def _metric_summary(values):
+    if not values:
+        return {
+            "n": 0,
+            "mean": None,
+            "median": None,
+            "sample_sd": None,
+            "ci_low": None,
+            "ci_high": None,
+        }
+
+    data = np.asarray(values, dtype=float)
+    ci_low, ci_high = mean_confidence_interval(data)
+    return {
+        "n": len(data),
+        "mean": float(np.mean(data)),
+        "median": float(np.median(data)),
+        "sample_sd": float(np.std(data, ddof=1)) if len(data) >= 2 else None,
+        "ci_low": ci_low,
+        "ci_high": ci_high,
+    }
+
+
 def _run_summary_lines(runs):
     groups = defaultdict(list)
     for run in runs:
         config = run["config"]
         if config is not None:
-            groups[_key(config, CONFIG_FIELDS)].append(run)
+            groups[_key(config, REPLICATION_FIELDS)].append(run)
 
-    lines = []
-    lines.append("Run-level descriptive statistics (each input file is one independent run)")
+    lines = [
+        "Run-level descriptive statistics (each input file is one independent run)",
+        "Runs with different seeds are pooled as independent replicates; message events "
+        "within one log are not treated as independent runs.",
+        "95% confidence intervals are Student-t intervals for the mean across runs.",
+    ]
     for group_key in sorted(groups, key=str):
         group_runs = groups[group_key]
         config = group_runs[0]["config"]
-        lines.append("\nConfiguration: {}".format(_key_label(config, CONFIG_FIELDS)))
+        lines.append("\nConfiguration: {}".format(_key_label(config, REPLICATION_FIELDS)))
+        seeds = sorted({format_value(run["config"]["seed"]) for run in group_runs})
+        lines.append(
+            "  independent_runs={}, seeds={}".format(len(group_runs), ", ".join(seeds))
+        )
         for metric in RUN_METRICS:
-            values = [
-                run["run_metrics"][metric]
-                for run in group_runs
-                if run["run_metrics"][metric] is not None
-            ]
-            n = len(values)
-            mean = float(np.mean(values)) if values else None
-            standard_deviation = (
-                float(np.std(values, ddof=1)) if n >= 2 else None
-            )
-            ci_low, ci_high = mean_confidence_interval(values)
+            summary = _metric_summary(_metric_values(group_runs, metric))
             lines.append(
-                "  {}: n_runs={}, mean={}, sample_sd={}, 95%_CI=[{}, {}]".format(
+                "  {}: n_runs={}, mean={}, median={}, sample_sd={}, "
+                "95%_CI_for_mean=[{}, {}]".format(
                     RUN_METRIC_LABELS[metric],
-                    n,
-                    format_value(mean),
-                    format_value(standard_deviation),
-                    format_value(ci_low),
-                    format_value(ci_high),
+                    summary["n"],
+                    format_value(summary["mean"]),
+                    format_value(summary["median"]),
+                    format_value(summary["sample_sd"]),
+                    format_value(summary["ci_low"]),
+                    format_value(summary["ci_high"]),
                 )
             )
-            if n < 2:
+            if summary["n"] < 2:
                 lines.append(
                     "    CI unavailable: at least two independent runs with this metric are required."
                 )
     if not groups:
-        lines.append("No input filenames contained recognizable workload configuration metadata.")
+        lines.append(
+            "No input filenames contained recognizable workload configuration metadata."
+        )
     return lines
 
 
@@ -727,13 +882,14 @@ def _comparison_lines(runs):
 
     lines = [
         "",
-        "Matched platform comparisons",
-        "Method: two-sided Welch t-tests on independent per-log run metrics; "
-        "95% Welch confidence intervals for mean differences; Holm adjustment "
-        "within each matched configuration and metric. Tests are approximate; "
-        "interpret results cautiously when replication is low.",
-        "Latency metrics and differences are in microseconds; initialization time is in seconds.",
-        "Difference direction is platform A minus platform B.",
+        "Non-parametric matched-platform comparisons",
+        "Method: Kruskal-Wallis omnibus tests across platforms for each matched "
+        "configuration and metric. If the Holm-adjusted omnibus p-value is below "
+        "0.05, two-sided Mann-Whitney U post-hoc tests are reported with Holm "
+        "adjustment across platform pairs. Each input log is one independent run; "
+        "seed is treated as a replicate identifier, not a matching dimension.",
+        "At least two independent runs per platform are required. Omnibus p-values "
+        "are Holm-adjusted across metrics within each matched configuration.",
     ]
     found_comparison = False
     for group_key in sorted(groups, key=str):
@@ -742,70 +898,110 @@ def _comparison_lines(runs):
             continue
         found_comparison = True
         first_config = next(iter(next(iter(platform_runs.values()))))["config"]
-        lines.append("\nMatched workload: {}".format(_key_label(first_config, MATCH_FIELDS)))
+        lines.append(
+            "\nMatched workload: {}".format(_key_label(first_config, MATCH_FIELDS))
+        )
+
+        metric_results = []
         for metric in RUN_METRICS:
-            pair_results = []
-            for platform_a, platform_b in combinations(sorted(platform_runs), 2):
-                values_a = [
-                    run["run_metrics"][metric]
-                    for run in platform_runs[platform_a]
-                    if run["run_metrics"][metric] is not None
-                ]
-                values_b = [
-                    run["run_metrics"][metric]
-                    for run in platform_runs[platform_b]
-                    if run["run_metrics"][metric] is not None
-                ]
-                if len(values_a) < 2 or len(values_b) < 2:
-                    pair_results.append(
-                        (
-                            platform_a,
-                            platform_b,
-                            len(values_a),
-                            len(values_b),
-                            None,
-                        )
-                    )
-                else:
-                    pair_results.append(
-                        (
-                            platform_a,
-                            platform_b,
-                            len(values_a),
-                            len(values_b),
-                            welch_comparison(values_a, values_b),
-                        )
-                    )
-            tested = [entry for entry in pair_results if entry[4] is not None]
-            adjusted = holm_adjust([entry[4]["p_value"] for entry in tested])
-            adjusted_by_pair = {
-                (entry[0], entry[1]): adjusted[index]
-                for index, entry in enumerate(tested)
+            samples = {
+                platform: _metric_values(group_runs, metric)
+                for platform, group_runs in sorted(platform_runs.items())
             }
-            for platform_a, platform_b, count_a, count_b, result in pair_results:
-                if result is None:
-                    lines.append(
-                        "  {} vs {} / {}: not tested (runs: {}, {}; need at least 2 per platform).".format(
-                            platform_a, platform_b, metric, count_a, count_b
-                        )
-                    )
-                    continue
-                adjusted_p = adjusted_by_pair[(platform_a, platform_b)]
+            populated = {
+                platform: values for platform, values in samples.items() if values
+            }
+            counts = ", ".join(
+                "{}={}".format(platform, len(values))
+                for platform, values in samples.items()
+            )
+            if len(populated) < 2:
+                reason = "metric data are available for fewer than 2 platforms"
+                metric_results.append((metric, samples, None, counts, reason))
+                continue
+            if any(len(values) < 2 for values in populated.values()):
+                reason = "need at least 2 independent runs per platform"
+                metric_results.append((metric, samples, None, counts, reason))
+                continue
+            if len(populated) != len(samples):
+                reason = "one or more platforms have no valid observations"
+                metric_results.append((metric, samples, None, counts, reason))
+                continue
+
+            combined = np.concatenate(
+                [np.asarray(values, dtype=float) for values in populated.values()]
+            )
+            if np.all(combined == combined[0]):
+                result = {"statistic": 0.0, "p_value": 1.0}
+            else:
+                test = stats.kruskal(*populated.values())
+                result = {
+                    "statistic": float(test.statistic),
+                    "p_value": float(test.pvalue),
+                }
+            metric_results.append((metric, samples, result, None, None))
+
+        tested = [item for item in metric_results if item[2] is not None]
+        adjusted_omnibus = holm_adjust(
+            [item[2]["p_value"] for item in tested]
+        )
+        adjusted_by_metric = {
+            item[0]: adjusted_omnibus[index] for index, item in enumerate(tested)
+        }
+        for metric, samples, result, counts, reason in metric_results:
+            if result is None:
                 lines.append(
-                    "  {} vs {} / {}: n=({}, {}), mean_difference={}, "
-                    "95%_CI=[{}, {}], Welch_df={}, p={}, Holm_p={}{}".format(
+                    "  {}: not tested (runs per platform: {}; {}).".format(
+                        RUN_METRIC_LABELS[metric], counts, reason
+                    )
+                )
+                continue
+
+            adjusted_p = adjusted_by_metric[metric]
+            lines.append(
+                "  Kruskal-Wallis / {}: n_by_platform={}, H={}, p={}, "
+                "Holm_p={}{}".format(
+                    RUN_METRIC_LABELS[metric],
+                    ", ".join(
+                        "{}={}".format(platform, len(values))
+                        for platform, values in samples.items()
+                    ),
+                    format_value(result["statistic"]),
+                    format_value(result["p_value"]),
+                    format_value(adjusted_p),
+                    " (adjusted p < 0.05)" if adjusted_p < 0.05 else "",
+                )
+            )
+            if adjusted_p >= 0.05:
+                lines.append(
+                    "    Mann-Whitney U post-hoc tests not run: omnibus test is not significant."
+                )
+                continue
+
+            pair_results = []
+            for platform_a, platform_b in combinations(sorted(samples), 2):
+                test = stats.mannwhitneyu(
+                    samples[platform_a],
+                    samples[platform_b],
+                    alternative="two-sided",
+                    method="auto",
+                )
+                pair_results.append(
+                    (platform_a, platform_b, float(test.statistic), float(test.pvalue))
+                )
+            adjusted_pairs = holm_adjust([item[3] for item in pair_results])
+            for pair, adjusted_pair_p in zip(pair_results, adjusted_pairs):
+                platform_a, platform_b, statistic, p_value = pair
+                lines.append(
+                    "    Mann-Whitney U / {} vs {}: U={}, p={}, Holm_p={}{}".format(
                         platform_a,
                         platform_b,
-                        RUN_METRIC_LABELS[metric],
-                        count_a,
-                        count_b,
-                        format_value(result["difference"]),
-                        format_value(result["ci_low"]),
-                        format_value(result["ci_high"]),
-                        format_value(result["df"]),
-                        format_value(result["p_value"]),
-                        format_value(adjusted_p),
-                        " (adjusted p < 0.05)" if adjusted_p < 0.05 else "",
+                        format_value(statistic),
+                        format_value(p_value),
+                        format_value(adjusted_pair_p),
+                        " (adjusted p < 0.05)"
+                        if adjusted_pair_p < 0.05
+                        else "",
                     )
                 )
     if not found_comparison:

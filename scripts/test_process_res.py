@@ -422,6 +422,14 @@ class ProcessResTests(unittest.TestCase):
             self.assertTrue((project / "myLib" / "random_payload.java").is_file())
             self.assertTrue((project / "myLib" / "timestamp.java").is_file())
 
+    def test_jason_compose_builds_shared_image_only_once(self):
+        compose = gen_compose.gen_compose(
+            "jason", 8, 16, 1, 10, "inform", 1
+        )
+
+        self.assertEqual(compose.count("dockerfile: Dockerfile.jason"), 1)
+        self.assertEqual(compose.count("image: jasonmas:latest"), 8)
+
     def test_uagents_compose_uses_agents_without_a_server_container(self):
         compose = gen_compose.gen_compose(
             "uagents",

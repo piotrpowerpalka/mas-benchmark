@@ -320,13 +320,14 @@ def gen_compose(xmpp, numOfContainers, numOfAgents, repeats, messageSize, commTy
  
   if (xmpp == "jason"):
     for i in range(numOfContainers):
+        build_config = """      build:
+        context: .
+        dockerfile: Dockerfile.jason
+""" if i == 0 else ""
         rv += """
     mas{}:
       image: jasonmas:latest
-      build:
-        context: .
-        dockerfile: Dockerfile.jason
-      container_name: mas{}
+{}      container_name: mas{}
       hostname: mas{}
       command:
         - /app/benchmark.mas2j
@@ -345,7 +346,7 @@ def gen_compose(xmpp, numOfContainers, numOfAgents, repeats, messageSize, commTy
           limits:
             memory: {}
             cpus: {}
-    """.format(i, i, i, i, memsize, cpus)
+    """.format(i, build_config, i, i, i, memsize, cpus)
 
   if (xmpp in ("uagents", "uagents-agentverse")):
     uagents_transport = "agentverse" if xmpp == "uagents-agentverse" else "local"
